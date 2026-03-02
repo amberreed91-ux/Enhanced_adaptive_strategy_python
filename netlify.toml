@@ -1,0 +1,14 @@
+[build]
+  base = "python_portfolio_20"
+  command = "python3 portfolio_site/scripts/build_site_data.py"
+  publish = "portfolio_site"
+
+[build.environment]
+  PYTHON_VERSION = "3.12"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

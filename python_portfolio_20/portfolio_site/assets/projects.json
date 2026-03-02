@@ -1,0 +1,1083 @@
+{
+  "generated_at": "2026-03-02T03:54:02.732385+00:00",
+  "project_count": 20,
+  "featured_count": 5,
+  "categories": [
+    "Automation & Bots",
+    "Backend & APIs",
+    "Capstone",
+    "Core Python",
+    "Data & Analytics",
+    "ML & AI",
+    "Systems & DevOps"
+  ],
+  "skills": [
+    "HMAC signing",
+    "HMAC-safe compare",
+    "HTML parsing",
+    "KPI calculation",
+    "PBKDF2",
+    "aggregation",
+    "analytics aggregation",
+    "anomaly rules",
+    "argparse",
+    "base64url",
+    "cleaning",
+    "command routing",
+    "container readiness",
+    "dataclasses",
+    "edge detection intuition",
+    "error metrics",
+    "event filtering",
+    "filtering",
+    "forecasting",
+    "handlers",
+    "health checks",
+    "lightweight ML",
+    "matrix processing",
+    "moving averages",
+    "naive bayes",
+    "notifications",
+    "observability mindset",
+    "persistence",
+    "priority queues",
+    "quality gates",
+    "regex parsing",
+    "release criteria",
+    "repository pattern",
+    "retries",
+    "schema normalization",
+    "security basics",
+    "service contracts",
+    "sqlite3",
+    "stateful sessions",
+    "test/lint/type checks",
+    "threshold logic",
+    "token verification",
+    "tokenization",
+    "type hints",
+    "worker orchestration"
+  ],
+  "projects": [
+    {
+      "slug": "01_finance_tracker_cli",
+      "title": "Personal Finance Tracker CLI",
+      "summary": "Tracks transactions and computes category/month summaries.",
+      "skills": [
+        "argparse",
+        "dataclasses",
+        "type hints",
+        "aggregation"
+      ],
+      "category": "Core Python",
+      "run_command": "python3 projects/01_finance_tracker_cli/main.py",
+      "code_path": "./projects/01_finance_tracker_cli/main.py",
+      "readme_path": "./projects/01_finance_tracker_cli/README.md",
+      "demo_output": {
+        "project": "finance_tracker_cli",
+        "summary": {
+          "food": -42.5,
+          "income": 2600.0,
+          "transport": -12.0
+        }
+      },
+      "completion": "In Progress",
+      "client_value": "Demonstrates practical engineering and delivery quality.",
+      "impact_metrics": [],
+      "outcomes": [
+        "Runnable application with documented usage",
+        "Core functionality covered by smoke checks"
+      ],
+      "proof_points": [
+        "Source code and README included",
+        "Demo output captured on website"
+      ],
+      "featured": false,
+      "featured_rank": 999,
+      "links": {
+        "live": "",
+        "repo": "",
+        "docs": "",
+        "video": ""
+      }
+    },
+    {
+      "slug": "02_password_manager_encrypted",
+      "title": "Password Manager (Encrypted)",
+      "summary": "Encrypts and decrypts secrets with a password-derived key.",
+      "skills": [
+        "security basics",
+        "PBKDF2",
+        "HMAC-safe compare"
+      ],
+      "category": "Core Python",
+      "run_command": "python3 projects/02_password_manager_encrypted/main.py",
+      "code_path": "./projects/02_password_manager_encrypted/main.py",
+      "readme_path": "./projects/02_password_manager_encrypted/README.md",
+      "demo_output": {
+        "project": "password_manager_encrypted",
+        "round_trip_ok": true
+      },
+      "completion": "In Progress",
+      "client_value": "Demonstrates practical engineering and delivery quality.",
+      "impact_metrics": [],
+      "outcomes": [
+        "Runnable application with documented usage",
+        "Core functionality covered by smoke checks"
+      ],
+      "proof_points": [
+        "Source code and README included",
+        "Demo output captured on website"
+      ],
+      "featured": false,
+      "featured_rank": 999,
+      "links": {
+        "live": "",
+        "repo": "",
+        "docs": "",
+        "video": ""
+      }
+    },
+    {
+      "slug": "03_web_scraper_data_cleaner",
+      "title": "Web Scraper + Data Cleaner",
+      "summary": "Parses an HTML table and normalizes numeric values.",
+      "skills": [
+        "HTML parsing",
+        "cleaning",
+        "schema normalization"
+      ],
+      "category": "Data & Analytics",
+      "run_command": "python3 projects/03_web_scraper_data_cleaner/main.py",
+      "code_path": "./projects/03_web_scraper_data_cleaner/main.py",
+      "readme_path": "./projects/03_web_scraper_data_cleaner/README.md",
+      "demo_output": {
+        "project": "web_scraper_data_cleaner",
+        "symbol": "BTC",
+        "price": 102500.15
+      },
+      "completion": "In Progress",
+      "client_value": "Demonstrates practical engineering and delivery quality.",
+      "impact_metrics": [],
+      "outcomes": [
+        "Runnable application with documented usage",
+        "Core functionality covered by smoke checks"
+      ],
+      "proof_points": [
+        "Source code and README included",
+        "Demo output captured on website"
+      ],
+      "featured": false,
+      "featured_rank": 999,
+      "links": {
+        "live": "",
+        "repo": "",
+        "docs": "",
+        "video": ""
+      }
+    },
+    {
+      "slug": "04_rest_api_fastapi_style",
+      "title": "REST API with FastAPI-style Design",
+      "summary": "",
+      "skills": [],
+      "category": "Backend & APIs",
+      "run_command": "python3 projects/04_rest_api_fastapi_style/main.py",
+      "code_path": "./projects/04_rest_api_fastapi_style/main.py",
+      "readme_path": "./projects/04_rest_api_fastapi_style/README.md",
+      "demo_output": {
+        "project": "rest_api_fastapi_style",
+        "count": 2
+      },
+      "completion": "Production Ready",
+      "client_value": "Shows backend architecture, input validation, and clean service boundaries for scalable API work.",
+      "impact_metrics": [
+        "2 complete CRUD flows implemented",
+        "Deterministic service-layer validation",
+        "Average run_demo latency: 0.0009 ms",
+        "P95 latency: 0.0009 ms",
+        "Throughput: 1165538.9 runs/sec"
+      ],
+      "outcomes": [
+        "Created typed item service with strict empty-input rejection",
+        "Added clean create/list boundaries suitable for FastAPI handlers",
+        "Produced runnable demo payload for quick product walkthroughs"
+      ],
+      "proof_points": [
+        "Runnable locally via python3 projects/04_rest_api_fastapi_style/main.py",
+        "Included in smoke execution across all 20 projects",
+        "Screenshot proof at ./assets/project_media/04_rest_api_fastapi_style/preview.png",
+        "Animated demo at ./assets/project_media/04_rest_api_fastapi_style/demo.gif",
+        "Live project page at ./demos/04_rest_api_fastapi_style.html"
+      ],
+      "featured": true,
+      "featured_rank": 1,
+      "links": {
+        "live": "./demos/04_rest_api_fastapi_style.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/04_rest_api_fastapi_style",
+        "docs": "./projects/04_rest_api_fastapi_style/README.md",
+        "video": "./assets/project_media/04_rest_api_fastapi_style/demo.gif"
+      }
+    },
+    {
+      "slug": "05_task_manager_webapp",
+      "title": "Task Manager Web App Backend",
+      "summary": "Stores and retrieves tasks from SQLite.",
+      "skills": [
+        "sqlite3",
+        "repository pattern",
+        "persistence"
+      ],
+      "category": "Backend & APIs",
+      "run_command": "python3 projects/05_task_manager_webapp/main.py",
+      "code_path": "./projects/05_task_manager_webapp/main.py",
+      "readme_path": "./projects/05_task_manager_webapp/README.md",
+      "demo_output": {
+        "project": "task_manager_webapp",
+        "tasks": 1
+      },
+      "completion": "In Progress",
+      "client_value": "Demonstrates practical engineering and delivery quality.",
+      "impact_metrics": [],
+      "outcomes": [
+        "Runnable application with documented usage",
+        "Core functionality covered by smoke checks"
+      ],
+      "proof_points": [
+        "Source code and README included",
+        "Demo output captured on website"
+      ],
+      "featured": false,
+      "featured_rank": 999,
+      "links": {
+        "live": "",
+        "repo": "",
+        "docs": "",
+        "video": ""
+      }
+    },
+    {
+      "slug": "06_jwt_auth_service",
+      "title": "JWT Auth Service",
+      "summary": "Builds and verifies compact signed auth tokens.",
+      "skills": [
+        "base64url",
+        "HMAC signing",
+        "token verification"
+      ],
+      "category": "Backend & APIs",
+      "run_command": "python3 projects/06_jwt_auth_service/main.py",
+      "code_path": "./projects/06_jwt_auth_service/main.py",
+      "readme_path": "./projects/06_jwt_auth_service/README.md",
+      "demo_output": {
+        "project": "jwt_auth_service",
+        "verified": true
+      },
+      "completion": "In Progress",
+      "client_value": "Demonstrates practical engineering and delivery quality.",
+      "impact_metrics": [],
+      "outcomes": [
+        "Runnable application with documented usage",
+        "Core functionality covered by smoke checks"
+      ],
+      "proof_points": [
+        "Source code and README included",
+        "Demo output captured on website"
+      ],
+      "featured": false,
+      "featured_rank": 999,
+      "links": {
+        "live": "",
+        "repo": "",
+        "docs": "",
+        "video": ""
+      }
+    },
+    {
+      "slug": "07_etl_pipeline",
+      "title": "ETL Pipeline Project",
+      "summary": "",
+      "skills": [],
+      "category": "Data & Analytics",
+      "run_command": "python3 projects/07_etl_pipeline/main.py",
+      "code_path": "./projects/07_etl_pipeline/main.py",
+      "readme_path": "./projects/07_etl_pipeline/README.md",
+      "demo_output": {
+        "project": "etl_pipeline",
+        "loaded_rows": 2
+      },
+      "completion": "Production Ready",
+      "client_value": "Demonstrates robust extract-transform flow with data quality filtering and normalized outputs.",
+      "impact_metrics": [
+        "Invalid rows filtered before output",
+        "Consistent schema produced for downstream load",
+        "Average run_demo latency: 0.0067 ms",
+        "P95 latency: 0.0053 ms",
+        "Throughput: 149441.3 runs/sec"
+      ],
+      "outcomes": [
+        "Parsed CSV into structured records",
+        "Applied transformation and positive-value quality filter",
+        "Returned standardized shaped payload"
+      ],
+      "proof_points": [
+        "Smoke-tested in portfolio runner",
+        "Clear extraction and transform functions documented",
+        "Screenshot proof at ./assets/project_media/07_etl_pipeline/preview.png",
+        "Animated demo at ./assets/project_media/07_etl_pipeline/demo.gif",
+        "Live project page at ./demos/07_etl_pipeline.html"
+      ],
+      "featured": true,
+      "featured_rank": 2,
+      "links": {
+        "live": "./demos/07_etl_pipeline.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/07_etl_pipeline",
+        "docs": "./projects/07_etl_pipeline/README.md",
+        "video": "./assets/project_media/07_etl_pipeline/demo.gif"
+      }
+    },
+    {
+      "slug": "08_data_dashboard",
+      "title": "Data Dashboard Backend",
+      "summary": "Prepares dashboard-ready KPI payloads from raw records.",
+      "skills": [
+        "analytics aggregation",
+        "KPI calculation"
+      ],
+      "category": "Data & Analytics",
+      "run_command": "python3 projects/08_data_dashboard/main.py",
+      "code_path": "./projects/08_data_dashboard/main.py",
+      "readme_path": "./projects/08_data_dashboard/README.md",
+      "demo_output": {
+        "project": "data_dashboard",
+        "avg": 14.25
+      },
+      "completion": "In Progress",
+      "client_value": "Demonstrates practical engineering and delivery quality.",
+      "impact_metrics": [],
+      "outcomes": [
+        "Runnable application with documented usage",
+        "Core functionality covered by smoke checks"
+      ],
+      "proof_points": [
+        "Source code and README included",
+        "Demo output captured on website"
+      ],
+      "featured": false,
+      "featured_rank": 999,
+      "links": {
+        "live": "",
+        "repo": "",
+        "docs": "",
+        "video": ""
+      }
+    },
+    {
+      "slug": "09_price_alert_bot",
+      "title": "Stock/Crypto Alert Bot",
+      "summary": "Emits buy/sell alerts from incoming market ticks.",
+      "skills": [
+        "threshold logic",
+        "event filtering",
+        "notifications"
+      ],
+      "category": "Automation & Bots",
+      "run_command": "python3 projects/09_price_alert_bot/main.py",
+      "code_path": "./projects/09_price_alert_bot/main.py",
+      "readme_path": "./projects/09_price_alert_bot/README.md",
+      "demo_output": {
+        "project": "price_alert_bot",
+        "alerts": [
+          "BUY BTCUSD @ 96000",
+          "SELL BTCUSD @ 108000"
+        ]
+      },
+      "completion": "In Progress",
+      "client_value": "Demonstrates practical engineering and delivery quality.",
+      "impact_metrics": [],
+      "outcomes": [
+        "Runnable application with documented usage",
+        "Core functionality covered by smoke checks"
+      ],
+      "proof_points": [
+        "Source code and README included",
+        "Demo output captured on website"
+      ],
+      "featured": false,
+      "featured_rank": 999,
+      "links": {
+        "live": "",
+        "repo": "",
+        "docs": "",
+        "video": ""
+      }
+    },
+    {
+      "slug": "10_log_analyzer_monitor",
+      "title": "Log Analyzer + Monitoring Tool",
+      "summary": "Parses log levels and flags elevated error rates.",
+      "skills": [
+        "regex parsing",
+        "anomaly rules",
+        "observability mindset"
+      ],
+      "category": "Automation & Bots",
+      "run_command": "python3 projects/10_log_analyzer_monitor/main.py",
+      "code_path": "./projects/10_log_analyzer_monitor/main.py",
+      "readme_path": "./projects/10_log_analyzer_monitor/README.md",
+      "demo_output": {
+        "project": "log_analyzer_monitor",
+        "error_rate": 0.5,
+        "anomaly": true
+      },
+      "completion": "In Progress",
+      "client_value": "Demonstrates practical engineering and delivery quality.",
+      "impact_metrics": [],
+      "outcomes": [
+        "Runnable application with documented usage",
+        "Core functionality covered by smoke checks"
+      ],
+      "proof_points": [
+        "Source code and README included",
+        "Demo output captured on website"
+      ],
+      "featured": false,
+      "featured_rank": 999,
+      "links": {
+        "live": "",
+        "repo": "",
+        "docs": "",
+        "video": ""
+      }
+    },
+    {
+      "slug": "11_async_api_aggregator",
+      "title": "Asynchronous API Aggregator",
+      "summary": "",
+      "skills": [],
+      "category": "Backend & APIs",
+      "run_command": "python3 projects/11_async_api_aggregator/main.py",
+      "code_path": "./projects/11_async_api_aggregator/main.py",
+      "readme_path": "./projects/11_async_api_aggregator/README.md",
+      "demo_output": {
+        "project": "async_api_aggregator",
+        "sources": 3,
+        "total": 140
+      },
+      "completion": "Production Ready",
+      "client_value": "Shows concurrent task orchestration to reduce end-to-end latency for multi-source integrations.",
+      "impact_metrics": [
+        "Concurrent collection from 3 data sources",
+        "Single aggregation pass for summary value",
+        "Average run_demo latency: 22.4078 ms",
+        "P95 latency: 25.3414 ms",
+        "Throughput: 44.6 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented asyncio-based concurrent fetch flow",
+        "Merged independent responses into one payload",
+        "Demonstrated async run path with repeatable output"
+      ],
+      "proof_points": [
+        "Includes async function coverage through smoke execution",
+        "Output includes source count and aggregate totals",
+        "Screenshot proof at ./assets/project_media/11_async_api_aggregator/preview.png",
+        "Animated demo at ./assets/project_media/11_async_api_aggregator/demo.gif",
+        "Live project page at ./demos/11_async_api_aggregator.html"
+      ],
+      "featured": true,
+      "featured_rank": 3,
+      "links": {
+        "live": "./demos/11_async_api_aggregator.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/11_async_api_aggregator",
+        "docs": "./projects/11_async_api_aggregator/README.md",
+        "video": "./assets/project_media/11_async_api_aggregator/demo.gif"
+      }
+    },
+    {
+      "slug": "12_chat_bot",
+      "title": "Telegram/Discord Bot Core",
+      "summary": "Routes slash-commands and persists lightweight user state.",
+      "skills": [
+        "command routing",
+        "stateful sessions",
+        "handlers"
+      ],
+      "category": "Automation & Bots",
+      "run_command": "python3 projects/12_chat_bot/main.py",
+      "code_path": "./projects/12_chat_bot/main.py",
+      "readme_path": "./projects/12_chat_bot/README.md",
+      "demo_output": {
+        "project": "chat_bot",
+        "last_reply": "pong 1"
+      },
+      "completion": "In Progress",
+      "client_value": "Demonstrates practical engineering and delivery quality.",
+      "impact_metrics": [],
+      "outcomes": [
+        "Runnable application with documented usage",
+        "Core functionality covered by smoke checks"
+      ],
+      "proof_points": [
+        "Source code and README included",
+        "Demo output captured on website"
+      ],
+      "featured": false,
+      "featured_rank": 999,
+      "links": {
+        "live": "",
+        "repo": "",
+        "docs": "",
+        "video": ""
+      }
+    },
+    {
+      "slug": "13_recommender_system",
+      "title": "Recommendation System",
+      "summary": "",
+      "skills": [],
+      "category": "ML & AI",
+      "run_command": "python3 projects/13_recommender_system/main.py",
+      "code_path": "./projects/13_recommender_system/main.py",
+      "readme_path": "./projects/13_recommender_system/README.md",
+      "demo_output": {
+        "project": "recommender_system",
+        "top_item": "item_a"
+      },
+      "completion": "Production Ready",
+      "client_value": "Demonstrates ranking logic for personalization use cases with transparent scoring behavior.",
+      "impact_metrics": [
+        "Cosine similarity ranking implemented",
+        "Top recommendation returned deterministically",
+        "Average run_demo latency: 0.004 ms",
+        "P95 latency: 0.0042 ms",
+        "Throughput: 247504.7 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented vector similarity scoring",
+        "Sorted catalog results by descending score",
+        "Returned explainable top-item recommendation"
+      ],
+      "proof_points": [
+        "Recommendation output visible in website demo",
+        "Core math logic isolated in reusable functions",
+        "Screenshot proof at ./assets/project_media/13_recommender_system/preview.png",
+        "Animated demo at ./assets/project_media/13_recommender_system/demo.gif",
+        "Live project page at ./demos/13_recommender_system.html"
+      ],
+      "featured": true,
+      "featured_rank": 4,
+      "links": {
+        "live": "./demos/13_recommender_system.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/13_recommender_system",
+        "docs": "./projects/13_recommender_system/README.md",
+        "video": "./assets/project_media/13_recommender_system/demo.gif"
+      }
+    },
+    {
+      "slug": "14_nlp_text_classifier",
+      "title": "NLP Text Classifier",
+      "summary": "Implements a simple bag-of-words Naive Bayes classifier.",
+      "skills": [
+        "tokenization",
+        "naive bayes",
+        "lightweight ML"
+      ],
+      "category": "ML & AI",
+      "run_command": "python3 projects/14_nlp_text_classifier/main.py",
+      "code_path": "./projects/14_nlp_text_classifier/main.py",
+      "readme_path": "./projects/14_nlp_text_classifier/README.md",
+      "demo_output": {
+        "project": "nlp_text_classifier",
+        "prediction": "spam"
+      },
+      "completion": "In Progress",
+      "client_value": "Demonstrates practical engineering and delivery quality.",
+      "impact_metrics": [],
+      "outcomes": [
+        "Runnable application with documented usage",
+        "Core functionality covered by smoke checks"
+      ],
+      "proof_points": [
+        "Source code and README included",
+        "Demo output captured on website"
+      ],
+      "featured": false,
+      "featured_rank": 999,
+      "links": {
+        "live": "",
+        "repo": "",
+        "docs": "",
+        "video": ""
+      }
+    },
+    {
+      "slug": "15_time_series_forecaster",
+      "title": "Time-Series Forecasting App",
+      "summary": "Generates short-horizon forecasts and computes MAPE.",
+      "skills": [
+        "forecasting",
+        "moving averages",
+        "error metrics"
+      ],
+      "category": "ML & AI",
+      "run_command": "python3 projects/15_time_series_forecaster/main.py",
+      "code_path": "./projects/15_time_series_forecaster/main.py",
+      "readme_path": "./projects/15_time_series_forecaster/README.md",
+      "demo_output": {
+        "project": "time_series_forecaster",
+        "forecast": [
+          104.33,
+          105.44
+        ]
+      },
+      "completion": "In Progress",
+      "client_value": "Demonstrates practical engineering and delivery quality.",
+      "impact_metrics": [],
+      "outcomes": [
+        "Runnable application with documented usage",
+        "Core functionality covered by smoke checks"
+      ],
+      "proof_points": [
+        "Source code and README included",
+        "Demo output captured on website"
+      ],
+      "featured": false,
+      "featured_rank": 999,
+      "links": {
+        "live": "",
+        "repo": "",
+        "docs": "",
+        "video": ""
+      }
+    },
+    {
+      "slug": "16_computer_vision_mini_app",
+      "title": "Computer Vision Mini-App",
+      "summary": "Applies blur and edge-like transforms on image matrices.",
+      "skills": [
+        "matrix processing",
+        "filtering",
+        "edge detection intuition"
+      ],
+      "category": "ML & AI",
+      "run_command": "python3 projects/16_computer_vision_mini_app/main.py",
+      "code_path": "./projects/16_computer_vision_mini_app/main.py",
+      "readme_path": "./projects/16_computer_vision_mini_app/README.md",
+      "demo_output": {
+        "project": "computer_vision_mini_app",
+        "blur": [
+          10,
+          13,
+          18,
+          20,
+          18
+        ],
+        "edge": [
+          2,
+          7,
+          5,
+          6
+        ]
+      },
+      "completion": "In Progress",
+      "client_value": "Demonstrates practical engineering and delivery quality.",
+      "impact_metrics": [],
+      "outcomes": [
+        "Runnable application with documented usage",
+        "Core functionality covered by smoke checks"
+      ],
+      "proof_points": [
+        "Source code and README included",
+        "Demo output captured on website"
+      ],
+      "featured": false,
+      "featured_rank": 999,
+      "links": {
+        "live": "",
+        "repo": "",
+        "docs": "",
+        "video": ""
+      }
+    },
+    {
+      "slug": "17_dockerized_microservice",
+      "title": "Dockerized Microservice Core",
+      "summary": "Implements app metadata and readiness/liveness checks.",
+      "skills": [
+        "service contracts",
+        "health checks",
+        "container readiness"
+      ],
+      "category": "Systems & DevOps",
+      "run_command": "python3 projects/17_dockerized_microservice/main.py",
+      "code_path": "./projects/17_dockerized_microservice/main.py",
+      "readme_path": "./projects/17_dockerized_microservice/README.md",
+      "demo_output": {
+        "project": "dockerized_microservice",
+        "healthy": true,
+        "version": "1.0.0"
+      },
+      "completion": "In Progress",
+      "client_value": "Demonstrates practical engineering and delivery quality.",
+      "impact_metrics": [],
+      "outcomes": [
+        "Runnable application with documented usage",
+        "Core functionality covered by smoke checks"
+      ],
+      "proof_points": [
+        "Source code and README included",
+        "Demo output captured on website"
+      ],
+      "featured": false,
+      "featured_rank": 999,
+      "links": {
+        "live": "",
+        "repo": "",
+        "docs": "",
+        "video": ""
+      }
+    },
+    {
+      "slug": "18_ci_cd_project_template",
+      "title": "CI/CD-Ready Project Template",
+      "summary": "Evaluates whether a build passes core quality gates.",
+      "skills": [
+        "quality gates",
+        "test/lint/type checks",
+        "release criteria"
+      ],
+      "category": "Systems & DevOps",
+      "run_command": "python3 projects/18_ci_cd_project_template/main.py",
+      "code_path": "./projects/18_ci_cd_project_template/main.py",
+      "readme_path": "./projects/18_ci_cd_project_template/README.md",
+      "demo_output": {
+        "project": "ci_cd_project_template",
+        "passed": false,
+        "failed": [
+          "types"
+        ]
+      },
+      "completion": "In Progress",
+      "client_value": "Demonstrates practical engineering and delivery quality.",
+      "impact_metrics": [],
+      "outcomes": [
+        "Runnable application with documented usage",
+        "Core functionality covered by smoke checks"
+      ],
+      "proof_points": [
+        "Source code and README included",
+        "Demo output captured on website"
+      ],
+      "featured": false,
+      "featured_rank": 999,
+      "links": {
+        "live": "",
+        "repo": "",
+        "docs": "",
+        "video": ""
+      }
+    },
+    {
+      "slug": "19_distributed_job_queue",
+      "title": "Distributed Job Queue System",
+      "summary": "Runs jobs with priority ordering and bounded retries.",
+      "skills": [
+        "priority queues",
+        "retries",
+        "worker orchestration"
+      ],
+      "category": "Systems & DevOps",
+      "run_command": "python3 projects/19_distributed_job_queue/main.py",
+      "code_path": "./projects/19_distributed_job_queue/main.py",
+      "readme_path": "./projects/19_distributed_job_queue/README.md",
+      "demo_output": {
+        "project": "distributed_job_queue",
+        "completed": [
+          "fail-once-task",
+          "email"
+        ]
+      },
+      "completion": "In Progress",
+      "client_value": "Demonstrates practical engineering and delivery quality.",
+      "impact_metrics": [],
+      "outcomes": [
+        "Runnable application with documented usage",
+        "Core functionality covered by smoke checks"
+      ],
+      "proof_points": [
+        "Source code and README included",
+        "Demo output captured on website"
+      ],
+      "featured": false,
+      "featured_rank": 999,
+      "links": {
+        "live": "",
+        "repo": "",
+        "docs": "",
+        "video": ""
+      }
+    },
+    {
+      "slug": "20_capstone_end_to_end_ml_product",
+      "title": "Capstone: End-to-End ML Product",
+      "summary": "",
+      "skills": [],
+      "category": "Capstone",
+      "run_command": "python3 projects/20_capstone_end_to_end_ml_product/main.py",
+      "code_path": "./projects/20_capstone_end_to_end_ml_product/main.py",
+      "readme_path": "./projects/20_capstone_end_to_end_ml_product/README.md",
+      "demo_output": {
+        "project": "capstone_end_to_end_ml_product",
+        "prediction": 10.0
+      },
+      "completion": "Production Ready",
+      "client_value": "Shows complete ML flow from fitting to inference, suitable as a foundation for model-serving APIs.",
+      "impact_metrics": [
+        "Model fit + predict pipeline delivered",
+        "Deterministic linear inference output",
+        "Average run_demo latency: 0.0018 ms",
+        "P95 latency: 0.0019 ms",
+        "Throughput: 552281.4 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented linear fit from raw training arrays",
+        "Exposed deterministic prediction function",
+        "Packaged full run_demo path for stakeholder review"
+      ],
+      "proof_points": [
+        "End-to-end fit/predict visible from site modal",
+        "Smoke-tested with portfolio-wide checks",
+        "Screenshot proof at ./assets/project_media/20_capstone_end_to_end_ml_product/preview.png",
+        "Animated demo at ./assets/project_media/20_capstone_end_to_end_ml_product/demo.gif",
+        "Live project page at ./demos/20_capstone_end_to_end_ml_product.html"
+      ],
+      "featured": true,
+      "featured_rank": 5,
+      "links": {
+        "live": "./demos/20_capstone_end_to_end_ml_product.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/20_capstone_end_to_end_ml_product",
+        "docs": "./projects/20_capstone_end_to_end_ml_product/README.md",
+        "video": "./assets/project_media/20_capstone_end_to_end_ml_product/demo.gif"
+      }
+    }
+  ],
+  "featured_projects": [
+    {
+      "slug": "04_rest_api_fastapi_style",
+      "title": "REST API with FastAPI-style Design",
+      "summary": "",
+      "skills": [],
+      "category": "Backend & APIs",
+      "run_command": "python3 projects/04_rest_api_fastapi_style/main.py",
+      "code_path": "./projects/04_rest_api_fastapi_style/main.py",
+      "readme_path": "./projects/04_rest_api_fastapi_style/README.md",
+      "demo_output": {
+        "project": "rest_api_fastapi_style",
+        "count": 2
+      },
+      "completion": "Production Ready",
+      "client_value": "Shows backend architecture, input validation, and clean service boundaries for scalable API work.",
+      "impact_metrics": [
+        "2 complete CRUD flows implemented",
+        "Deterministic service-layer validation",
+        "Average run_demo latency: 0.0009 ms",
+        "P95 latency: 0.0009 ms",
+        "Throughput: 1165538.9 runs/sec"
+      ],
+      "outcomes": [
+        "Created typed item service with strict empty-input rejection",
+        "Added clean create/list boundaries suitable for FastAPI handlers",
+        "Produced runnable demo payload for quick product walkthroughs"
+      ],
+      "proof_points": [
+        "Runnable locally via python3 projects/04_rest_api_fastapi_style/main.py",
+        "Included in smoke execution across all 20 projects",
+        "Screenshot proof at ./assets/project_media/04_rest_api_fastapi_style/preview.png",
+        "Animated demo at ./assets/project_media/04_rest_api_fastapi_style/demo.gif",
+        "Live project page at ./demos/04_rest_api_fastapi_style.html"
+      ],
+      "featured": true,
+      "featured_rank": 1,
+      "links": {
+        "live": "./demos/04_rest_api_fastapi_style.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/04_rest_api_fastapi_style",
+        "docs": "./projects/04_rest_api_fastapi_style/README.md",
+        "video": "./assets/project_media/04_rest_api_fastapi_style/demo.gif"
+      }
+    },
+    {
+      "slug": "07_etl_pipeline",
+      "title": "ETL Pipeline Project",
+      "summary": "",
+      "skills": [],
+      "category": "Data & Analytics",
+      "run_command": "python3 projects/07_etl_pipeline/main.py",
+      "code_path": "./projects/07_etl_pipeline/main.py",
+      "readme_path": "./projects/07_etl_pipeline/README.md",
+      "demo_output": {
+        "project": "etl_pipeline",
+        "loaded_rows": 2
+      },
+      "completion": "Production Ready",
+      "client_value": "Demonstrates robust extract-transform flow with data quality filtering and normalized outputs.",
+      "impact_metrics": [
+        "Invalid rows filtered before output",
+        "Consistent schema produced for downstream load",
+        "Average run_demo latency: 0.0067 ms",
+        "P95 latency: 0.0053 ms",
+        "Throughput: 149441.3 runs/sec"
+      ],
+      "outcomes": [
+        "Parsed CSV into structured records",
+        "Applied transformation and positive-value quality filter",
+        "Returned standardized shaped payload"
+      ],
+      "proof_points": [
+        "Smoke-tested in portfolio runner",
+        "Clear extraction and transform functions documented",
+        "Screenshot proof at ./assets/project_media/07_etl_pipeline/preview.png",
+        "Animated demo at ./assets/project_media/07_etl_pipeline/demo.gif",
+        "Live project page at ./demos/07_etl_pipeline.html"
+      ],
+      "featured": true,
+      "featured_rank": 2,
+      "links": {
+        "live": "./demos/07_etl_pipeline.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/07_etl_pipeline",
+        "docs": "./projects/07_etl_pipeline/README.md",
+        "video": "./assets/project_media/07_etl_pipeline/demo.gif"
+      }
+    },
+    {
+      "slug": "11_async_api_aggregator",
+      "title": "Asynchronous API Aggregator",
+      "summary": "",
+      "skills": [],
+      "category": "Backend & APIs",
+      "run_command": "python3 projects/11_async_api_aggregator/main.py",
+      "code_path": "./projects/11_async_api_aggregator/main.py",
+      "readme_path": "./projects/11_async_api_aggregator/README.md",
+      "demo_output": {
+        "project": "async_api_aggregator",
+        "sources": 3,
+        "total": 140
+      },
+      "completion": "Production Ready",
+      "client_value": "Shows concurrent task orchestration to reduce end-to-end latency for multi-source integrations.",
+      "impact_metrics": [
+        "Concurrent collection from 3 data sources",
+        "Single aggregation pass for summary value",
+        "Average run_demo latency: 22.4078 ms",
+        "P95 latency: 25.3414 ms",
+        "Throughput: 44.6 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented asyncio-based concurrent fetch flow",
+        "Merged independent responses into one payload",
+        "Demonstrated async run path with repeatable output"
+      ],
+      "proof_points": [
+        "Includes async function coverage through smoke execution",
+        "Output includes source count and aggregate totals",
+        "Screenshot proof at ./assets/project_media/11_async_api_aggregator/preview.png",
+        "Animated demo at ./assets/project_media/11_async_api_aggregator/demo.gif",
+        "Live project page at ./demos/11_async_api_aggregator.html"
+      ],
+      "featured": true,
+      "featured_rank": 3,
+      "links": {
+        "live": "./demos/11_async_api_aggregator.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/11_async_api_aggregator",
+        "docs": "./projects/11_async_api_aggregator/README.md",
+        "video": "./assets/project_media/11_async_api_aggregator/demo.gif"
+      }
+    },
+    {
+      "slug": "13_recommender_system",
+      "title": "Recommendation System",
+      "summary": "",
+      "skills": [],
+      "category": "ML & AI",
+      "run_command": "python3 projects/13_recommender_system/main.py",
+      "code_path": "./projects/13_recommender_system/main.py",
+      "readme_path": "./projects/13_recommender_system/README.md",
+      "demo_output": {
+        "project": "recommender_system",
+        "top_item": "item_a"
+      },
+      "completion": "Production Ready",
+      "client_value": "Demonstrates ranking logic for personalization use cases with transparent scoring behavior.",
+      "impact_metrics": [
+        "Cosine similarity ranking implemented",
+        "Top recommendation returned deterministically",
+        "Average run_demo latency: 0.004 ms",
+        "P95 latency: 0.0042 ms",
+        "Throughput: 247504.7 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented vector similarity scoring",
+        "Sorted catalog results by descending score",
+        "Returned explainable top-item recommendation"
+      ],
+      "proof_points": [
+        "Recommendation output visible in website demo",
+        "Core math logic isolated in reusable functions",
+        "Screenshot proof at ./assets/project_media/13_recommender_system/preview.png",
+        "Animated demo at ./assets/project_media/13_recommender_system/demo.gif",
+        "Live project page at ./demos/13_recommender_system.html"
+      ],
+      "featured": true,
+      "featured_rank": 4,
+      "links": {
+        "live": "./demos/13_recommender_system.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/13_recommender_system",
+        "docs": "./projects/13_recommender_system/README.md",
+        "video": "./assets/project_media/13_recommender_system/demo.gif"
+      }
+    },
+    {
+      "slug": "20_capstone_end_to_end_ml_product",
+      "title": "Capstone: End-to-End ML Product",
+      "summary": "",
+      "skills": [],
+      "category": "Capstone",
+      "run_command": "python3 projects/20_capstone_end_to_end_ml_product/main.py",
+      "code_path": "./projects/20_capstone_end_to_end_ml_product/main.py",
+      "readme_path": "./projects/20_capstone_end_to_end_ml_product/README.md",
+      "demo_output": {
+        "project": "capstone_end_to_end_ml_product",
+        "prediction": 10.0
+      },
+      "completion": "Production Ready",
+      "client_value": "Shows complete ML flow from fitting to inference, suitable as a foundation for model-serving APIs.",
+      "impact_metrics": [
+        "Model fit + predict pipeline delivered",
+        "Deterministic linear inference output",
+        "Average run_demo latency: 0.0018 ms",
+        "P95 latency: 0.0019 ms",
+        "Throughput: 552281.4 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented linear fit from raw training arrays",
+        "Exposed deterministic prediction function",
+        "Packaged full run_demo path for stakeholder review"
+      ],
+      "proof_points": [
+        "End-to-end fit/predict visible from site modal",
+        "Smoke-tested with portfolio-wide checks",
+        "Screenshot proof at ./assets/project_media/20_capstone_end_to_end_ml_product/preview.png",
+        "Animated demo at ./assets/project_media/20_capstone_end_to_end_ml_product/demo.gif",
+        "Live project page at ./demos/20_capstone_end_to_end_ml_product.html"
+      ],
+      "featured": true,
+      "featured_rank": 5,
+      "links": {
+        "live": "./demos/20_capstone_end_to_end_ml_product.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/20_capstone_end_to_end_ml_product",
+        "docs": "./projects/20_capstone_end_to_end_ml_product/README.md",
+        "video": "./assets/project_media/20_capstone_end_to_end_ml_product/demo.gif"
+      }
+    }
+  ]
+}

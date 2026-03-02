@@ -1,0 +1,180 @@
+{
+  "defaults": {
+    "featured": false,
+    "featured_rank": 999,
+    "completion": "In Progress",
+    "client_value": "Demonstrates practical engineering and delivery quality.",
+    "impact_metrics": [],
+    "outcomes": [
+      "Runnable application with documented usage",
+      "Core functionality covered by smoke checks"
+    ],
+    "proof_points": [
+      "Source code and README included",
+      "Demo output captured on website"
+    ],
+    "links": {
+      "live": "",
+      "repo": "",
+      "docs": "",
+      "video": ""
+    }
+  },
+  "projects": {
+    "04_rest_api_fastapi_style": {
+      "featured": true,
+      "featured_rank": 1,
+      "completion": "Production Ready",
+      "client_value": "Shows backend architecture, input validation, and clean service boundaries for scalable API work.",
+      "impact_metrics": [
+        "2 complete CRUD flows implemented",
+        "Deterministic service-layer validation",
+        "Average run_demo latency: 0.0009 ms",
+        "P95 latency: 0.0009 ms",
+        "Throughput: 1165538.9 runs/sec"
+      ],
+      "outcomes": [
+        "Created typed item service with strict empty-input rejection",
+        "Added clean create/list boundaries suitable for FastAPI handlers",
+        "Produced runnable demo payload for quick product walkthroughs"
+      ],
+      "proof_points": [
+        "Runnable locally via python3 projects/04_rest_api_fastapi_style/main.py",
+        "Included in smoke execution across all 20 projects",
+        "Screenshot proof at ./assets/project_media/04_rest_api_fastapi_style/preview.png",
+        "Animated demo at ./assets/project_media/04_rest_api_fastapi_style/demo.gif",
+        "Live project page at ./demos/04_rest_api_fastapi_style.html"
+      ],
+      "links": {
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/04_rest_api_fastapi_style",
+        "docs": "./projects/04_rest_api_fastapi_style/README.md",
+        "live": "./demos/04_rest_api_fastapi_style.html",
+        "video": "./assets/project_media/04_rest_api_fastapi_style/demo.gif"
+      }
+    },
+    "07_etl_pipeline": {
+      "featured": true,
+      "featured_rank": 2,
+      "completion": "Production Ready",
+      "client_value": "Demonstrates robust extract-transform flow with data quality filtering and normalized outputs.",
+      "impact_metrics": [
+        "Invalid rows filtered before output",
+        "Consistent schema produced for downstream load",
+        "Average run_demo latency: 0.0067 ms",
+        "P95 latency: 0.0053 ms",
+        "Throughput: 149441.3 runs/sec"
+      ],
+      "outcomes": [
+        "Parsed CSV into structured records",
+        "Applied transformation and positive-value quality filter",
+        "Returned standardized shaped payload"
+      ],
+      "proof_points": [
+        "Smoke-tested in portfolio runner",
+        "Clear extraction and transform functions documented",
+        "Screenshot proof at ./assets/project_media/07_etl_pipeline/preview.png",
+        "Animated demo at ./assets/project_media/07_etl_pipeline/demo.gif",
+        "Live project page at ./demos/07_etl_pipeline.html"
+      ],
+      "links": {
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/07_etl_pipeline",
+        "docs": "./projects/07_etl_pipeline/README.md",
+        "live": "./demos/07_etl_pipeline.html",
+        "video": "./assets/project_media/07_etl_pipeline/demo.gif"
+      }
+    },
+    "11_async_api_aggregator": {
+      "featured": true,
+      "featured_rank": 3,
+      "completion": "Production Ready",
+      "client_value": "Shows concurrent task orchestration to reduce end-to-end latency for multi-source integrations.",
+      "impact_metrics": [
+        "Concurrent collection from 3 data sources",
+        "Single aggregation pass for summary value",
+        "Average run_demo latency: 22.4078 ms",
+        "P95 latency: 25.3414 ms",
+        "Throughput: 44.6 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented asyncio-based concurrent fetch flow",
+        "Merged independent responses into one payload",
+        "Demonstrated async run path with repeatable output"
+      ],
+      "proof_points": [
+        "Includes async function coverage through smoke execution",
+        "Output includes source count and aggregate totals",
+        "Screenshot proof at ./assets/project_media/11_async_api_aggregator/preview.png",
+        "Animated demo at ./assets/project_media/11_async_api_aggregator/demo.gif",
+        "Live project page at ./demos/11_async_api_aggregator.html"
+      ],
+      "links": {
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/11_async_api_aggregator",
+        "docs": "./projects/11_async_api_aggregator/README.md",
+        "live": "./demos/11_async_api_aggregator.html",
+        "video": "./assets/project_media/11_async_api_aggregator/demo.gif"
+      }
+    },
+    "13_recommender_system": {
+      "featured": true,
+      "featured_rank": 4,
+      "completion": "Production Ready",
+      "client_value": "Demonstrates ranking logic for personalization use cases with transparent scoring behavior.",
+      "impact_metrics": [
+        "Cosine similarity ranking implemented",
+        "Top recommendation returned deterministically",
+        "Average run_demo latency: 0.004 ms",
+        "P95 latency: 0.0042 ms",
+        "Throughput: 247504.7 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented vector similarity scoring",
+        "Sorted catalog results by descending score",
+        "Returned explainable top-item recommendation"
+      ],
+      "proof_points": [
+        "Recommendation output visible in website demo",
+        "Core math logic isolated in reusable functions",
+        "Screenshot proof at ./assets/project_media/13_recommender_system/preview.png",
+        "Animated demo at ./assets/project_media/13_recommender_system/demo.gif",
+        "Live project page at ./demos/13_recommender_system.html"
+      ],
+      "links": {
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/13_recommender_system",
+        "docs": "./projects/13_recommender_system/README.md",
+        "live": "./demos/13_recommender_system.html",
+        "video": "./assets/project_media/13_recommender_system/demo.gif"
+      }
+    },
+    "20_capstone_end_to_end_ml_product": {
+      "featured": true,
+      "featured_rank": 5,
+      "completion": "Production Ready",
+      "client_value": "Shows complete ML flow from fitting to inference, suitable as a foundation for model-serving APIs.",
+      "impact_metrics": [
+        "Model fit + predict pipeline delivered",
+        "Deterministic linear inference output",
+        "Average run_demo latency: 0.0018 ms",
+        "P95 latency: 0.0019 ms",
+        "Throughput: 552281.4 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented linear fit from raw training arrays",
+        "Exposed deterministic prediction function",
+        "Packaged full run_demo path for stakeholder review"
+      ],
+      "proof_points": [
+        "End-to-end fit/predict visible from site modal",
+        "Smoke-tested with portfolio-wide checks",
+        "Screenshot proof at ./assets/project_media/20_capstone_end_to_end_ml_product/preview.png",
+        "Animated demo at ./assets/project_media/20_capstone_end_to_end_ml_product/demo.gif",
+        "Live project page at ./demos/20_capstone_end_to_end_ml_product.html"
+      ],
+      "links": {
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/20_capstone_end_to_end_ml_product",
+        "docs": "./projects/20_capstone_end_to_end_ml_product/README.md",
+        "live": "./demos/20_capstone_end_to_end_ml_product.html",
+        "video": "./assets/project_media/20_capstone_end_to_end_ml_product/demo.gif"
+      }
+    }
+  }
+}

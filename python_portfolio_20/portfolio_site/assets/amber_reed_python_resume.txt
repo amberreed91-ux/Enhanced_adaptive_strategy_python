@@ -1,0 +1,36 @@
+AMBER REED
+Python Engineer
+Location: United States
+Email: amber_reed91@outlook.com
+GitHub: https://github.com/amberreed91-ux
+LinkedIn: https://www.linkedin.com/in/amber-reed-738081267
+
+SUMMARY
+Python engineer focused on backend services, automation workflows, data tooling, and practical ML systems.
+Builds production-minded applications with clear architecture, tests, and maintainable code.
+
+CORE SKILLS
+- Python, asyncio, OOP, typing
+- API development patterns, auth workflows, service design
+- Data extraction/transform pipelines, analytics summarization
+- ML fundamentals: recommendation, NLP, time-series, CV primitives
+- Systems engineering: Docker-ready services, CI/CD gates, job queues
+
+SELECTED PORTFOLIO PROJECTS
+- REST API with FastAPI-style architecture and typed CRUD services
+- JWT auth service with compact token signing and verification
+- ETL pipeline from CSV ingestion through transform and load shaping
+- Async API aggregator using concurrent task orchestration
+- Log analyzer that detects elevated error-rate anomalies
+- Recommendation engine using cosine similarity ranking
+- NLP text classifier with lightweight Naive Bayes flow
+- Time-series forecaster with moving-average projection
+- Distributed queue with retries and priority execution
+- End-to-end ML capstone with fit + predict pipeline
+
+PORTFOLIO
+20 runnable Python projects available in this repository under:
+python_portfolio_20/projects/
+
+NOTE
+Replace placeholder contact links with your public profiles before sharing.

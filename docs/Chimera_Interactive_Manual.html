@@ -1,0 +1,1278 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chimera Interactive Manual</title>
+  <style>
+    :root {
+      --bg: #09111a;
+      --bg-soft: #0f1b27;
+      --card: #112232;
+      --card-soft: #162b3f;
+      --line: #26455f;
+      --text: #e7f2ff;
+      --muted: #9ab4cc;
+      --gold: #f5b000;
+      --green: #2ecf9f;
+      --red: #ff6b6b;
+      --blue: #48a8ff;
+      --teal: #1ecad3;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(800px 420px at 15% -10%, rgba(245,176,0,0.12), transparent 55%),
+        radial-gradient(900px 420px at 100% 0%, rgba(30,202,211,0.09), transparent 50%),
+        linear-gradient(170deg, #070d14, #0c1823 38%, #0a1119);
+      line-height: 1.45;
+    }
+
+    a { color: #9bd2ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code, pre {
+      font-family: "IBM Plex Mono", "SF Mono", Menlo, monospace;
+      font-size: 0.92rem;
+    }
+    pre {
+      background: #0a141f;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      overflow-x: auto;
+      margin: 8px 0 0;
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(8px);
+      background: rgba(8,14,22,0.82);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .topbar h1 {
+      margin: 0;
+      font-size: clamp(1.0rem, 2vw, 1.35rem);
+      letter-spacing: 0.02em;
+    }
+    .pill-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .pill {
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+    }
+    .pill.gold {
+      border-color: rgba(245,176,0,0.55);
+      color: #ffdd8e;
+      background: rgba(245,176,0,0.12);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 16px;
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 74px;
+      align-self: start;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(16,30,45,0.85), rgba(10,19,30,0.86));
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 14px 30px rgba(0,0,0,0.26);
+      max-height: calc(100vh - 92px);
+      overflow: auto;
+    }
+    .sidebar h3 {
+      margin: 0 0 10px;
+      font-size: 0.95rem;
+      color: #dcecff;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .sidebar nav a {
+      display: block;
+      color: #b6cbe0;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 7px 8px;
+      margin: 4px 0;
+      font-size: 0.9rem;
+    }
+    .sidebar nav a:hover {
+      color: #fff;
+      border-color: rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.04);
+      text-decoration: none;
+    }
+    .sidebar .active {
+      color: #fff;
+      border-color: rgba(245,176,0,0.45);
+      background: rgba(245,176,0,0.11);
+    }
+    .progress-wrap {
+      margin-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 12px;
+    }
+    .progress-bar {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--teal), var(--gold));
+      transition: width 150ms ease;
+    }
+    .check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 6px 0;
+      color: #bdd2e9;
+      font-size: 0.85rem;
+    }
+
+    .main {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .card {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(15,27,39,0.84), rgba(12,22,33,0.84));
+      box-shadow: 0 12px 28px rgba(0,0,0,0.23);
+      padding: 16px;
+    }
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 1.08rem;
+      letter-spacing: 0.02em;
+    }
+    .card h3 {
+      margin: 14px 0 8px;
+      font-size: 0.97rem;
+      color: #d8e7f6;
+    }
+    .muted { color: var(--muted); }
+    .row {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .col-4 { grid-column: span 4; }
+    .col-6 { grid-column: span 6; }
+    .col-8 { grid-column: span 8; }
+    .col-12 { grid-column: span 12; }
+    .mini {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 10px;
+      background: rgba(255,255,255,0.03);
+    }
+    .tag {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 0.76rem;
+      border: 1px solid transparent;
+      margin-right: 6px;
+    }
+    .long { color: #9df5d8; border-color: rgba(46,207,159,0.42); background: rgba(46,207,159,0.14); }
+    .short { color: #ffb9b9; border-color: rgba(255,107,107,0.42); background: rgba(255,107,107,0.15); }
+    .flat { color: #ffe0a1; border-color: rgba(245,176,0,0.42); background: rgba(245,176,0,0.15); }
+    .copy-btn {
+      margin-top: 8px;
+      border: 1px solid rgba(245,176,0,0.42);
+      color: #ffd98a;
+      background: rgba(245,176,0,0.12);
+      border-radius: 8px;
+      font-size: 0.82rem;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    .copy-btn:hover { filter: brightness(1.15); }
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    figure {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.02);
+    }
+    figure figcaption {
+      margin-top: 8px;
+      color: #a7bfd7;
+      font-size: 0.82rem;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+      background: #0c1824;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 0.88rem;
+    }
+    th, td {
+      border: 1px solid rgba(255,255,255,0.09);
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: rgba(72,168,255,0.14); color: #d7e9ff; }
+    tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+    .accordion {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .acc-btn {
+      width: 100%;
+      border: 0;
+      text-align: left;
+      background: rgba(255,255,255,0.04);
+      color: #e8f3ff;
+      padding: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .acc-panel {
+      display: none;
+      padding: 10px;
+      background: rgba(0,0,0,0.15);
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .acc-panel.open { display: block; }
+
+    .sim-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .sim-output {
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      padding: 10px;
+      background: rgba(255,255,255,0.03);
+    }
+    .decision-box {
+      margin: 6px 0 10px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-weight: 700;
+      border: 1px solid transparent;
+    }
+    .timeline-controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .timeline-controls button {
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+      color: #ebf5ff;
+      background: rgba(255,255,255,0.05);
+    }
+    .timeline-controls button:hover { background: rgba(255,255,255,0.10); }
+
+    .kpi {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .kpi .mini strong {
+      font-size: 1.1rem;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .note {
+      border-left: 3px solid var(--gold);
+      background: rgba(245,176,0,0.08);
+      padding: 9px 10px;
+      border-radius: 8px;
+      margin-top: 8px;
+      color: #f9e3b2;
+    }
+
+    .map-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    .map-direct {
+      color: #98f4d4;
+      background: rgba(46,207,159,0.15);
+      border-color: rgba(46,207,159,0.40);
+    }
+    .map-partial {
+      color: #ffe0a2;
+      background: rgba(245,176,0,0.15);
+      border-color: rgba(245,176,0,0.42);
+    }
+    .map-config {
+      color: #c9dcf2;
+      background: rgba(72,168,255,0.14);
+      border-color: rgba(72,168,255,0.40);
+    }
+
+    .search {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(0,0,0,0.22);
+      color: #e8f2ff;
+      padding: 8px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 1060px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+      .col-4, .col-6, .col-8 { grid-column: span 12; }
+      .split, .sim-grid { grid-template-columns: 1fr; }
+      .kpi { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <h1>Chimera Strategy Manual: Interactive Operations + TradingView Integration</h1>
+    <div class="pill-row">
+      <span class="pill gold">Version: Chimera Live Manual</span>
+      <span class="pill">Markets: MNQ / MGC</span>
+      <span class="pill">Mode: Paper + Prop Prep</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h3>Manual Navigation</h3>
+      <nav id="toc">
+        <a href="#quick-start">1. Quick Start</a>
+        <a href="#architecture">2. Chimera Architecture</a>
+        <a href="#chimera-ui">3. Chimera UI Guide</a>
+        <a href="#tradingview-ui">4. TradingView Table Guide</a>
+        <a href="#strategy-core">5. Strategy Logic</a>
+        <a href="#strategy-complete">6. Complete Strategy Spec</a>
+        <a href="#pine-map">7. Pine to Chimera Map</a>
+        <a href="#simulator">8. Decision Simulator</a>
+        <a href="#trade-walkthrough">9. Full Trade Walkthrough</a>
+        <a href="#webhooks">10. Webhooks and Broker Routing</a>
+        <a href="#watchdog-cooldown">11. Watchdog and Cooldowns</a>
+        <a href="#review">12. Journal, Backtest, Monte Carlo</a>
+        <a href="#troubleshooting">13. Troubleshooting</a>
+      </nav>
+
+      <div class="progress-wrap">
+        <h3>Readiness Checklist</h3>
+        <label class="check"><input type="checkbox" class="ready-check"> Stack launches with Executor UP</label>
+        <label class="check"><input type="checkbox" class="ready-check"> Feed Delay and Bridge Age are green</label>
+        <label class="check"><input type="checkbox" class="ready-check"> TradingView alert reaches Chimera</label>
+        <label class="check"><input type="checkbox" class="ready-check"> Closed trade appears in Journal</label>
+        <label class="check"><input type="checkbox" class="ready-check"> Prop Readiness gates mostly pass</label>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="muted" id="progress-text" style="margin-top:6px;font-size:0.82rem;">0% complete</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section id="quick-start" class="card">
+        <h2>1) Quick Start</h2>
+        <p class="muted">Use this exact sequence for your local setup.</p>
+        <div class="split">
+          <div class="mini">
+            <h3>Launch Full Stack</h3>
+            <pre id="cmd-stack">cd /Users/amberreed/Enhanced_adaptive_strategy_python
+source venv/bin/activate
+python run_chimera_stack.py --config config/config.yaml --with-bridge</pre>
+            <button class="copy-btn" data-copy="cmd-stack">Copy Command</button>
+          </div>
+          <div class="mini">
+            <h3>Open Services</h3>
+            <table>
+              <tr><th>Service</th><th>URL</th></tr>
+              <tr><td>Chimera App</td><td><code>http://127.0.0.1:8501</code></td></tr>
+              <tr><td>Executor Status</td><td><code>http://127.0.0.1:8787/status</code></td></tr>
+              <tr><td>Risk Status</td><td><code>http://127.0.0.1:8787/risk/status</code></td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="note">
+          For TradingView cloud webhooks, localhost is not reachable directly. Use an HTTPS tunnel (Cloudflare Tunnel or ngrok) and point alerts to that tunnel URL.
+        </div>
+      </section>
+
+      <section id="architecture" class="card">
+        <h2>2) Chimera Architecture</h2>
+        <div class="row">
+          <div class="col-12">
+            <figure>
+              <svg viewBox="0 0 980 300" role="img" aria-label="Chimera architecture flow">
+                <defs>
+                  <linearGradient id="g1" x1="0" x2="1">
+                    <stop offset="0%" stop-color="#1d3f5a"/>
+                    <stop offset="100%" stop-color="#245e7f"/>
+                  </linearGradient>
+                  <linearGradient id="g2" x1="0" x2="1">
+                    <stop offset="0%" stop-color="#2f4b25"/>
+                    <stop offset="100%" stop-color="#3d7a2f"/>
+                  </linearGradient>
+                  <linearGradient id="g3" x1="0" x2="1">
+                    <stop offset="0%" stop-color="#5c3f1d"/>
+                    <stop offset="100%" stop-color="#8d5f1f"/>
+                  </linearGradient>
+                </defs>
+                <rect x="20" y="90" width="175" height="110" rx="12" fill="url(#g1)" stroke="#5da6de"/>
+                <text x="35" y="125" fill="#dff0ff" font-size="14">Market Feed</text>
+                <text x="35" y="148" fill="#b9d8ef" font-size="12">Synthetic / Replay / L2 JSON</text>
+
+                <rect x="230" y="70" width="225" height="150" rx="12" fill="url(#g2)" stroke="#7ad58a"/>
+                <text x="248" y="105" fill="#effff1" font-size="14">Chimera App (Streamlit)</text>
+                <text x="248" y="127" fill="#cbeecd" font-size="12">Bookmap Engine + Signals</text>
+                <text x="248" y="148" fill="#cbeecd" font-size="12">Bridge writer: data/bookmap_signal.json</text>
+                <text x="248" y="169" fill="#cbeecd" font-size="12">UI desks + Journal + Backtest</text>
+
+                <rect x="500" y="70" width="225" height="150" rx="12" fill="url(#g3)" stroke="#f4c274"/>
+                <text x="518" y="105" fill="#fff3dc" font-size="14">Chimera Executor</text>
+                <text x="518" y="127" fill="#f7dfb1" font-size="12">Webhook + Risk Guard + Routing</text>
+                <text x="518" y="148" fill="#f7dfb1" font-size="12">Audit trail + watchdog telemetry</text>
+                <text x="518" y="169" fill="#f7dfb1" font-size="12">Paper journals per broker</text>
+
+                <rect x="760" y="90" width="200" height="110" rx="12" fill="#3b244a" stroke="#ca99f6"/>
+                <text x="778" y="125" fill="#f0dfff" font-size="14">TradingView / Broker</text>
+                <text x="778" y="148" fill="#dbc1ef" font-size="12">Alerts + broker fills</text>
+
+                <line x1="195" y1="145" x2="230" y2="145" stroke="#8ec2e8" stroke-width="3"/>
+                <line x1="455" y1="145" x2="500" y2="145" stroke="#9ce0a8" stroke-width="3"/>
+                <line x1="725" y1="145" x2="760" y2="145" stroke="#ffd090" stroke-width="3"/>
+                <line x1="760" y1="185" x2="725" y2="185" stroke="#ffd090" stroke-width="2" stroke-dasharray="6 5"/>
+                <text x="620" y="205" fill="#f8e5c5" font-size="12">journal sync (fill mirror)</text>
+              </svg>
+              <figcaption>Picture: End-to-end data and execution flow.</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="kpi">
+          <div class="mini"><span class="muted">Signal States</span><strong><span class="tag long">LONG</span><span class="tag short">SHORT</span><span class="tag flat">NO TRADE</span></strong></div>
+          <div class="mini"><span class="muted">Bridge File</span><strong><code>data/bookmap_signal.json</code></strong></div>
+          <div class="mini"><span class="muted">Audit Log</span><strong><code>data/chimera_execution_audit.jsonl</code></strong></div>
+          <div class="mini"><span class="muted">Executor Port</span><strong><code>8787</code></strong></div>
+        </div>
+      </section>
+
+      <section id="chimera-ui" class="card">
+        <h2>3) How To Read Chimera App</h2>
+        <figure>
+          <svg viewBox="0 0 980 330" role="img" aria-label="Chimera UI map">
+            <rect x="12" y="12" width="956" height="306" rx="14" fill="#0b1521" stroke="#2f4d68"/>
+            <rect x="32" y="32" width="220" height="266" rx="10" fill="#13283a" stroke="#3b6587"/>
+            <text x="44" y="56" fill="#cfe6ff" font-size="14">Sidebar Controls</text>
+            <text x="44" y="78" fill="#9dc3e3" font-size="12">Feed / Symbol / Replay / Presets</text>
+            <text x="44" y="98" fill="#9dc3e3" font-size="12">Strategy Profile / Advanced Controls</text>
+
+            <rect x="272" y="32" width="676" height="72" rx="10" fill="#193047" stroke="#4c7699"/>
+            <text x="286" y="56" fill="#d9ecff" font-size="14">System Overview</text>
+            <text x="286" y="78" fill="#add0ee" font-size="12">Feed Delay | Bridge Age | Webhook RTT p95 | Session</text>
+
+            <rect x="272" y="116" width="410" height="182" rx="10" fill="#172a3d" stroke="#3f6788"/>
+            <text x="286" y="140" fill="#d9ecff" font-size="14">Bookmap Heatmap</text>
+            <text x="286" y="162" fill="#add0ee" font-size="12">Depth + bubbles + midline</text>
+
+            <rect x="694" y="116" width="254" height="182" rx="10" fill="#23253f" stroke="#5963a8"/>
+            <text x="708" y="140" fill="#f0ecff" font-size="14">Signal Card + Desks</text>
+            <text x="708" y="162" fill="#ccc6f5" font-size="12">Decision, confidence, imbalance, notes</text>
+            <text x="708" y="181" fill="#ccc6f5" font-size="12">Signal Deck / DOM / Risk / Footprint</text>
+          </svg>
+          <figcaption>Picture: Chimera dashboard map with the areas you check each trade cycle.</figcaption>
+        </figure>
+
+        <table>
+          <tr><th>Panel</th><th>What It Means</th><th>How To Use It</th></tr>
+          <tr><td>Feed Delay</td><td>Age of newest market snapshot.</td><td>If delay is above your watchdog threshold, do not trust current signal.</td></tr>
+          <tr><td>Bridge Age</td><td>Age of <code>bookmap_signal.json</code>.</td><td>Stale bridge means executor may block or fail-open depending on profile.</td></tr>
+          <tr><td>Webhook RTT p95</td><td>Execution round-trip latency percentile.</td><td>Watch for spikes before enabling auto loop.</td></tr>
+          <tr><td>Signal Card</td><td>Current state: LONG/SHORT/NO TRADE + confidence + imbalance.</td><td>Primary trade-read screen for immediate go/no-go.</td></tr>
+          <tr><td>Signal Deck</td><td>Sweep, absorption, whale conditions + block reason.</td><td>Use this to understand why a signal was blocked or promoted.</td></tr>
+          <tr><td>DOM Desk</td><td>Current ladder and optional depth map.</td><td>Check spread and liquidity before accepting entry risk.</td></tr>
+          <tr><td>Risk Desk</td><td>Stop ticks, qty, tick value, estimated risk/trade.</td><td>Set max risk before any live webhook forwarding.</td></tr>
+          <tr><td>A/B Profile Tracker</td><td>Strict/Balanced/Scalp performance by broker.</td><td>Pick profile from data, not feel.</td></tr>
+          <tr><td>Prop Readiness</td><td>Gate checklist: sample size, PF, DD, infra health, risk blocks.</td><td>Use for promotion decisions to prop phase.</td></tr>
+          <tr><td>Journal + Backtest</td><td>Closed trades, orders, audit, backtest lab, Monte Carlo.</td><td>This is your review and validation center.</td></tr>
+        </table>
+      </section>
+
+      <section id="tradingview-ui" class="card">
+        <h2>4) How To Read TradingView Chimera Table</h2>
+        <p class="muted">This matches your Pine dashboard rows (SIGNAL, Regime, Long Conf, Short Conf, etc.).</p>
+        <input id="tv-search" class="search" placeholder="Type to filter rows, for example: regime, portfolio, ml, impact">
+        <table id="tv-table">
+          <tr><th>Row</th><th>Interpretation</th><th>Action Rule</th></tr>
+          <tr><td>SIGNAL</td><td>Current decision from strategy logic.</td><td>Only execute when it aligns with Chimera signal or your selected route policy.</td></tr>
+          <tr><td>Regime</td><td>Trend, ranging, or volatile context.</td><td>If regime is ranging and your range mode is disabled, skip.</td></tr>
+          <tr><td>Long Conf / Short Conf</td><td>Confluence score toward each side.</td><td>Prefer side with clear spread over the opposite side.</td></tr>
+          <tr><td>Dre Zone</td><td>Premium/discount structure context.</td><td>Avoid longs in premium and shorts in discount when DRE says no.</td></tr>
+          <tr><td>Order Flow</td><td>Bullish/bearish flow bias.</td><td>Do not fight sustained opposite flow.</td></tr>
+          <tr><td>Long Dre / Short Dre</td><td>Component breakdown of DRE score.</td><td>Use to debug why confluence is weak.</td></tr>
+          <tr><td>RB Tier</td><td>Rejection-block tier and active flag.</td><td>Higher tier active adds quality.</td></tr>
+          <tr><td>MAZ</td><td>Multi-asset zone pass/fail.</td><td>Fail on MAZ is a quality warning for entries.</td></tr>
+          <tr><td>Session</td><td>Allowed session label and pass/fail.</td><td>No session = no trade.</td></tr>
+          <tr><td>Position</td><td>Current position state.</td><td>Use to avoid duplicate manual entries.</td></tr>
+          <tr><td>Daily</td><td>Daily trade count and running daily PnL.</td><td>Respect prop limits before taking next signal.</td></tr>
+          <tr><td>Slippage</td><td>Current effective slippage assumption.</td><td>If slippage rises, reduce size or stand down.</td></tr>
+          <tr><td>MC Robustness</td><td>Monte Carlo status on trade sample quality.</td><td>Low robustness means continue paper phase.</td></tr>
+          <tr><td>PORTFOLIO / PORT HEAT / CORR COUNT</td><td>Portfolio-level risk concentration.</td><td>Reduce risk when heat or correlation is elevated.</td></tr>
+          <tr><td>ML REGIME / ML CONF</td><td>Machine-learning regime prediction confidence.</td><td>Use as a filter, not a standalone trigger.</td></tr>
+          <tr><td>IMPACT / IMP VIOL</td><td>Estimated impact and violation count.</td><td>Avoid entries when impact cost is elevated.</td></tr>
+          <tr><td>RL ACTION / RL REWARD</td><td>Execution optimizer action/reward telemetry.</td><td>Review over large sample, not per trade.</td></tr>
+        </table>
+      </section>
+
+      <section id="strategy-core" class="card">
+        <h2>5) Chimera Strategy Logic (Full Summary)</h2>
+        <div class="row">
+          <div class="col-6">
+            <div class="mini">
+              <h3>Layer A: Microstructure Signals (Bookmap Engine)</h3>
+              <p class="muted">Engine computes these features from L2 + tape:</p>
+              <ul>
+                <li>Imbalance = (bid_total - ask_total) / total</li>
+                <li>Sweep up/down from short burst move + size percentile</li>
+                <li>Absorption from large hit without follow-through</li>
+                <li>Whale event from percentile threshold + minimum size</li>
+                <li>Confidence score capped at 100</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="mini">
+              <h3>Layer B: Decision Votes</h3>
+              <p>Vote logic from Chimera app:</p>
+              <pre>long += 1 if imbalance &gt;= 0.05
+short += 1 if imbalance &lt;= -0.05
+long += 1 if sweep_up
+short += 1 if sweep_down
+long += 1 if absorption_bid
+short += 1 if absorption_ask
+long += 2 if whale_buy
+short += 2 if whale_sell
+
+min_conf = 50 (quiet mode) else 40
+decision = GO_LONG / GO_SHORT / NO_TRADE</pre>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="mini">
+              <h3>Layer C: Executor Hard Gate</h3>
+              <ul>
+                <li>Symbol allow-list</li>
+                <li>Daily trade cap + cooldown</li>
+                <li>Max daily loss guard</li>
+                <li>Per-symbol kill switch</li>
+                <li>Session lockout windows</li>
+                <li>Bridge profile checks (strict/balanced/permissive/custom)</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="mini">
+              <h3>Layer D: Journal + Evaluation</h3>
+              <ul>
+                <li>Orders + closed trades per broker</li>
+                <li>Executor audit trail with reasons</li>
+                <li>A/B profile tracker over rolling trades</li>
+                <li>Backtest + Monte Carlo in app</li>
+                <li>Prop readiness gate panel</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="strategy-complete" class="card">
+        <h2>6) Complete Strategy Spec (Chimera)</h2>
+        <p class="muted">This is the full practical logic chain currently used in your Python strategy + Chimera automation stack.</p>
+
+        <div class="mini">
+          <h3>End-to-End Decision Order</h3>
+          <table>
+            <tr><th>Stage</th><th>Rule</th><th>Fail Outcome</th></tr>
+            <tr><td>1</td><td>Session/day filters (timezone + allowed windows + weekdays + daily limits)</td><td>NO_TRADE</td></tr>
+            <tr><td>2</td><td>Market-state build (ATR, efficiency, regime, HTF bias, structure, premium/discount)</td><td>NO_TRADE if invalid inputs</td></tr>
+            <tr><td>3</td><td>Confluence score computed from regime confidence + DRE alignment + HTF + RVOL + structure</td><td>NO_TRADE if below threshold</td></tr>
+            <tr><td>4</td><td>Entry quality gate (min RVOL, min absolute imbalance, directional imbalance)</td><td>NO_TRADE</td></tr>
+            <tr><td>5</td><td>Regime split branch:
+              TREND / RANGE / VOLATILE behavior chosen by config</td><td>NO_TRADE if branch disallows</td></tr>
+            <tr><td>6</td><td>Trend-quality gate (EMA spread, EMA slope, structure persistence, breakout buffer)</td><td>NO_TRADE</td></tr>
+            <tr><td>7</td><td>Direction rule picks LONG/SHORT only if all branch conditions pass</td><td>NO_TRADE</td></tr>
+            <tr><td>8</td><td>Bridge gate aligns with app bridge decision/profile when enabled</td><td>Blocked signal</td></tr>
+            <tr><td>9</td><td>Position sizing from risk budget, stop distance, regime multiplier, quality scale, notional cap</td><td>Size clipped or minimum size</td></tr>
+            <tr><td>10</td><td>Stops/targets are ATR-based by regime; exits include stop/target/time</td><td>Trade closed</td></tr>
+          </table>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <div class="col-6">
+            <div class="mini">
+              <h3>Current Core Defaults (Tradecount Config)</h3>
+              <table>
+                <tr><th>Setting</th><th>Current Value</th></tr>
+                <tr><td>Regime Split Enabled</td><td><code>true</code></td></tr>
+                <tr><td>Range Mode</td><td><code>ICT_ASIAN_SWEEP</code></td></tr>
+                <tr><td>Volatile Mode</td><td><code>NO_TRADE</code></td></tr>
+                <tr><td>Trend Confluence Threshold</td><td><code>long_entry_min=62</code> / <code>short_entry_min_mgc=58</code> / <code>short_entry_min_mnq=62</code></td></tr>
+                <tr><td>Range Entry Thresholds</td><td><code>range_long_entry_min=48</code>, <code>range_short_entry_min=48</code></td></tr>
+                <tr><td>Entry Quality</td><td><code>min_rvol=0.95</code>, <code>min_abs_imbalance=0.04</code>, <code>min_directional_imbalance=0.025</code></td></tr>
+                <tr><td>Trend Quality</td><td><code>ema_spread_min_pct=0.00025</code>, <code>ema_slope_min_pct=0.00008</code>, <code>breakout_buffer_atr=0.10</code></td></tr>
+                <tr><td>Daily Limits</td><td><code>max_daily_trades=5</code>, <code>max_consecutive_losses=3</code></td></tr>
+              </table>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="mini">
+              <h3>ICT Asian Sweep Branch (Range Engine)</h3>
+              <ul>
+                <li>Uses last completed Asian session high/low.</li>
+                <li>Checks recent sweep beyond range edge by ATR buffer.</li>
+                <li>Requires reclaim back inside range edge.</li>
+                <li>Optionally requires displacement candle and kill-zone time windows.</li>
+                <li>Optional FVG CE and premium/discount filters.</li>
+                <li>Can invert signals with <code>invert_signals=true</code> (currently enabled in combined configs).</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="mini" style="margin-top:10px;">
+          <h3>Key Formulas</h3>
+          <pre>Imbalance_estimate = mean((close - open) / (high - low)) over imbalance_lookback
+
+Confluence =
+  int(regime_confidence * 0.7)
+  + DRE alignment weight
+  + HTF alignment bonus
+  + RVOL confirmation bonus
+  + structure bonus
+
+Risk size =
+  risk_budget_usd / (stop_distance * point_value)
+where:
+  risk_budget_usd = min(initial_capital * base_risk_percent, max_risk_per_trade_usd)
+  stop_distance = max(ATR * regime_stop_mult, min_stop_abs)
+
+Final position size =
+  risk_size * regime_multiplier * quality_scale
+  then clipped by notional cap, portfolio adjustment, and min/max position size.</pre>
+        </div>
+
+        <div class="note">
+          Why you sometimes see fewer trades: this stack applies multiple hard filters in sequence (session, quality, regime mode, trend-quality, bridge, risk guard). Lower trade count with better quality is expected behavior.
+        </div>
+      </section>
+
+      <section id="pine-map" class="card">
+        <h2>7) Pine to Chimera Mapping (1:1 + Gaps)</h2>
+        <p class="muted">This table shows how your Pine groups map to Chimera app controls and YAML keys today.</p>
+
+        <div class="mini">
+          <h3>Direct UI Mapping (editable in Chimera app)</h3>
+          <table>
+            <tr><th>Pine Group</th><th>Pine Inputs</th><th>Chimera App Control</th><th>Config/State Key</th><th>Status</th></tr>
+            <tr><td>Instrument</td><td>Symbol/profile</td><td>Sidebar: <code>Feed -> Symbol</code>, quick symbol buttons</td><td><code>feed_symbol</code>, <code>feed_mode</code></td><td><span class="map-badge map-partial">Partial</span></td></tr>
+            <tr><td>Visualization</td><td>Show labels/lines/dashboard</td><td><code>Zoom Around Mid</code>, <code>3D Trade Bubbles</code>, bubble scale</td><td><code>zoom_view</code>, <code>show_trade_bubbles</code>, <code>bubble_scale</code></td><td><span class="map-badge map-partial">Partial</span></td></tr>
+            <tr><td>Alerts</td><td>Alert mode, payload</td><td><code>Enable Buy/Sell Alerts</code>, cooldown, webhook URL</td><td><code>alerts_enabled</code>, <code>alert_cooldown_sec</code>, <code>alert_webhook_url</code></td><td><span class="map-badge map-direct">Direct</span></td></tr>
+            <tr><td>Bookmap Signal Tuning</td><td>Whale/absorb/sweep thresholds concept</td><td><code>Whale Percentile</code>, <code>Whale Min Size</code>, <code>Absorption Percentile</code>, <code>Sweep Percentile</code></td><td><code>whale_pct</code>, <code>whale_min</code>, <code>absorb_pct</code>, <code>sweep_pct</code></td><td><span class="map-badge map-direct">Direct</span></td></tr>
+            <tr><td>Execution Control</td><td>Manual step/run</td><td><code>Batch Run</code>, <code>Single Tick</code>, <code>Auto Pulse</code>, live loop</td><td><code>live_loop_enabled</code>, <code>live_loop_interval</code>, <code>live_loop_ticks</code></td><td><span class="map-badge map-direct">Direct</span></td></tr>
+            <tr><td>Risk (panel)</td><td>Stop/qty/tick value concept</td><td>Risk desk inputs and risk estimate</td><td><code>risk_stop_ticks</code>, <code>risk_qty</code>, <code>risk_tick_value</code></td><td><span class="map-badge map-direct">Direct</span></td></tr>
+            <tr><td>Watchdog</td><td>stale/idle/cooldown concept</td><td>Sidebar watchdog toggles + thresholds + cooldown</td><td><code>watchdog_* </code> UI state keys</td><td><span class="map-badge map-direct">Direct</span></td></tr>
+            <tr><td>Replay</td><td>Replay loop/step concept</td><td><code>Replay JSONL Path</code>, <code>Replay Loop</code>, <code>Record Live Feed To Replay</code>, <code>Replay Step Size</code></td><td><code>replay_file_path</code>, <code>replay_loop</code>, <code>replay_record_enabled</code>, <code>replay_auto_step</code></td><td><span class="map-badge map-direct">Direct</span></td></tr>
+          </table>
+        </div>
+
+        <div class="mini" style="margin-top:10px;">
+          <h3>Config Mapping (strategy logic is synced via YAML, not individual app sliders)</h3>
+          <table>
+            <tr><th>Pine Group</th><th>Primary YAML Keys</th><th>How You Apply In Chimera</th><th>Status</th></tr>
+            <tr><td>General</td><td><code>general.*</code></td><td>Select config in Backtest Lab (<code>Config YAML</code>) then run backtest.</td><td><span class="map-badge map-config">Config-only</span></td></tr>
+            <tr><td>DRE Concepts</td><td><code>dre.*</code></td><td>Config-driven strategy engine behavior.</td><td><span class="map-badge map-config">Config-only</span></td></tr>
+            <tr><td>Volatility Regime</td><td><code>volatility.*</code></td><td>Config-driven regime behavior.</td><td><span class="map-badge map-config">Config-only</span></td></tr>
+            <tr><td>Dynamic Slippage</td><td><code>slippage.*</code></td><td>Used by backtest/execution simulation logic.</td><td><span class="map-badge map-config">Config-only</span></td></tr>
+            <tr><td>Range Engine (ICT)</td><td><code>regime_split.*</code>, <code>ict_asian_sweep.*</code></td><td>Driven by selected YAML (for example tradecount config).</td><td><span class="map-badge map-config">Config-only</span></td></tr>
+            <tr><td>Thresholds</td><td><code>thresholds.*</code></td><td>Config-driven signal gating.</td><td><span class="map-badge map-config">Config-only</span></td></tr>
+            <tr><td>Entry Quality</td><td><code>entry_quality.*</code></td><td>Config-driven hard quality gate.</td><td><span class="map-badge map-config">Config-only</span></td></tr>
+            <tr><td>Trend Quality</td><td><code>trend_quality.*</code></td><td>Config-driven trend branch filter.</td><td><span class="map-badge map-config">Config-only</span></td></tr>
+            <tr><td>Position Sizing</td><td><code>position_sizing.*</code>, <code>capital.*</code></td><td>Config-driven risk and size math.</td><td><span class="map-badge map-config">Config-only</span></td></tr>
+            <tr><td>Stop Loss / Take Profit / Exit</td><td><code>stop_loss.*</code>, <code>take_profit.*</code>, <code>exit_management.*</code></td><td>Config-driven exit model.</td><td><span class="map-badge map-config">Config-only</span></td></tr>
+            <tr><td>Session</td><td><code>session.*</code></td><td>Config-driven trading window gate.</td><td><span class="map-badge map-config">Config-only</span></td></tr>
+            <tr><td>Daily Limits</td><td><code>daily_limits.*</code>, <code>automation.risk_guard.*</code></td><td>Executor enforces for automation; strategy/backtest uses daily limits.</td><td><span class="map-badge map-partial">Partial</span></td></tr>
+            <tr><td>Bookmap Bridge Profile</td><td><code>bookmap_bridge.*</code></td><td>Backtest toggle <code>Use Live Bridge Gate</code> + runtime executor checks.</td><td><span class="map-badge map-partial">Partial</span></td></tr>
+            <tr><td>Portfolio / ML / OL / Impact / RL</td><td><code>portfolio.*</code>, <code>ml_regime.*</code>, <code>online_learning.*</code>, <code>market_impact.*</code>, <code>rl_execution.*</code></td><td>Mainly config-driven and evaluation-time behavior.</td><td><span class="map-badge map-config">Config-only</span></td></tr>
+            <tr><td>Monte Carlo</td><td><code>monte_carlo.*</code> + app MC runner params</td><td>Run from Backtest Lab with <code>MC Paths</code> and <code>Slippage Perturb</code>.</td><td><span class="map-badge map-partial">Partial</span></td></tr>
+          </table>
+        </div>
+
+        <div class="note">
+          Practical rule: for now, treat Chimera sidebar as your execution/monitoring console, and YAML as your strategy-parameter source of truth. The app already lets you choose which YAML to run in Backtest Lab.
+        </div>
+      </section>
+
+      <section id="simulator" class="card">
+        <h2>8) Interactive Decision Simulator</h2>
+        <p class="muted">Use this to understand why Chimera returns <span class="tag flat">NO TRADE</span>, <span class="tag long">LONG</span>, or <span class="tag short">SHORT</span>.</p>
+        <div class="sim-grid">
+          <div class="mini">
+            <label>Confidence: <strong id="conf-val">55</strong></label>
+            <input id="conf" type="range" min="0" max="100" value="55" style="width:100%">
+
+            <label>Imbalance: <strong id="imb-val">0.12</strong></label>
+            <input id="imb" type="range" min="-1" max="1" step="0.01" value="0.12" style="width:100%">
+
+            <label class="check"><input id="quiet" type="checkbox"> Quiet Mode (min confidence 50)</label>
+            <label class="check"><input id="sweep-up" type="checkbox" checked> Sweep Up</label>
+            <label class="check"><input id="sweep-down" type="checkbox"> Sweep Down</label>
+            <label class="check"><input id="abs-bid" type="checkbox" checked> Absorption Bid</label>
+            <label class="check"><input id="abs-ask" type="checkbox"> Absorption Ask</label>
+            <label class="check"><input id="whale-buy" type="checkbox"> Whale Buy</label>
+            <label class="check"><input id="whale-sell" type="checkbox"> Whale Sell</label>
+          </div>
+          <div class="sim-output">
+            <div class="muted">Computed decision</div>
+            <div id="decision-box" class="decision-box">NO TRADE</div>
+            <div id="reason" class="muted">reason</div>
+            <table>
+              <tr><th>Vote Source</th><th>Long</th><th>Short</th></tr>
+              <tr><td>Imbalance threshold</td><td id="v-imb-long">0</td><td id="v-imb-short">0</td></tr>
+              <tr><td>Sweeps</td><td id="v-sweep-long">0</td><td id="v-sweep-short">0</td></tr>
+              <tr><td>Absorption</td><td id="v-abs-long">0</td><td id="v-abs-short">0</td></tr>
+              <tr><td>Whales</td><td id="v-whale-long">0</td><td id="v-whale-short">0</td></tr>
+              <tr><th>Total</th><th id="v-long-total">0</th><th id="v-short-total">0</th></tr>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="trade-walkthrough" class="card">
+        <h2>9) Full Trade Walkthrough: Start To Finish</h2>
+        <div class="timeline-controls">
+          <button id="step-prev">Previous Step</button>
+          <button id="step-next">Next Step</button>
+          <button class="step-jump" data-step="0">1) Pre-Flight</button>
+          <button class="step-jump" data-step="1">2) Signal Qualifies</button>
+          <button class="step-jump" data-step="2">3) TradingView Alert</button>
+          <button class="step-jump" data-step="3">4) Executor Checks</button>
+          <button class="step-jump" data-step="4">5) Fill + Journal</button>
+          <button class="step-jump" data-step="5">6) Review + Grade</button>
+        </div>
+        <div class="mini" id="step-content" style="margin-top:10px;"></div>
+        <figure>
+          <svg viewBox="0 0 980 200" role="img" aria-label="Trade lifecycle timeline">
+            <line x1="50" y1="100" x2="930" y2="100" stroke="#44708f" stroke-width="4"/>
+            <circle cx="90" cy="100" r="16" fill="#1ecad3"/><text x="84" y="104" fill="#06222a" font-size="11">1</text>
+            <circle cx="250" cy="100" r="16" fill="#48a8ff"/><text x="244" y="104" fill="#041b31" font-size="11">2</text>
+            <circle cx="410" cy="100" r="16" fill="#f5b000"/><text x="404" y="104" fill="#2a1b02" font-size="11">3</text>
+            <circle cx="570" cy="100" r="16" fill="#d79d42"/><text x="564" y="104" fill="#2a1b02" font-size="11">4</text>
+            <circle cx="730" cy="100" r="16" fill="#9adf7b"/><text x="724" y="104" fill="#123106" font-size="11">5</text>
+            <circle cx="890" cy="100" r="16" fill="#9fbdff"/><text x="884" y="104" fill="#102546" font-size="11">6</text>
+            <text x="55" y="135" fill="#b7d1e7" font-size="12">Pre-flight</text>
+            <text x="225" y="135" fill="#b7d1e7" font-size="12">Signal</text>
+            <text x="372" y="135" fill="#b7d1e7" font-size="12">Webhook</text>
+            <text x="546" y="135" fill="#b7d1e7" font-size="12">Risk gate</text>
+            <text x="706" y="135" fill="#b7d1e7" font-size="12">Journal</text>
+            <text x="868" y="135" fill="#b7d1e7" font-size="12">Review</text>
+          </svg>
+          <figcaption>Picture: One complete Chimera trade lifecycle.</figcaption>
+        </figure>
+      </section>
+
+      <section id="webhooks" class="card">
+        <h2>10) TradingView Integration and Webhooks</h2>
+        <div class="mini">
+          <label>Alert Route</label>
+          <select id="route-select" style="width:100%;margin-top:6px;padding:8px;border-radius:8px;background:#0a141f;color:#dcecff;border:1px solid #31516b;">
+            <option value="gated">A) Gated route (recommended for strategy alerts)</option>
+            <option value="fill">B) Fill mirror (sync external broker fills)</option>
+            <option value="paper">C) TradingView paper route (auto broker=tradingview_paper)</option>
+          </select>
+          <div style="margin-top:10px">
+            <strong>Webhook URL</strong>
+            <pre id="route-url">http://127.0.0.1:8787/webhook/tradingview</pre>
+            <button class="copy-btn" data-copy="route-url">Copy URL</button>
+          </div>
+          <div style="margin-top:10px">
+            <strong>Alert JSON</strong>
+            <pre id="route-json"></pre>
+            <button class="copy-btn" data-copy="route-json">Copy JSON</button>
+          </div>
+          <div class="note">
+            Route mapping in your config: MNQ -> tradovate, MGC -> ninjatrader, FX/Gold spot -> oanda. TradingView Paper route always journals to <code>data/tradingview_paper/</code>.
+          </div>
+        </div>
+      </section>
+
+      <section id="watchdog-cooldown" class="card">
+        <h2>11) Watchdog and Cooldown Breakdown</h2>
+        <p class="muted">This is the exact separation of cooldown logic across Chimera app and executor.</p>
+
+        <table>
+          <tr><th>Cooldown / Threshold</th><th>Default</th><th>Where</th><th>What It Does</th></tr>
+          <tr><td>Signal Alert Cooldown</td><td><code>15s</code></td><td>App UI setting <code>alert_cooldown_sec</code></td><td>Throttles BUY/SELL alert spam in app alerts. Does not block execution itself.</td></tr>
+          <tr><td>Watchdog Alert Cooldown (App)</td><td><code>120s</code></td><td>App UI setting <code>watchdog_alert_cooldown_sec</code></td><td>Limits how often the app sends watchdog webhook alerts while errors persist.</td></tr>
+          <tr><td>Order Cooldown (Executor)</td><td><code>20s</code></td><td><code>automation.cooldown_seconds</code></td><td>Blocks new fills in executor with reason <code>cooldown_active</code> to prevent rapid-fire entries.</td></tr>
+          <tr><td>Watchdog Phone/Webhook Cooldown (Executor)</td><td><code>180s</code></td><td><code>automation.watchdog.phone_alert_cooldown_seconds</code></td><td>Limits outbound phone/webhook watchdog notifications from executor.</td></tr>
+          <tr><td>Feed Stale Threshold</td><td><code>20s</code> app / <code>25s</code> executor</td><td>App + config</td><td>Marks feed stale and raises watchdog alerts if exceeded.</td></tr>
+          <tr><td>Bridge Stale Threshold</td><td><code>25s</code> app / <code>30s</code> executor</td><td>App + config</td><td>Flags stale bridge and can affect readiness/alerts.</td></tr>
+          <tr><td>Executor Idle Threshold</td><td><code>180s</code></td><td>App + config</td><td>Flags idle webhook pipeline if no posts arrive.</td></tr>
+        </table>
+
+        <div class="row" style="margin-top:10px;">
+          <div class="col-6">
+            <div class="mini">
+              <h3>How Watchdog Alert Cooldown Works</h3>
+              <pre>if watchdog_alerts_exist:
+  if webhook_enabled and url_set:
+    if (now - last_watchdog_alert_epoch) >= watchdog_alert_cooldown_sec:
+      send_watchdog_alert()
+      last_watchdog_alert_epoch = now</pre>
+              <p class="muted">This controls alert frequency only. It does not resume trading or clear the underlying stale condition.</p>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="mini">
+              <h3>How Order Cooldown Works (Executor)</h3>
+              <pre>if time_since_last_trade < automation.cooldown_seconds:
+  reject_trade("cooldown_active")
+else:
+  continue risk checks and execution</pre>
+              <p class="muted">This one directly blocks execution attempts until cooldown expires.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="sim-grid" style="margin-top:10px;">
+          <div class="mini">
+            <h3>Cooldown Calculator</h3>
+            <label>Seconds since last order:</label>
+            <input id="cool-last-order" type="range" min="0" max="120" value="8" style="width:100%">
+            <div class="muted">Current: <strong id="cool-last-order-val">8s</strong></div>
+            <label style="margin-top:8px;display:block;">Order cooldown setting (s):</label>
+            <input id="cool-order-th" type="number" value="20" min="1" max="600" style="width:100%;padding:6px;border-radius:8px;background:#0a141f;color:#dcecff;border:1px solid #31516b;">
+
+            <label style="margin-top:10px;display:block;">Seconds since last watchdog alert:</label>
+            <input id="cool-last-watchdog" type="range" min="0" max="600" value="45" style="width:100%">
+            <div class="muted">Current: <strong id="cool-last-watchdog-val">45s</strong></div>
+            <label style="margin-top:8px;display:block;">Watchdog cooldown setting (s):</label>
+            <input id="cool-watchdog-th" type="number" value="120" min="1" max="1800" style="width:100%;padding:6px;border-radius:8px;background:#0a141f;color:#dcecff;border:1px solid #31516b;">
+          </div>
+          <div class="sim-output">
+            <h3>Result</h3>
+            <div id="cool-order-result" class="decision-box">Order cooldown result</div>
+            <div id="cool-order-msg" class="muted"></div>
+            <div id="cool-watchdog-result" class="decision-box" style="margin-top:8px;">Watchdog cooldown result</div>
+            <div id="cool-watchdog-msg" class="muted"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="review" class="card">
+        <h2>12) Journal, Backtest, Monte Carlo, and Promotion Logic</h2>
+        <div class="row">
+          <div class="col-6">
+            <div class="mini">
+              <h3>Journal Files</h3>
+              <table>
+                <tr><th>File</th><th>Purpose</th></tr>
+                <tr><td><code>data/&lt;broker&gt;/paper_orders.csv</code></td><td>Every open/close order event.</td></tr>
+                <tr><td><code>data/&lt;broker&gt;/closed_trades.csv</code></td><td>Closed trade ledger with realized PnL.</td></tr>
+                <tr><td><code>data/&lt;broker&gt;/paper_broker_state.json</code></td><td>Current positions, daily count, locks.</td></tr>
+                <tr><td><code>data/chimera_execution_audit.jsonl</code></td><td>Decision reason + route + webhook response.</td></tr>
+              </table>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="mini">
+              <h3>Prop Readiness Gate In App</h3>
+              <ul>
+                <li>Sample Size</li>
+                <li>Active Days</li>
+                <li>Win Rate</li>
+                <li>Profit Factor</li>
+                <li>Max Drawdown</li>
+                <li>Infra Health</li>
+                <li>Hard-Lock Clear</li>
+                <li>Recent Risk Blocks</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="mini">
+              <h3>Interpretation Model</h3>
+              <p><strong>Backtest</strong> tells you in-sample/out-of-sample behavior.</p>
+              <p><strong>Monte Carlo</strong> tells you stress robustness under slippage/sequence variance.</p>
+              <p><strong>Journal</strong> tells you live execution behavior and discipline quality.</p>
+              <p class="muted">Promotion decision should use all three, not only win rate.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="troubleshooting" class="card">
+        <h2>13) Troubleshooting</h2>
+        <div class="accordion">
+          <button class="acc-btn">Issue: Watchdog shows feed_stale / bridge_stale / executor_idle</button>
+          <div class="acc-panel">
+            Verify source is updating, bridge path is correct, and executor is running at <code>/status</code>. Reduce stale thresholds only after data is stable.
+          </div>
+        </div>
+        <div class="accordion">
+          <button class="acc-btn">Issue: TradingView alert says sent but no order in Chimera</button>
+          <div class="acc-panel">
+            Check webhook URL route, tunnel health, symbol allow-list, and webhook secret. Then inspect <code>data/chimera_execution_audit.jsonl</code> for exact rejection reason.
+          </div>
+        </div>
+        <div class="accordion">
+          <button class="acc-btn">Issue: No trades in Backtest Lab</button>
+          <div class="acc-panel">
+            Confirm data CSV has required OHLCV columns, quality gate passes, and strategy thresholds are not too restrictive for selected instrument/session.
+          </div>
+        </div>
+        <div class="accordion">
+          <button class="acc-btn">Issue: Signals mostly NO TRADE</button>
+          <div class="acc-panel">
+            Inspect confidence and vote spread in Signal Card notes, then use the simulator above to see which feature is missing (imbalance, sweep, absorption, or whale).
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const sections = [...document.querySelectorAll("main section[id]")];
+    const tocLinks = [...document.querySelectorAll("#toc a")];
+    function updateTOC() {
+      let current = sections[0].id;
+      for (const sec of sections) {
+        const top = sec.getBoundingClientRect().top;
+        if (top <= 140) current = sec.id;
+      }
+      tocLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + current));
+    }
+    window.addEventListener("scroll", updateTOC);
+    updateTOC();
+
+    document.querySelectorAll(".copy-btn").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const id = btn.getAttribute("data-copy");
+        const el = document.getElementById(id);
+        const text = el ? el.textContent.trim() : "";
+        try {
+          await navigator.clipboard.writeText(text);
+          btn.textContent = "Copied";
+          setTimeout(() => { btn.textContent = "Copy"; }, 1200);
+        } catch (_) {
+          btn.textContent = "Copy failed";
+          setTimeout(() => { btn.textContent = "Copy"; }, 1200);
+        }
+      });
+    });
+
+    const checks = [...document.querySelectorAll(".ready-check")];
+    const pFill = document.getElementById("progress-fill");
+    const pText = document.getElementById("progress-text");
+    function updateProgress() {
+      const done = checks.filter(c => c.checked).length;
+      const pct = Math.round((done / checks.length) * 100);
+      pFill.style.width = pct + "%";
+      pText.textContent = pct + "% complete";
+      localStorage.setItem("chimera-manual-checks", JSON.stringify(checks.map(c => c.checked)));
+    }
+    const saved = localStorage.getItem("chimera-manual-checks");
+    if (saved) {
+      try {
+        JSON.parse(saved).forEach((v, i) => { if (checks[i]) checks[i].checked = !!v; });
+      } catch (_) {}
+    }
+    checks.forEach(c => c.addEventListener("change", updateProgress));
+    updateProgress();
+
+    function simDecision() {
+      const conf = Number(document.getElementById("conf").value);
+      const imb = Number(document.getElementById("imb").value);
+      const quiet = document.getElementById("quiet").checked;
+      const sweepUp = document.getElementById("sweep-up").checked;
+      const sweepDown = document.getElementById("sweep-down").checked;
+      const absBid = document.getElementById("abs-bid").checked;
+      const absAsk = document.getElementById("abs-ask").checked;
+      const whaleBuy = document.getElementById("whale-buy").checked;
+      const whaleSell = document.getElementById("whale-sell").checked;
+
+      let longVotes = 0;
+      let shortVotes = 0;
+      let vImbLong = 0, vImbShort = 0, vSweepLong = 0, vSweepShort = 0;
+      let vAbsLong = 0, vAbsShort = 0, vWhaleLong = 0, vWhaleShort = 0;
+
+      if (imb >= 0.05) { longVotes += 1; vImbLong = 1; }
+      if (imb <= -0.05) { shortVotes += 1; vImbShort = 1; }
+      if (sweepUp) { longVotes += 1; vSweepLong = 1; }
+      if (sweepDown) { shortVotes += 1; vSweepShort = 1; }
+      if (absBid) { longVotes += 1; vAbsLong = 1; }
+      if (absAsk) { shortVotes += 1; vAbsShort = 1; }
+      if (whaleBuy) { longVotes += 2; vWhaleLong = 2; }
+      if (whaleSell) { shortVotes += 2; vWhaleShort = 2; }
+
+      const minConf = quiet ? 50 : 40;
+      let decision = "NO TRADE";
+      let reason = "";
+      if (conf < minConf) {
+        reason = "confidence<" + minConf;
+      } else if (longVotes >= shortVotes + 1 && longVotes >= 2) {
+        decision = "GO_LONG";
+        reason = "long_votes=" + longVotes + ",short_votes=" + shortVotes;
+      } else if (shortVotes >= longVotes + 1 && shortVotes >= 2) {
+        decision = "GO_SHORT";
+        reason = "long_votes=" + longVotes + ",short_votes=" + shortVotes;
+      } else {
+        reason = "long_votes=" + longVotes + ",short_votes=" + shortVotes;
+      }
+
+      document.getElementById("conf-val").textContent = String(conf);
+      document.getElementById("imb-val").textContent = imb.toFixed(2);
+      document.getElementById("reason").textContent = reason;
+      document.getElementById("v-imb-long").textContent = String(vImbLong);
+      document.getElementById("v-imb-short").textContent = String(vImbShort);
+      document.getElementById("v-sweep-long").textContent = String(vSweepLong);
+      document.getElementById("v-sweep-short").textContent = String(vSweepShort);
+      document.getElementById("v-abs-long").textContent = String(vAbsLong);
+      document.getElementById("v-abs-short").textContent = String(vAbsShort);
+      document.getElementById("v-whale-long").textContent = String(vWhaleLong);
+      document.getElementById("v-whale-short").textContent = String(vWhaleShort);
+      document.getElementById("v-long-total").textContent = String(longVotes);
+      document.getElementById("v-short-total").textContent = String(shortVotes);
+
+      const box = document.getElementById("decision-box");
+      box.className = "decision-box";
+      if (decision === "GO_LONG") {
+        box.textContent = "GO_LONG";
+        box.style.background = "rgba(46,207,159,0.16)";
+        box.style.borderColor = "rgba(46,207,159,0.45)";
+        box.style.color = "#a7f7dc";
+      } else if (decision === "GO_SHORT") {
+        box.textContent = "GO_SHORT";
+        box.style.background = "rgba(255,107,107,0.16)";
+        box.style.borderColor = "rgba(255,107,107,0.45)";
+        box.style.color = "#ffc5c5";
+      } else {
+        box.textContent = "NO_TRADE";
+        box.style.background = "rgba(245,176,0,0.14)";
+        box.style.borderColor = "rgba(245,176,0,0.45)";
+        box.style.color = "#ffe3a5";
+      }
+    }
+    ["conf","imb","quiet","sweep-up","sweep-down","abs-bid","abs-ask","whale-buy","whale-sell"]
+      .forEach(id => document.getElementById(id).addEventListener("input", simDecision));
+    simDecision();
+
+    const steps = [
+      {
+        title: "Step 1: Pre-flight checks in Chimera",
+        body: "Confirm Executor is UP, Feed Delay and Bridge Age are inside watchdog thresholds, and symbol/feed are correct. If watchdog alerts are red, stand down."
+      },
+      {
+        title: "Step 2: Signal qualifies",
+        body: "Signal Card shows LONG or SHORT with enough confidence, and Signal Deck confirms no hard block reason. Verify imbalance direction matches the decision."
+      },
+      {
+        title: "Step 3: TradingView alert fires",
+        body: "Your Pine strategy sends JSON alert. Choose correct route: /webhook/tradingview (gated), /fill (mirror), or /paper (TradingView paper)."
+      },
+      {
+        title: "Step 4: Executor hard checks",
+        body: "Executor validates symbol, risk limits, cooldown, session lockout, and bridge decision profile (unless using mirror route). Rejections are logged with exact reason."
+      },
+      {
+        title: "Step 5: Fill and journal",
+        body: "Order is marked in paper journal files. Close events compute realized PnL from symbol tick specs and update per-broker state."
+      },
+      {
+        title: "Step 6: Post-trade review",
+        body: "Review Closed Trades, Orders, Audit Trail, and Prop Readiness gates. If result quality drifts, adjust profile and re-test in Backtest Lab + Monte Carlo."
+      }
+    ];
+    let stepIdx = 0;
+    function renderStep() {
+      const s = steps[stepIdx];
+      document.getElementById("step-content").innerHTML =
+        "<strong>" + s.title + "</strong><p class='muted' style='margin-top:6px'>" + s.body + "</p>";
+    }
+    document.getElementById("step-prev").addEventListener("click", () => {
+      stepIdx = (stepIdx - 1 + steps.length) % steps.length;
+      renderStep();
+    });
+    document.getElementById("step-next").addEventListener("click", () => {
+      stepIdx = (stepIdx + 1) % steps.length;
+      renderStep();
+    });
+    document.querySelectorAll(".step-jump").forEach(btn => {
+      btn.addEventListener("click", () => {
+        stepIdx = Number(btn.getAttribute("data-step"));
+        renderStep();
+      });
+    });
+    renderStep();
+
+    const routeSelect = document.getElementById("route-select");
+    const routeUrl = document.getElementById("route-url");
+    const routeJson = document.getElementById("route-json");
+    function renderRoute() {
+      const mode = routeSelect.value;
+      if (mode === "gated") {
+        routeUrl.textContent = "http://127.0.0.1:8787/webhook/tradingview";
+        routeJson.textContent = JSON.stringify({
+          symbol: "{{ticker}}",
+          action: "{{strategy.order.action}}",
+          price: "{{close}}",
+          qty: "{{strategy.order.contracts}}",
+          timestamp_utc: "{{timenow}}",
+          strategy_profile: "balanced",
+          broker: "tradovate"
+        }, null, 2);
+      } else if (mode === "fill") {
+        routeUrl.textContent = "http://127.0.0.1:8787/webhook/tradingview/fill";
+        routeJson.textContent = JSON.stringify({
+          symbol: "{{ticker}}",
+          action: "{{strategy.order.action}}",
+          price: "{{close}}",
+          qty: "{{strategy.order.contracts}}",
+          timestamp_utc: "{{timenow}}",
+          strategy_profile: "balanced",
+          broker: "ninjatrader"
+        }, null, 2);
+      } else {
+        routeUrl.textContent = "http://127.0.0.1:8787/webhook/tradingview/paper";
+        routeJson.textContent = JSON.stringify({
+          symbol: "{{ticker}}",
+          action: "{{strategy.order.action}}",
+          price: "{{close}}",
+          qty: "{{strategy.order.contracts}}",
+          timestamp_utc: "{{timenow}}",
+          strategy_profile: "balanced"
+        }, null, 2);
+      }
+    }
+    routeSelect.addEventListener("change", renderRoute);
+    renderRoute();
+
+    function renderCooldownCalc() {
+      const lastOrder = Number(document.getElementById("cool-last-order").value);
+      const orderTh = Number(document.getElementById("cool-order-th").value);
+      const lastWatchdog = Number(document.getElementById("cool-last-watchdog").value);
+      const watchdogTh = Number(document.getElementById("cool-watchdog-th").value);
+
+      document.getElementById("cool-last-order-val").textContent = lastOrder + "s";
+      document.getElementById("cool-last-watchdog-val").textContent = lastWatchdog + "s";
+
+      const orderReady = lastOrder >= orderTh;
+      const orderBox = document.getElementById("cool-order-result");
+      const orderMsg = document.getElementById("cool-order-msg");
+      if (orderReady) {
+        orderBox.textContent = "ORDER ALLOWED";
+        orderBox.style.background = "rgba(46,207,159,0.16)";
+        orderBox.style.borderColor = "rgba(46,207,159,0.45)";
+        orderBox.style.color = "#a7f7dc";
+        orderMsg.textContent = "Executor cooldown has expired.";
+      } else {
+        const remaining = Math.max(0, orderTh - lastOrder);
+        orderBox.textContent = "ORDER BLOCKED (cooldown_active)";
+        orderBox.style.background = "rgba(255,107,107,0.16)";
+        orderBox.style.borderColor = "rgba(255,107,107,0.45)";
+        orderBox.style.color = "#ffc5c5";
+        orderMsg.textContent = "Wait " + remaining + "s before next eligible order.";
+      }
+
+      const watchdogReady = lastWatchdog >= watchdogTh;
+      const wdBox = document.getElementById("cool-watchdog-result");
+      const wdMsg = document.getElementById("cool-watchdog-msg");
+      if (watchdogReady) {
+        wdBox.textContent = "WATCHDOG ALERT CAN FIRE";
+        wdBox.style.background = "rgba(46,207,159,0.16)";
+        wdBox.style.borderColor = "rgba(46,207,159,0.45)";
+        wdBox.style.color = "#a7f7dc";
+        wdMsg.textContent = "If watchdog conditions still fail, next alert can be sent now.";
+      } else {
+        const remaining = Math.max(0, watchdogTh - lastWatchdog);
+        wdBox.textContent = "WATCHDOG ALERT THROTTLED";
+        wdBox.style.background = "rgba(245,176,0,0.16)";
+        wdBox.style.borderColor = "rgba(245,176,0,0.45)";
+        wdBox.style.color = "#ffe3a5";
+        wdMsg.textContent = "Alert suppressed for " + remaining + "s more.";
+      }
+    }
+    ["cool-last-order","cool-order-th","cool-last-watchdog","cool-watchdog-th"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener("input", renderCooldownCalc);
+    });
+    renderCooldownCalc();
+
+    document.querySelectorAll(".acc-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const panel = btn.nextElementSibling;
+        panel.classList.toggle("open");
+      });
+    });
+
+    const tvSearch = document.getElementById("tv-search");
+    const tvRows = [...document.querySelectorAll("#tv-table tr")].slice(1);
+    tvSearch.addEventListener("input", () => {
+      const q = tvSearch.value.toLowerCase().trim();
+      tvRows.forEach(r => {
+        r.style.display = r.textContent.toLowerCase().includes(q) ? "" : "none";
+      });
+    });
+  </script>
+</body>
+</html>

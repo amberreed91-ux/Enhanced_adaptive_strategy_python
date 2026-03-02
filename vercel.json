@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "cd python_portfolio_20 && python3 portfolio_site/scripts/build_site_data.py",
+  "outputDirectory": "python_portfolio_20/portfolio_site",
+  "cleanUrls": true,
+  "trailingSlash": false
+}

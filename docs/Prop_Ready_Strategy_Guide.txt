@@ -1,0 +1,312 @@
+ENHANCED ADAPTIVE STRATEGY
+Beginner-to-Prop Guide (MGC + MNQ)
+
+Built from your latest fixed logic
+Date: February 24, 2026
+
+====================================================================
+HOW TO USE THIS GUIDE
+====================================================================
+This guide is written for newer traders.
+Read it once front-to-back.
+Then print it or keep it open and complete the checklists in real time.
+
+Goal:
+- Understand what the strategy is doing.
+- Execute with discipline.
+- Protect capital first.
+- Build consistency for prop-firm style evaluation.
+
+Important:
+- No strategy guarantees profits.
+- Your edge comes from execution quality and risk control.
+- You must follow your rules exactly.
+
+
+====================================================================
+PART 1) THE BIG IDEA (IN PLAIN ENGLISH)
+====================================================================
+Your strategy is a quality filter, not a constant signal generator.
+It only wants to trade when multiple conditions agree:
+
+1) Regime quality
+   - It wants TRENDING conditions (not random chop).
+
+2) Trend efficiency
+   - It requires meaningful directional movement (efficiency >= 0.55).
+
+3) Structure direction
+   - For LONG: bullish structure + bullish HTF bias.
+   - For SHORT: bearish structure + bearish HTF bias.
+
+4) Confluence score
+   - Many components combine into one quality score.
+   - If confluence is too low, no trade.
+
+5) Risk-first sizing
+   - Position size is based on stop distance and dollar risk.
+   - This is crucial for longevity.
+
+6) Daily limits
+   - Max trades/day, max loss/day, max losing streak.
+   - In Prop Mode, limits are tighter and can lock the day.
+
+
+====================================================================
+PART 2) REVERSE TRADE WALKTHROUGH (END -> BEGINNING)
+====================================================================
+This is the most important section.
+You requested a walk-through from the END of a trade back to the START.
+
+--------------------------------------------------------------------
+STEP 8 (END): TRADE CLOSED
+--------------------------------------------------------------------
+Question: Why did the trade close?
+Possible reasons:
+- Target hit
+- Stop hit
+- Time exit
+- Session exit
+- Scale-out then managed stop
+
+Interactive check:
+[ ] I can identify the exact exit reason on chart.
+[ ] I can confirm exit label matches strategy behavior.
+[ ] I can state whether exit respected the plan.
+
+Notes:
+_______________________________________________________________
+_______________________________________________________________
+
+--------------------------------------------------------------------
+STEP 7: EXIT QUALITY REVIEW
+--------------------------------------------------------------------
+Now ask:
+- Did I let strategy manage the trade without interference?
+- Did trailing/breakeven rules execute as expected?
+- Was the exit emotionally driven or rule-driven?
+
+Interactive score (1-5):
+Execution discipline: ____ / 5
+Exit quality: _________ / 5
+
+--------------------------------------------------------------------
+STEP 6: RISK OUTCOME REVIEW
+--------------------------------------------------------------------
+Before you care about P/L, care about risk integrity.
+
+Checklist:
+[ ] Position size was within cap.
+[ ] Stop distance matched logic (ATR/regime based).
+[ ] Daily risk limits were not violated.
+[ ] Loss (if any) was acceptable and planned.
+
+If any box is unchecked, that is a process loss.
+
+--------------------------------------------------------------------
+STEP 5: IN-TRADE MANAGEMENT CHECK
+--------------------------------------------------------------------
+What happened during the trade?
+- Did it move into profit quickly?
+- Did it stall (low momentum)?
+- Was there a regime shift?
+
+Interactive prompt:
+What did price do after entry (first 5-10 bars)?
+_______________________________________________________________
+
+Did that behavior match expected setup behavior?
+[ ] Yes  [ ] No
+
+--------------------------------------------------------------------
+STEP 4: ENTRY QUALITY (JUST BEFORE ENTRY)
+--------------------------------------------------------------------
+This is where your edge lives.
+
+Required alignment summary:
+[ ] TRENDING regime
+[ ] Efficiency threshold passed
+[ ] Structure + HTF bias aligned with direction
+[ ] Confluence passed threshold
+[ ] Session and daily limits allowed trade
+
+If one critical item is missing, skip the trade.
+
+--------------------------------------------------------------------
+STEP 3: MARKET CONTEXT (BEFORE SIGNAL)
+--------------------------------------------------------------------
+Was the market environment tradable for this model?
+
+Checklist:
+[ ] Not obvious low-quality chop
+[ ] No major news disruption (if using news filter)
+[ ] Volatility not in abnormal panic state
+[ ] Confluence is earned, not forced
+
+--------------------------------------------------------------------
+STEP 2: PRE-TRADE RISK DECISION
+--------------------------------------------------------------------
+Before entering:
+- Define worst-case loss.
+- Confirm this loss is acceptable today.
+- Confirm this trade does NOT threaten your daily limits.
+
+Write your max allowed loss for next trade:
+$ ______________________
+
+--------------------------------------------------------------------
+STEP 1 (BEGINNING): SHOULD I TAKE THIS TRADE?
+--------------------------------------------------------------------
+Final gate:
+If anything feels unclear, skip.
+"No trade" is a valid high-quality decision.
+
+Decision:
+[ ] Take trade
+[ ] Pass trade
+Reason:
+_______________________________________________________________
+
+
+====================================================================
+PART 3) PROP EVALUATION MODE (HOW TO THINK)
+====================================================================
+Prop mode is about survival + consistency, not hero returns.
+
+When Prop Mode is ON, your script hardens:
+- Lower risk cap per trade
+- Higher confluence requirement
+- Longer cooldown between trades
+- Optional quality-only time windows
+- Tighter daily limits and lockout behavior
+
+Mindset shift:
+- A+ setups only
+- Lower frequency
+- Protect drawdown at all costs
+
+Daily rule card:
+[ ] I will stop when daily lockout triggers.
+[ ] I will not increase size to recover losses.
+[ ] I will not override filters because of FOMO.
+
+
+====================================================================
+PART 4) MGC VS MNQ (WHY THEY FEEL DIFFERENT)
+====================================================================
+MNQ (Micro Nasdaq):
+- Faster movement, more whipsaw risk, higher noise.
+- Needs stricter short gate and cleaner alignment.
+
+MGC (Micro Gold):
+- Different rhythm and session behavior.
+- Can trend well but reacts differently around macro events.
+
+Key point:
+Do NOT assume one instrument's behavior transfers perfectly.
+Your script handles this with instrument-aware gates and sizing.
+
+
+====================================================================
+PART 5) PRE-MARKET 5-MINUTE CHECKLIST
+====================================================================
+1) Risk + Limits
+[ ] Daily max loss set
+[ ] Daily trade cap known
+[ ] Max consecutive losses known
+
+2) Platform + Strategy Health
+[ ] Script loaded correctly
+[ ] Entry labels visible
+[ ] Exit labels visible
+[ ] Session/time settings correct
+
+3) Environment
+[ ] News awareness checked
+[ ] No emotional pressure from prior day
+[ ] Ready to follow rules mechanically
+
+4) Focus
+[ ] I will only take qualified signals
+[ ] I will skip marginal setups
+[ ] I accept that missing trades is normal
+
+
+====================================================================
+PART 6) POST-TRADE DEBRIEF (QUICK FORM)
+====================================================================
+Trade #: _______   Date: __________   Instrument: __________
+
+Setup quality (A/B/C): ______
+Rule compliance (0-100): _____
+Emotional control (0-100): ___
+
+Was this trade:
+[ ] Rule-perfect win
+[ ] Rule-perfect loss
+[ ] Rule-break win
+[ ] Rule-break loss
+
+Most important lesson:
+_______________________________________________________________
+
+One improvement for next trade:
+_______________________________________________________________
+
+
+====================================================================
+PART 7) COMMON NEW-TRADER MISTAKES (AND FIXES)
+====================================================================
+Mistake: Taking every signal.
+Fix: Only A-grade context + confluence.
+
+Mistake: Increasing size after losses.
+Fix: Keep size algorithmic and capped.
+
+Mistake: Ignoring daily stop.
+Fix: Hard stop trading when limits are hit.
+
+Mistake: Judging strategy by 1-3 trades.
+Fix: Evaluate over meaningful sample size.
+
+Mistake: Changing settings daily.
+Fix: Make changes only after structured review.
+
+
+====================================================================
+PART 8) WHAT "INSTITUTIONAL" REALLY MEANS HERE
+====================================================================
+Institutional-level execution is:
+- Repeatable process
+- Defined risk
+- Stable decision rules
+- High-quality logs and review
+- Emotional neutrality
+
+It is NOT:
+- Constant action
+- Prediction ego
+- Revenge trading
+- Rule bending
+
+Your advantage over most retail traders will come from:
+1) Consistent filtering
+2) Strict risk containment
+3) Professional review loop
+
+
+====================================================================
+PART 9) FINAL COMMITMENT STATEMENT
+====================================================================
+Read this before each session:
+
+"My job is not to force profit today.
+My job is to execute my process with precision.
+If I protect capital and follow rules,
+my edge has room to work over time."
+
+Signature: _______________________   Date: ___________________
+
+====================================================================
+END OF GUIDE
+====================================================================

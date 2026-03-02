@@ -1,0 +1,202 @@
+CHIMERA
+Complete Trading Playbook
+(TradingView Strategy + Bookmap Bridge)
+
+Date: February 25, 2026
+
+WHAT CHIMERA IS
+Chimera is your combined execution system:
+1) TradingView strategy = setup engine (direction, risk, exits)
+2) Bookmap Engine = execution-quality engine (order book + whales + microstructure)
+3) Python Bridge = gate that allows/blocks entries using Bookmap decision file.
+
+Core rule:
+- TradingView finds opportunities.
+- Bookmap confirms quality/timing.
+- Bridge enforces discipline.
+
+SYSTEM ARCHITECTURE
+A) TradingView (Pine)
+- Generates long/short setup logic and risk framework.
+- Your validation panel helps determine robustness by symbol.
+
+B) Bookmap Engine (Streamlit)
+- Shows heatmap, DOM ladder, imbalance, sweep, absorption, whale hits.
+- Writes decision file: data/bookmap_signal.json
+  decision: GO_LONG / GO_SHORT / NO_TRADE
+  plus confidence and whale context.
+
+C) Python Strategy Engine
+- Reads bookmap_signal.json before final signal acceptance.
+- If bridge profile is strict, entry is blocked unless Bookmap agrees.
+
+CURRENT BRIDGE PROFILES
+In config/config.yaml -> bookmap_bridge.profile
+- strict: fail_open=false, max_age=8s, min_conf=70, require_whale=true
+- balanced: fail_open=true, max_age=20s, min_conf=55, require_whale=false
+- permissive: fail_open=true, max_age=30s, min_conf=45, require_whale=false
+- custom: uses explicit fields in YAML
+
+Your current default is strict.
+
+STARTUP CHECKLIST (DAILY)
+1) Launch Bookmap app
+   cd /Users/amberreed/Enhanced_adaptive_strategy_python
+   source venv/bin/activate
+   streamlit run bookmap_engine/app_streamlit.py
+
+2) In Bookmap sidebar
+- Set Source: Synthetic or Binance Futures (REST)
+- Set Symbol to match your chart focus
+- Keep Write Strategy Bridge File = ON
+- Confirm Bridge File Path = data/bookmap_signal.json
+
+3) Open TradingView strategy
+- Same symbol/timeframe as your planned trade.
+- Confirm strategy compiles and Validation panel is visible.
+
+4) Confirm bridge freshness
+- Decision updating in Bookmap panel.
+- No stale/no-feed errors.
+
+HOW TO TRADE CHIMERA (END-TO-BEGINNING FLOW)
+STEP 8 (END): Trade closed
+- Record exit reason (target, stop, time exit).
+- Confirm no manual override broke rules.
+
+STEP 7: Exit quality
+- Did market structure fail first, or was exit planned?
+- Score discipline (1-5).
+
+STEP 6: Risk outcome
+- Was loss/profit inside your planned risk envelope?
+- Any daily limit violations? If yes, stop.
+
+STEP 5: In-trade behavior
+- Did order flow continue in your direction?
+- Did whales support or fade your move?
+
+STEP 4: Entry quality gate (critical)
+Take LONG only if:
+- TV strategy setup = LONG candidate
+- Bookmap decision = GO_LONG
+- Bridge confidence >= profile threshold
+- (strict mode) Whale Buy present
+
+Take SHORT only if:
+- TV strategy setup = SHORT candidate
+- Bookmap decision = GO_SHORT
+- Bridge confidence >= profile threshold
+- (strict mode) Whale Sell present
+
+If any item fails -> NO TRADE.
+
+STEP 3: Market context
+- Session quality acceptable
+- Not random chop regime
+- Costs/slippage not dominating expected edge
+
+STEP 2: Pre-trade risk
+- Define max loss this trade.
+- Confirm daily drawdown room exists.
+
+STEP 1 (BEGINNING): Final decision
+- Execute only when both engines agree.
+- Passing a trade is a valid edge-preserving action.
+
+BOOKMAP SIGNAL INTERPRETATION (CLEAN VERSION)
+Order Book Imbalance
+- Positive: bid-side support
+- Negative: ask-side pressure
+
+Sweep Up / Sweep Down
+- Aggressive directional activity through levels.
+- Better when aligned with bridge direction.
+
+Absorption Bid / Ask
+- Bid absorption: sells absorbed, downside stalls (bullish clue)
+- Ask absorption: buys absorbed, upside stalls (bearish clue)
+
+Whale Hit
+- Large aggressive print above dynamic threshold.
+- strict profile requires whale alignment to pass gate.
+
+Signal Confidence (0-100)
+- Composite quality score from imbalance + sweep + absorption + whale.
+- Higher confidence = stronger bridge conviction.
+
+TRADINGVIEW + BOOKMAP ALIGNMENT RULES
+Use this matrix:
+- TV LONG + Bookmap GO_LONG = eligible
+- TV SHORT + Bookmap GO_SHORT = eligible
+- TV LONG + GO_SHORT = block
+- TV SHORT + GO_LONG = block
+- Any setup + NO_TRADE = block
+
+This is the main anti-impulse protection layer.
+
+MNQ/MGC USAGE GUIDANCE
+MNQ:
+- Faster tape, more fakeouts.
+- Keep strict profile during prop-eval periods.
+
+MGC:
+- Can trend cleanly but can stall near macro flows.
+- Let bridge filter low-energy entries.
+
+Do not force one threshold set across all symbols.
+Use validation panel stats before trusting a symbol.
+
+PROP-EVAL MODE GUIDELINES
+Primary objective: pass risk constraints first.
+- Limit daily attempts.
+- Avoid revenge sizing.
+- Stop on lockout triggers.
+- Keep strict bridge until sample is stable.
+
+Minimum reliability target before size increase:
+- 60+ closed trades
+- PF >= 1.30
+- Max DD <= 4%
+- Avg Trade >= $25
+- Win Rate >= 45%
+
+TROUBLESHOOTING
+1) Bookmap shows feed error 451
+- Futures endpoint geo-blocked.
+- App now auto-falls back to spot/binance.us where possible.
+- If still blocked, use Synthetic mode.
+
+2) Bridge blocks too many trades
+- strict is intentionally selective.
+- switch to balanced only after collecting enough sample data.
+
+3) No bridge file updates
+- Ensure Write Strategy Bridge File is ON.
+- Confirm path: data/bookmap_signal.json
+- Keep app running while strategy runs.
+
+4) Strategy still entering without bridge agreement
+- Check config: bookmap_bridge.enabled must be true.
+- Ensure same project folder/config is used by your run.
+
+EXECUTION SOP (SHORT VERSION)
+Before session:
+- Launch Chimera Bookmap.
+- Confirm bridge updates.
+- Open TradingView and choose symbols.
+
+During session:
+- Wait for TV setup.
+- Require matching Bookmap GO direction.
+- Execute only when risk limits allow.
+
+After session:
+- Review each trade with end-to-beginning checklist.
+- Track misses vs rule violations.
+- Tune process, not emotions.
+
+IMPORTANT RISK NOTE
+Chimera improves decision quality but does not eliminate risk.
+Your edge comes from consistency, selective execution, and risk discipline.
+No single signal, whale print, or setup guarantees profit.

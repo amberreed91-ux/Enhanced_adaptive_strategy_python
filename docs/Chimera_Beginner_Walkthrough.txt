@@ -1,0 +1,194 @@
+CHIMERA BEGINNER WALKTHROUGH + PLAYBOOK
+Date: February 28, 2026
+
+WHO THIS IS FOR
+You are new to Chimera, TradingView, and strategy automation.
+This guide explains what to click, what each signal means, and how to run safe paper testing first.
+
+IMPORTANT
+This is educational and process guidance, not financial advice.
+No strategy guarantees profit. Use strict risk limits.
+
+=================================================================
+1) BIG PICTURE: CHIMERA VS ICC VS PURE ICC
+=================================================================
+
+Simple definitions:
+- ICC approach: usually structure + liquidity + timing concepts.
+- Pure ICC ideology: discretionary, trader interprets everything manually.
+- Chimera: ICC-style logic + objective filters + bridge gate + execution auditing.
+
+Why Chimera is usually better for beginners:
+1. Fewer impulse trades: bridge can block weak entries.
+2. Better consistency: rules are codified instead of memory-only.
+3. Better review loop: every webhook/signal is logged.
+4. Better safety: paper mode, kill-switches, profile gates.
+
+Tradeoff:
+- Pure discretionary trading can be flexible, but consistency is harder.
+- Chimera is more structured and therefore easier to audit and improve.
+
+=================================================================
+2) CHIMERA SIGNAL FLOW (END-TO-END)
+=================================================================
+
+Step A: TradingView strategy finds a setup (LONG/SHORT/FLAT intent).
+Step B: Chimera bridge checks microstructure and profile rules.
+Step C: Executor decides pass/block and logs reason.
+Step D: Paper journal updates (orders, state, closed trades).
+
+Golden rule:
+If TradingView and Chimera do not agree -> NO TRADE.
+
+=================================================================
+3) HOW TO USE TRADINGVIEW WITH CHIMERA
+=================================================================
+
+A) Sign in to TradingView
+1. Open your browser and sign in at tradingview.com.
+2. Open the chart for the same symbol you use in Chimera (example: MNQ1! or MGC1!).
+3. Set your timeframe (example: 5m) and keep it consistent.
+
+B) Load your Pine strategy
+1. Open Pine Editor.
+2. Paste/load your Chimera-aligned Pine strategy.
+3. Click Add to chart and verify strategy orders appear.
+
+C) Create webhook alert
+1. Click Alert.
+2. Condition: your strategy order event.
+3. Webhook URL (local): http://127.0.0.1:8787/webhook/tradingview
+4. Message JSON example:
+   {
+     "symbol":"{{ticker}}",
+     "action":"{{strategy.order.action}}",
+     "price":"{{close}}",
+     "timestamp_utc":"{{timenow}}"
+   }
+
+D) If using TradingView Paper mode mirroring
+- Use endpoint: /webhook/tradingview/paper
+- Chimera stores mirrored journal in data/tradingview_paper/
+
+Note about "sign in to TradingView on Chimera":
+Chimera does not replace TradingView login itself. You sign in on TradingView,
+then connect to Chimera by webhook endpoint.
+
+=================================================================
+4) CHIMERA APP SIGNALS VS TRADINGVIEW SIGNALS
+=================================================================
+
+TradingView signal = setup intent from your Pine strategy.
+Chimera signal state = execution-quality decision from bridge + guardrails.
+
+Think of it like this:
+- TradingView asks: "Do I see a setup?"
+- Chimera asks: "Is this setup good enough to execute now?"
+
+When they differ:
+- TV LONG + Chimera NO_TRADE -> skip.
+- TV SHORT + Chimera GO_LONG -> skip.
+- Alignment required for discipline.
+
+=================================================================
+5) BEGINNER EXPLANATION OF THE PINE STRATEGY
+=================================================================
+
+Most Chimera-aligned Pine scripts do five jobs:
+1. Context: trend/range regime detection.
+2. Trigger: entry condition (break/sweep/reclaim/etc.).
+3. Risk: stop loss + take profit levels.
+4. Sizing: fixed or rule-based quantity.
+5. Output: sends order actions used by alerts/webhooks.
+
+Keep beginner defaults simple:
+- One symbol
+- One timeframe
+- One risk profile (strict or balanced)
+- Fixed size in paper mode
+
+Only optimize one variable at a time.
+
+=================================================================
+6) BACKTEST LAB (BEGINNER WORKFLOW)
+=================================================================
+
+Goal: validate behavior before live risk.
+
+Quick run example (from this repo):
+venv/bin/python scripts/run_backtest_profile.py --profile combined_trend_ict_range --dataset mixed_50k
+
+Useful profiles:
+- trend_only
+- range_preserved
+- ict_asian_sweep
+- ict_asian_sweep_inverted
+- combined_trend_ict_range
+
+Where results go:
+results/backtests/<profile>/<dataset>_<timestamp>/
+
+What to review first:
+1. total trades
+2. win rate
+3. profit factor
+4. max drawdown
+5. average trade quality
+
+Beginner promotion rule (paper -> more size):
+- 60+ trades
+- Profit factor >= 1.30
+- Max drawdown <= 4%
+- Stable behavior across multiple recent runs
+
+=================================================================
+7) DAILY CHECKLIST (BEGINNER SOP)
+=================================================================
+
+Before session:
+- Start Chimera app (bridge writing ON)
+- Start executor server
+- Confirm /status is healthy
+- Confirm TradingView alert is active and pointing to correct webhook
+
+During session:
+- Take only aligned signals
+- Respect daily loss/trade limits
+- Do not switch profiles mid-emotion
+
+After session:
+- Review blocked vs executed signals
+- Read journal files
+- Mark rule violations
+- Decide one improvement for next day
+
+=================================================================
+8) TROUBLESHOOTING QUICK FIXES
+=================================================================
+
+Problem: No fills recorded
+- Check executor running on 127.0.0.1:8787
+- Check alert webhook URL and JSON fields
+
+Problem: Too many blocked trades
+- You may be on strict profile with low-confidence market
+- Collect sample before loosening filters
+
+Problem: TV chart and Chimera feel out of sync
+- Check symbol/timeframe match
+- Check action mapping (LONG/SHORT/FLAT)
+- Check clock/timezone consistency
+
+=================================================================
+9) FINAL PLAYBOOK SUMMARY
+=================================================================
+
+Use this order every day:
+1. Prepare system
+2. Validate signal alignment
+3. Execute only when both engines agree
+4. Respect risk limits
+5. Review logs and improve process
+
+Chimera wins for beginners when you treat it as a rules engine,
+not a prediction machine.
