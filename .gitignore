@@ -75,3 +75,6 @@ htmlcov/
 # Backup files
 *.bak
 *.backup
+
+# Large local replay artifacts
+data/replay_snapshots.jsonl
