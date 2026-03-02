@@ -2,8 +2,8 @@
   "defaults": {
     "featured": false,
     "featured_rank": 999,
-    "completion": "In Progress",
-    "client_value": "Demonstrates practical engineering and delivery quality.",
+    "completion": "Completed",
+    "client_value": "Completed runnable Python project with test and demo proof.",
     "impact_metrics": [],
     "outcomes": [
       "Runnable application with documented usage",
@@ -24,19 +24,23 @@
     "04_rest_api_fastapi_style": {
       "featured": true,
       "featured_rank": 1,
-      "completion": "Production Ready",
+      "completion": "Completed",
       "client_value": "Shows backend architecture, input validation, and clean service boundaries for scalable API work.",
       "impact_metrics": [
         "2 complete CRUD flows implemented",
         "Deterministic service-layer validation",
         "Average run_demo latency: 0.0009 ms",
         "P95 latency: 0.0009 ms",
-        "Throughput: 1165538.9 runs/sec"
+        "Throughput: 1165538.9 runs/sec",
+        "Average run_demo latency: 0.001 ms"
       ],
       "outcomes": [
         "Created typed item service with strict empty-input rejection",
         "Added clean create/list boundaries suitable for FastAPI handlers",
-        "Produced runnable demo payload for quick product walkthroughs"
+        "Produced runnable demo payload for quick product walkthroughs",
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
       ],
       "proof_points": [
         "Runnable locally via python3 projects/04_rest_api_fastapi_style/main.py",
@@ -55,19 +59,23 @@
     "07_etl_pipeline": {
       "featured": true,
       "featured_rank": 2,
-      "completion": "Production Ready",
+      "completion": "Completed",
       "client_value": "Demonstrates robust extract-transform flow with data quality filtering and normalized outputs.",
       "impact_metrics": [
         "Invalid rows filtered before output",
         "Consistent schema produced for downstream load",
         "Average run_demo latency: 0.0067 ms",
         "P95 latency: 0.0053 ms",
-        "Throughput: 149441.3 runs/sec"
+        "Throughput: 149441.3 runs/sec",
+        "Average run_demo latency: 0.0039 ms"
       ],
       "outcomes": [
         "Parsed CSV into structured records",
         "Applied transformation and positive-value quality filter",
-        "Returned standardized shaped payload"
+        "Returned standardized shaped payload",
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
       ],
       "proof_points": [
         "Smoke-tested in portfolio runner",
@@ -86,19 +94,23 @@
     "11_async_api_aggregator": {
       "featured": true,
       "featured_rank": 3,
-      "completion": "Production Ready",
+      "completion": "Completed",
       "client_value": "Shows concurrent task orchestration to reduce end-to-end latency for multi-source integrations.",
       "impact_metrics": [
         "Concurrent collection from 3 data sources",
         "Single aggregation pass for summary value",
         "Average run_demo latency: 22.4078 ms",
         "P95 latency: 25.3414 ms",
-        "Throughput: 44.6 runs/sec"
+        "Throughput: 44.6 runs/sec",
+        "Average run_demo latency: 21.8199 ms"
       ],
       "outcomes": [
         "Implemented asyncio-based concurrent fetch flow",
         "Merged independent responses into one payload",
-        "Demonstrated async run path with repeatable output"
+        "Demonstrated async run path with repeatable output",
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
       ],
       "proof_points": [
         "Includes async function coverage through smoke execution",
@@ -117,19 +129,23 @@
     "13_recommender_system": {
       "featured": true,
       "featured_rank": 4,
-      "completion": "Production Ready",
+      "completion": "Completed",
       "client_value": "Demonstrates ranking logic for personalization use cases with transparent scoring behavior.",
       "impact_metrics": [
         "Cosine similarity ranking implemented",
         "Top recommendation returned deterministically",
         "Average run_demo latency: 0.004 ms",
         "P95 latency: 0.0042 ms",
-        "Throughput: 247504.7 runs/sec"
+        "Throughput: 247504.7 runs/sec",
+        "Average run_demo latency: 0.0041 ms"
       ],
       "outcomes": [
         "Implemented vector similarity scoring",
         "Sorted catalog results by descending score",
-        "Returned explainable top-item recommendation"
+        "Returned explainable top-item recommendation",
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
       ],
       "proof_points": [
         "Recommendation output visible in website demo",
@@ -148,19 +164,23 @@
     "20_capstone_end_to_end_ml_product": {
       "featured": true,
       "featured_rank": 5,
-      "completion": "Production Ready",
+      "completion": "Completed",
       "client_value": "Shows complete ML flow from fitting to inference, suitable as a foundation for model-serving APIs.",
       "impact_metrics": [
         "Model fit + predict pipeline delivered",
         "Deterministic linear inference output",
         "Average run_demo latency: 0.0018 ms",
         "P95 latency: 0.0019 ms",
-        "Throughput: 552281.4 runs/sec"
+        "Throughput: 552281.4 runs/sec",
+        "Average run_demo latency: 0.002 ms"
       ],
       "outcomes": [
         "Implemented linear fit from raw training arrays",
         "Exposed deterministic prediction function",
-        "Packaged full run_demo path for stakeholder review"
+        "Packaged full run_demo path for stakeholder review",
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
       ],
       "proof_points": [
         "End-to-end fit/predict visible from site modal",
@@ -174,6 +194,411 @@
         "docs": "./projects/20_capstone_end_to_end_ml_product/README.md",
         "live": "./demos/20_capstone_end_to_end_ml_product.html",
         "video": "./assets/project_media/20_capstone_end_to_end_ml_product/demo.gif"
+      }
+    },
+    "01_finance_tracker_cli": {
+      "featured": false,
+      "featured_rank": 999,
+      "completion": "Completed",
+      "client_value": "Personal Finance Tracker CLI demonstrates completed Python implementation, repeatable runtime behavior, and recruiter-verifiable outputs.",
+      "impact_metrics": [
+        "Average run_demo latency: 0.0021 ms",
+        "P95 latency: 0.002 ms",
+        "Throughput: 483713.1 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
+      ],
+      "proof_points": [
+        "Live project page at ./demos/01_finance_tracker_cli.html",
+        "Screenshot proof at ./assets/project_media/01_finance_tracker_cli/preview.png",
+        "Animated demo at ./assets/project_media/01_finance_tracker_cli/demo.gif"
+      ],
+      "links": {
+        "live": "./demos/01_finance_tracker_cli.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/01_finance_tracker_cli",
+        "docs": "./projects/01_finance_tracker_cli/README.md",
+        "video": "./assets/project_media/01_finance_tracker_cli/demo.gif"
+      }
+    },
+    "02_password_manager_encrypted": {
+      "featured": false,
+      "featured_rank": 999,
+      "completion": "Completed",
+      "client_value": "Password Manager (Encrypted) demonstrates completed Python implementation, repeatable runtime behavior, and recruiter-verifiable outputs.",
+      "impact_metrics": [
+        "Average run_demo latency: 97.824 ms",
+        "P95 latency: 104.7968 ms",
+        "Throughput: 10.2 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
+      ],
+      "proof_points": [
+        "Live project page at ./demos/02_password_manager_encrypted.html",
+        "Screenshot proof at ./assets/project_media/02_password_manager_encrypted/preview.png",
+        "Animated demo at ./assets/project_media/02_password_manager_encrypted/demo.gif"
+      ],
+      "links": {
+        "live": "./demos/02_password_manager_encrypted.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/02_password_manager_encrypted",
+        "docs": "./projects/02_password_manager_encrypted/README.md",
+        "video": "./assets/project_media/02_password_manager_encrypted/demo.gif"
+      }
+    },
+    "03_web_scraper_data_cleaner": {
+      "featured": false,
+      "featured_rank": 999,
+      "completion": "Completed",
+      "client_value": "Web Scraper + Data Cleaner demonstrates completed Python implementation, repeatable runtime behavior, and recruiter-verifiable outputs.",
+      "impact_metrics": [
+        "Average run_demo latency: 0.0125 ms",
+        "P95 latency: 0.013 ms",
+        "Throughput: 79982.5 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
+      ],
+      "proof_points": [
+        "Live project page at ./demos/03_web_scraper_data_cleaner.html",
+        "Screenshot proof at ./assets/project_media/03_web_scraper_data_cleaner/preview.png",
+        "Animated demo at ./assets/project_media/03_web_scraper_data_cleaner/demo.gif"
+      ],
+      "links": {
+        "live": "./demos/03_web_scraper_data_cleaner.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/03_web_scraper_data_cleaner",
+        "docs": "./projects/03_web_scraper_data_cleaner/README.md",
+        "video": "./assets/project_media/03_web_scraper_data_cleaner/demo.gif"
+      }
+    },
+    "05_task_manager_webapp": {
+      "featured": false,
+      "featured_rank": 999,
+      "completion": "Completed",
+      "client_value": "Task Manager Web App Backend demonstrates completed Python implementation, repeatable runtime behavior, and recruiter-verifiable outputs.",
+      "impact_metrics": [
+        "Average run_demo latency: 1.2954 ms",
+        "P95 latency: 1.6263 ms",
+        "Throughput: 771.9 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
+      ],
+      "proof_points": [
+        "Live project page at ./demos/05_task_manager_webapp.html",
+        "Screenshot proof at ./assets/project_media/05_task_manager_webapp/preview.png",
+        "Animated demo at ./assets/project_media/05_task_manager_webapp/demo.gif"
+      ],
+      "links": {
+        "live": "./demos/05_task_manager_webapp.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/05_task_manager_webapp",
+        "docs": "./projects/05_task_manager_webapp/README.md",
+        "video": "./assets/project_media/05_task_manager_webapp/demo.gif"
+      }
+    },
+    "06_jwt_auth_service": {
+      "featured": false,
+      "featured_rank": 999,
+      "completion": "Completed",
+      "client_value": "JWT Auth Service demonstrates completed Python implementation, repeatable runtime behavior, and recruiter-verifiable outputs.",
+      "impact_metrics": [
+        "Average run_demo latency: 0.0141 ms",
+        "P95 latency: 0.0143 ms",
+        "Throughput: 70891.2 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
+      ],
+      "proof_points": [
+        "Live project page at ./demos/06_jwt_auth_service.html",
+        "Screenshot proof at ./assets/project_media/06_jwt_auth_service/preview.png",
+        "Animated demo at ./assets/project_media/06_jwt_auth_service/demo.gif"
+      ],
+      "links": {
+        "live": "./demos/06_jwt_auth_service.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/06_jwt_auth_service",
+        "docs": "./projects/06_jwt_auth_service/README.md",
+        "video": "./assets/project_media/06_jwt_auth_service/demo.gif"
+      }
+    },
+    "08_data_dashboard": {
+      "featured": false,
+      "featured_rank": 999,
+      "completion": "Completed",
+      "client_value": "Data Dashboard Backend demonstrates completed Python implementation, repeatable runtime behavior, and recruiter-verifiable outputs.",
+      "impact_metrics": [
+        "Average run_demo latency: 0.0041 ms",
+        "P95 latency: 0.0042 ms",
+        "Throughput: 246306.9 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
+      ],
+      "proof_points": [
+        "Live project page at ./demos/08_data_dashboard.html",
+        "Screenshot proof at ./assets/project_media/08_data_dashboard/preview.png",
+        "Animated demo at ./assets/project_media/08_data_dashboard/demo.gif"
+      ],
+      "links": {
+        "live": "./demos/08_data_dashboard.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/08_data_dashboard",
+        "docs": "./projects/08_data_dashboard/README.md",
+        "video": "./assets/project_media/08_data_dashboard/demo.gif"
+      }
+    },
+    "09_price_alert_bot": {
+      "featured": false,
+      "featured_rank": 999,
+      "completion": "Completed",
+      "client_value": "Stock/Crypto Alert Bot demonstrates completed Python implementation, repeatable runtime behavior, and recruiter-verifiable outputs.",
+      "impact_metrics": [
+        "Average run_demo latency: 0.0005 ms",
+        "P95 latency: 0.0005 ms",
+        "Throughput: 2038354.2 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
+      ],
+      "proof_points": [
+        "Live project page at ./demos/09_price_alert_bot.html",
+        "Screenshot proof at ./assets/project_media/09_price_alert_bot/preview.png",
+        "Animated demo at ./assets/project_media/09_price_alert_bot/demo.gif"
+      ],
+      "links": {
+        "live": "./demos/09_price_alert_bot.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/09_price_alert_bot",
+        "docs": "./projects/09_price_alert_bot/README.md",
+        "video": "./assets/project_media/09_price_alert_bot/demo.gif"
+      }
+    },
+    "10_log_analyzer_monitor": {
+      "featured": false,
+      "featured_rank": 999,
+      "completion": "Completed",
+      "client_value": "Log Analyzer + Monitoring Tool demonstrates completed Python implementation, repeatable runtime behavior, and recruiter-verifiable outputs.",
+      "impact_metrics": [
+        "Average run_demo latency: 0.0013 ms",
+        "P95 latency: 0.0015 ms",
+        "Throughput: 747547.2 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
+      ],
+      "proof_points": [
+        "Live project page at ./demos/10_log_analyzer_monitor.html",
+        "Screenshot proof at ./assets/project_media/10_log_analyzer_monitor/preview.png",
+        "Animated demo at ./assets/project_media/10_log_analyzer_monitor/demo.gif"
+      ],
+      "links": {
+        "live": "./demos/10_log_analyzer_monitor.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/10_log_analyzer_monitor",
+        "docs": "./projects/10_log_analyzer_monitor/README.md",
+        "video": "./assets/project_media/10_log_analyzer_monitor/demo.gif"
+      }
+    },
+    "12_chat_bot": {
+      "featured": false,
+      "featured_rank": 999,
+      "completion": "Completed",
+      "client_value": "Telegram/Discord Bot Core demonstrates completed Python implementation, repeatable runtime behavior, and recruiter-verifiable outputs.",
+      "impact_metrics": [
+        "Average run_demo latency: 0.0004 ms",
+        "P95 latency: 0.0005 ms",
+        "Throughput: 2457350.4 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
+      ],
+      "proof_points": [
+        "Live project page at ./demos/12_chat_bot.html",
+        "Screenshot proof at ./assets/project_media/12_chat_bot/preview.png",
+        "Animated demo at ./assets/project_media/12_chat_bot/demo.gif"
+      ],
+      "links": {
+        "live": "./demos/12_chat_bot.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/12_chat_bot",
+        "docs": "./projects/12_chat_bot/README.md",
+        "video": "./assets/project_media/12_chat_bot/demo.gif"
+      }
+    },
+    "14_nlp_text_classifier": {
+      "featured": false,
+      "featured_rank": 999,
+      "completion": "Completed",
+      "client_value": "NLP Text Classifier demonstrates completed Python implementation, repeatable runtime behavior, and recruiter-verifiable outputs.",
+      "impact_metrics": [
+        "Average run_demo latency: 0.005 ms",
+        "P95 latency: 0.0054 ms",
+        "Throughput: 201220.0 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
+      ],
+      "proof_points": [
+        "Live project page at ./demos/14_nlp_text_classifier.html",
+        "Screenshot proof at ./assets/project_media/14_nlp_text_classifier/preview.png",
+        "Animated demo at ./assets/project_media/14_nlp_text_classifier/demo.gif"
+      ],
+      "links": {
+        "live": "./demos/14_nlp_text_classifier.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/14_nlp_text_classifier",
+        "docs": "./projects/14_nlp_text_classifier/README.md",
+        "video": "./assets/project_media/14_nlp_text_classifier/demo.gif"
+      }
+    },
+    "15_time_series_forecaster": {
+      "featured": false,
+      "featured_rank": 999,
+      "completion": "Completed",
+      "client_value": "Time-Series Forecasting App demonstrates completed Python implementation, repeatable runtime behavior, and recruiter-verifiable outputs.",
+      "impact_metrics": [
+        "Average run_demo latency: 0.0013 ms",
+        "P95 latency: 0.0013 ms",
+        "Throughput: 792540.7 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
+      ],
+      "proof_points": [
+        "Live project page at ./demos/15_time_series_forecaster.html",
+        "Screenshot proof at ./assets/project_media/15_time_series_forecaster/preview.png",
+        "Animated demo at ./assets/project_media/15_time_series_forecaster/demo.gif"
+      ],
+      "links": {
+        "live": "./demos/15_time_series_forecaster.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/15_time_series_forecaster",
+        "docs": "./projects/15_time_series_forecaster/README.md",
+        "video": "./assets/project_media/15_time_series_forecaster/demo.gif"
+      }
+    },
+    "16_computer_vision_mini_app": {
+      "featured": false,
+      "featured_rank": 999,
+      "completion": "Completed",
+      "client_value": "Computer Vision Mini-App demonstrates completed Python implementation, repeatable runtime behavior, and recruiter-verifiable outputs.",
+      "impact_metrics": [
+        "Average run_demo latency: 0.0008 ms",
+        "P95 latency: 0.0008 ms",
+        "Throughput: 1310245.2 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
+      ],
+      "proof_points": [
+        "Live project page at ./demos/16_computer_vision_mini_app.html",
+        "Screenshot proof at ./assets/project_media/16_computer_vision_mini_app/preview.png",
+        "Animated demo at ./assets/project_media/16_computer_vision_mini_app/demo.gif"
+      ],
+      "links": {
+        "live": "./demos/16_computer_vision_mini_app.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/16_computer_vision_mini_app",
+        "docs": "./projects/16_computer_vision_mini_app/README.md",
+        "video": "./assets/project_media/16_computer_vision_mini_app/demo.gif"
+      }
+    },
+    "17_dockerized_microservice": {
+      "featured": false,
+      "featured_rank": 999,
+      "completion": "Completed",
+      "client_value": "Dockerized Microservice Core demonstrates completed Python implementation, repeatable runtime behavior, and recruiter-verifiable outputs.",
+      "impact_metrics": [
+        "Average run_demo latency: 0.0003 ms",
+        "P95 latency: 0.0004 ms",
+        "Throughput: 2883366.9 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
+      ],
+      "proof_points": [
+        "Live project page at ./demos/17_dockerized_microservice.html",
+        "Screenshot proof at ./assets/project_media/17_dockerized_microservice/preview.png",
+        "Animated demo at ./assets/project_media/17_dockerized_microservice/demo.gif"
+      ],
+      "links": {
+        "live": "./demos/17_dockerized_microservice.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/17_dockerized_microservice",
+        "docs": "./projects/17_dockerized_microservice/README.md",
+        "video": "./assets/project_media/17_dockerized_microservice/demo.gif"
+      }
+    },
+    "18_ci_cd_project_template": {
+      "featured": false,
+      "featured_rank": 999,
+      "completion": "Completed",
+      "client_value": "CI/CD-Ready Project Template demonstrates completed Python implementation, repeatable runtime behavior, and recruiter-verifiable outputs.",
+      "impact_metrics": [
+        "Average run_demo latency: 0.0004 ms",
+        "P95 latency: 0.0004 ms",
+        "Throughput: 2640205.0 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
+      ],
+      "proof_points": [
+        "Live project page at ./demos/18_ci_cd_project_template.html",
+        "Screenshot proof at ./assets/project_media/18_ci_cd_project_template/preview.png",
+        "Animated demo at ./assets/project_media/18_ci_cd_project_template/demo.gif"
+      ],
+      "links": {
+        "live": "./demos/18_ci_cd_project_template.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/18_ci_cd_project_template",
+        "docs": "./projects/18_ci_cd_project_template/README.md",
+        "video": "./assets/project_media/18_ci_cd_project_template/demo.gif"
+      }
+    },
+    "19_distributed_job_queue": {
+      "featured": false,
+      "featured_rank": 999,
+      "completion": "Completed",
+      "client_value": "Distributed Job Queue System demonstrates completed Python implementation, repeatable runtime behavior, and recruiter-verifiable outputs.",
+      "impact_metrics": [
+        "Average run_demo latency: 0.0009 ms",
+        "P95 latency: 0.001 ms",
+        "Throughput: 1154344.9 runs/sec"
+      ],
+      "outcomes": [
+        "Implemented a runnable main module with deterministic demo behavior",
+        "Integrated into smoke validation workflow across portfolio projects",
+        "Published project proof in live website demo page"
+      ],
+      "proof_points": [
+        "Live project page at ./demos/19_distributed_job_queue.html",
+        "Screenshot proof at ./assets/project_media/19_distributed_job_queue/preview.png",
+        "Animated demo at ./assets/project_media/19_distributed_job_queue/demo.gif"
+      ],
+      "links": {
+        "live": "./demos/19_distributed_job_queue.html",
+        "repo": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/19_distributed_job_queue",
+        "docs": "./projects/19_distributed_job_queue/README.md",
+        "video": "./assets/project_media/19_distributed_job_queue/demo.gif"
       }
     }
   }

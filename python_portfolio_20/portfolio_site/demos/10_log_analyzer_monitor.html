@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Log Analyzer + Monitoring Tool | Live Demo</title>
+    <style>
+      body { font-family: Arial, sans-serif; background:#0b202b; color:#eef8f6; margin:0; padding:24px; }
+      .wrap { max-width:980px; margin:0 auto; }
+      .card { border:1px solid #2b5262; border-radius:12px; padding:16px; margin-top:12px; background:#112f3d; }
+      h1,h2 { margin:0 0 8px 0; }
+      pre { border:1px solid #2b5262; border-radius:10px; padding:12px; background:#0a1720; overflow:auto; }
+      img { width:100%; max-width:860px; border:1px solid #2b5262; border-radius:10px; }
+      a { color:#4fdabc; }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <h1>Log Analyzer + Monitoring Tool</h1>
+      <p>Parses log levels and flags elevated error rates.</p>
+
+      <section class="card">
+        <h2>Measured Runtime</h2>
+        <ul>
+          <li>Average latency: 0.0013 ms</li>
+          <li>P95 latency: 0.0015 ms</li>
+          <li>Throughput: 747547.2 runs/sec</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Visual Proof</h2>
+        <img src="../assets/project_media/10_log_analyzer_monitor/preview.png" alt="10_log_analyzer_monitor preview" />
+        <p><a href="../assets/project_media/10_log_analyzer_monitor/demo.gif">Open GIF Demo</a></p>
+      </section>
+
+      <section class="card">
+        <h2>Demo Output</h2>
+        <pre>{
+  "project": "log_analyzer_monitor",
+  "error_rate": 0.5,
+  "anomaly": true
+}</pre>
+      </section>
+
+      <section class="card">
+        <h2>Run Locally</h2>
+        <pre>python3 /Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/projects/10_log_analyzer_monitor/main.py</pre>
+      </section>
+    </main>
+  </body>
+</html>

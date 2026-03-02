@@ -1,10 +1,10 @@
 {
   "project_count": 20,
-  "valid_projects": 5,
+  "valid_projects": 20,
   "records": [
     {
       "slug": "01_finance_tracker_cli",
-      "all_valid": false,
+      "all_valid": true,
       "checks": [
         {
           "field": "code_path",
@@ -20,33 +20,33 @@
         },
         {
           "field": "links.live",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./demos/01_finance_tracker_cli.html",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/demos/01_finance_tracker_cli.html"
         },
         {
           "field": "links.repo",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/01_finance_tracker_cli",
+          "valid": true,
+          "reason": "url-format-only"
         },
         {
           "field": "links.docs",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./projects/01_finance_tracker_cli/README.md",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/projects/01_finance_tracker_cli/README.md"
         },
         {
           "field": "links.video",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./assets/project_media/01_finance_tracker_cli/demo.gif",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/assets/project_media/01_finance_tracker_cli/demo.gif"
         }
       ]
     },
     {
       "slug": "02_password_manager_encrypted",
-      "all_valid": false,
+      "all_valid": true,
       "checks": [
         {
           "field": "code_path",
@@ -62,33 +62,33 @@
         },
         {
           "field": "links.live",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./demos/02_password_manager_encrypted.html",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/demos/02_password_manager_encrypted.html"
         },
         {
           "field": "links.repo",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/02_password_manager_encrypted",
+          "valid": true,
+          "reason": "url-format-only"
         },
         {
           "field": "links.docs",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./projects/02_password_manager_encrypted/README.md",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/projects/02_password_manager_encrypted/README.md"
         },
         {
           "field": "links.video",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./assets/project_media/02_password_manager_encrypted/demo.gif",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/assets/project_media/02_password_manager_encrypted/demo.gif"
         }
       ]
     },
     {
       "slug": "03_web_scraper_data_cleaner",
-      "all_valid": false,
+      "all_valid": true,
       "checks": [
         {
           "field": "code_path",
@@ -104,27 +104,27 @@
         },
         {
           "field": "links.live",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./demos/03_web_scraper_data_cleaner.html",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/demos/03_web_scraper_data_cleaner.html"
         },
         {
           "field": "links.repo",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/03_web_scraper_data_cleaner",
+          "valid": true,
+          "reason": "url-format-only"
         },
         {
           "field": "links.docs",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./projects/03_web_scraper_data_cleaner/README.md",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/projects/03_web_scraper_data_cleaner/README.md"
         },
         {
           "field": "links.video",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./assets/project_media/03_web_scraper_data_cleaner/demo.gif",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/assets/project_media/03_web_scraper_data_cleaner/demo.gif"
         }
       ]
     },
@@ -172,7 +172,7 @@
     },
     {
       "slug": "05_task_manager_webapp",
-      "all_valid": false,
+      "all_valid": true,
       "checks": [
         {
           "field": "code_path",
@@ -188,33 +188,33 @@
         },
         {
           "field": "links.live",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./demos/05_task_manager_webapp.html",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/demos/05_task_manager_webapp.html"
         },
         {
           "field": "links.repo",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/05_task_manager_webapp",
+          "valid": true,
+          "reason": "url-format-only"
         },
         {
           "field": "links.docs",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./projects/05_task_manager_webapp/README.md",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/projects/05_task_manager_webapp/README.md"
         },
         {
           "field": "links.video",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./assets/project_media/05_task_manager_webapp/demo.gif",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/assets/project_media/05_task_manager_webapp/demo.gif"
         }
       ]
     },
     {
       "slug": "06_jwt_auth_service",
-      "all_valid": false,
+      "all_valid": true,
       "checks": [
         {
           "field": "code_path",
@@ -230,27 +230,27 @@
         },
         {
           "field": "links.live",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./demos/06_jwt_auth_service.html",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/demos/06_jwt_auth_service.html"
         },
         {
           "field": "links.repo",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/06_jwt_auth_service",
+          "valid": true,
+          "reason": "url-format-only"
         },
         {
           "field": "links.docs",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./projects/06_jwt_auth_service/README.md",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/projects/06_jwt_auth_service/README.md"
         },
         {
           "field": "links.video",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./assets/project_media/06_jwt_auth_service/demo.gif",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/assets/project_media/06_jwt_auth_service/demo.gif"
         }
       ]
     },
@@ -298,7 +298,7 @@
     },
     {
       "slug": "08_data_dashboard",
-      "all_valid": false,
+      "all_valid": true,
       "checks": [
         {
           "field": "code_path",
@@ -314,33 +314,33 @@
         },
         {
           "field": "links.live",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./demos/08_data_dashboard.html",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/demos/08_data_dashboard.html"
         },
         {
           "field": "links.repo",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/08_data_dashboard",
+          "valid": true,
+          "reason": "url-format-only"
         },
         {
           "field": "links.docs",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./projects/08_data_dashboard/README.md",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/projects/08_data_dashboard/README.md"
         },
         {
           "field": "links.video",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./assets/project_media/08_data_dashboard/demo.gif",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/assets/project_media/08_data_dashboard/demo.gif"
         }
       ]
     },
     {
       "slug": "09_price_alert_bot",
-      "all_valid": false,
+      "all_valid": true,
       "checks": [
         {
           "field": "code_path",
@@ -356,33 +356,33 @@
         },
         {
           "field": "links.live",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./demos/09_price_alert_bot.html",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/demos/09_price_alert_bot.html"
         },
         {
           "field": "links.repo",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/09_price_alert_bot",
+          "valid": true,
+          "reason": "url-format-only"
         },
         {
           "field": "links.docs",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./projects/09_price_alert_bot/README.md",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/projects/09_price_alert_bot/README.md"
         },
         {
           "field": "links.video",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./assets/project_media/09_price_alert_bot/demo.gif",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/assets/project_media/09_price_alert_bot/demo.gif"
         }
       ]
     },
     {
       "slug": "10_log_analyzer_monitor",
-      "all_valid": false,
+      "all_valid": true,
       "checks": [
         {
           "field": "code_path",
@@ -398,27 +398,27 @@
         },
         {
           "field": "links.live",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./demos/10_log_analyzer_monitor.html",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/demos/10_log_analyzer_monitor.html"
         },
         {
           "field": "links.repo",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/10_log_analyzer_monitor",
+          "valid": true,
+          "reason": "url-format-only"
         },
         {
           "field": "links.docs",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./projects/10_log_analyzer_monitor/README.md",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/projects/10_log_analyzer_monitor/README.md"
         },
         {
           "field": "links.video",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./assets/project_media/10_log_analyzer_monitor/demo.gif",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/assets/project_media/10_log_analyzer_monitor/demo.gif"
         }
       ]
     },
@@ -466,7 +466,7 @@
     },
     {
       "slug": "12_chat_bot",
-      "all_valid": false,
+      "all_valid": true,
       "checks": [
         {
           "field": "code_path",
@@ -482,27 +482,27 @@
         },
         {
           "field": "links.live",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./demos/12_chat_bot.html",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/demos/12_chat_bot.html"
         },
         {
           "field": "links.repo",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/12_chat_bot",
+          "valid": true,
+          "reason": "url-format-only"
         },
         {
           "field": "links.docs",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./projects/12_chat_bot/README.md",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/projects/12_chat_bot/README.md"
         },
         {
           "field": "links.video",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./assets/project_media/12_chat_bot/demo.gif",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/assets/project_media/12_chat_bot/demo.gif"
         }
       ]
     },
@@ -550,7 +550,7 @@
     },
     {
       "slug": "14_nlp_text_classifier",
-      "all_valid": false,
+      "all_valid": true,
       "checks": [
         {
           "field": "code_path",
@@ -566,33 +566,33 @@
         },
         {
           "field": "links.live",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./demos/14_nlp_text_classifier.html",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/demos/14_nlp_text_classifier.html"
         },
         {
           "field": "links.repo",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/14_nlp_text_classifier",
+          "valid": true,
+          "reason": "url-format-only"
         },
         {
           "field": "links.docs",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./projects/14_nlp_text_classifier/README.md",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/projects/14_nlp_text_classifier/README.md"
         },
         {
           "field": "links.video",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./assets/project_media/14_nlp_text_classifier/demo.gif",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/assets/project_media/14_nlp_text_classifier/demo.gif"
         }
       ]
     },
     {
       "slug": "15_time_series_forecaster",
-      "all_valid": false,
+      "all_valid": true,
       "checks": [
         {
           "field": "code_path",
@@ -608,33 +608,33 @@
         },
         {
           "field": "links.live",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./demos/15_time_series_forecaster.html",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/demos/15_time_series_forecaster.html"
         },
         {
           "field": "links.repo",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/15_time_series_forecaster",
+          "valid": true,
+          "reason": "url-format-only"
         },
         {
           "field": "links.docs",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./projects/15_time_series_forecaster/README.md",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/projects/15_time_series_forecaster/README.md"
         },
         {
           "field": "links.video",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./assets/project_media/15_time_series_forecaster/demo.gif",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/assets/project_media/15_time_series_forecaster/demo.gif"
         }
       ]
     },
     {
       "slug": "16_computer_vision_mini_app",
-      "all_valid": false,
+      "all_valid": true,
       "checks": [
         {
           "field": "code_path",
@@ -650,33 +650,33 @@
         },
         {
           "field": "links.live",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./demos/16_computer_vision_mini_app.html",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/demos/16_computer_vision_mini_app.html"
         },
         {
           "field": "links.repo",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/16_computer_vision_mini_app",
+          "valid": true,
+          "reason": "url-format-only"
         },
         {
           "field": "links.docs",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./projects/16_computer_vision_mini_app/README.md",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/projects/16_computer_vision_mini_app/README.md"
         },
         {
           "field": "links.video",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./assets/project_media/16_computer_vision_mini_app/demo.gif",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/assets/project_media/16_computer_vision_mini_app/demo.gif"
         }
       ]
     },
     {
       "slug": "17_dockerized_microservice",
-      "all_valid": false,
+      "all_valid": true,
       "checks": [
         {
           "field": "code_path",
@@ -692,33 +692,33 @@
         },
         {
           "field": "links.live",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./demos/17_dockerized_microservice.html",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/demos/17_dockerized_microservice.html"
         },
         {
           "field": "links.repo",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/17_dockerized_microservice",
+          "valid": true,
+          "reason": "url-format-only"
         },
         {
           "field": "links.docs",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./projects/17_dockerized_microservice/README.md",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/projects/17_dockerized_microservice/README.md"
         },
         {
           "field": "links.video",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./assets/project_media/17_dockerized_microservice/demo.gif",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/assets/project_media/17_dockerized_microservice/demo.gif"
         }
       ]
     },
     {
       "slug": "18_ci_cd_project_template",
-      "all_valid": false,
+      "all_valid": true,
       "checks": [
         {
           "field": "code_path",
@@ -734,33 +734,33 @@
         },
         {
           "field": "links.live",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./demos/18_ci_cd_project_template.html",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/demos/18_ci_cd_project_template.html"
         },
         {
           "field": "links.repo",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/18_ci_cd_project_template",
+          "valid": true,
+          "reason": "url-format-only"
         },
         {
           "field": "links.docs",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./projects/18_ci_cd_project_template/README.md",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/projects/18_ci_cd_project_template/README.md"
         },
         {
           "field": "links.video",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./assets/project_media/18_ci_cd_project_template/demo.gif",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/assets/project_media/18_ci_cd_project_template/demo.gif"
         }
       ]
     },
     {
       "slug": "19_distributed_job_queue",
-      "all_valid": false,
+      "all_valid": true,
       "checks": [
         {
           "field": "code_path",
@@ -776,27 +776,27 @@
         },
         {
           "field": "links.live",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./demos/19_distributed_job_queue.html",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/demos/19_distributed_job_queue.html"
         },
         {
           "field": "links.repo",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "https://github.com/amberreed91-ux/Enhanced_adaptive_strategy_python/tree/main/python_portfolio_20/projects/19_distributed_job_queue",
+          "valid": true,
+          "reason": "url-format-only"
         },
         {
           "field": "links.docs",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./projects/19_distributed_job_queue/README.md",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/projects/19_distributed_job_queue/README.md"
         },
         {
           "field": "links.video",
-          "value": "",
-          "valid": false,
-          "reason": "empty"
+          "value": "./assets/project_media/19_distributed_job_queue/demo.gif",
+          "valid": true,
+          "resolved": "/Users/amberreed/Enhanced_adaptive_strategy_python/python_portfolio_20/portfolio_site/assets/project_media/19_distributed_job_queue/demo.gif"
         }
       ]
     },
