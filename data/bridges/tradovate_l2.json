@@ -1,0 +1,18 @@
+{
+  "timestamp_utc": "2026-03-02T03:25:17.340992+00:00",
+  "source": "Futures L2 Bridge (JSON)",
+  "symbol": "MGC1!",
+  "profile": "balanced",
+  "decision": "NO_TRADE",
+  "confidence": 0.0,
+  "imbalance": 0.0,
+  "whale_buy": false,
+  "whale_sell": false,
+  "whale_size": 0.0,
+  "whale_threshold": 25.0,
+  "sweep_up": false,
+  "sweep_down": false,
+  "absorption_bid": false,
+  "absorption_ask": false,
+  "notes": "confidence<40"
+}

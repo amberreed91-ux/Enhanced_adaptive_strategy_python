@@ -1,0 +1,13 @@
+{
+  "timestamp_utc": "2026-03-02T03:25:17.340992+00:00",
+  "mid": 0.0,
+  "bids": {},
+  "asks": {},
+  "last_trade_price": 0.0,
+  "last_trade_size": 0.0,
+  "last_trade_side": "buy",
+  "source": "file-poll",
+  "broker": "tradovate",
+  "symbol": "MGC1!",
+  "bridge_write_timestamp_utc": "2026-03-02T03:25:20.103101+00:00"
+}

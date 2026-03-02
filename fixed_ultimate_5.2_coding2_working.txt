@@ -1,0 +1,2263 @@
+//@version=5
+// ============================================================
+// ENHANCED ADAPTIVE STRATEGY v5.1-GRAND UNIFIED (MNQ-OPTIMIZED)
+// Pine Script Version 6 | All Pine-Compatible Upgrades Applied
+// MNQ-Specific Optimizations Applied:
+//   ✅  Regime Persistence: 2 bars (faster response)
+//   ✅  RB Decay: 20 bars (wider for Nasdaq volatility)
+//   ✅  Vol Threshold: 0.15 (higher for Nasdaq)
+//   ✅  Tick Value: $0.50
+//   ✅  Default instrument: MNQ enabled
+// ============================================================
+strategy(
+     "Enhanced Adaptive Strategy v5.1-Grand Unified (MNQ)",
+     overlay=true,
+     initial_capital=100000,
+     default_qty_type=strategy.percent_of_equity,
+     default_qty_value=1,
+     commission_type=strategy.commission.cash_per_contract,
+     commission_value=0.5,
+     slippage=1,
+     max_lines_count=500,
+     max_boxes_count=500,
+     max_labels_count=500,
+     max_bars_back=500,
+     dynamic_requests=true)
+
+// ============================================================================
+// PART 1 - INPUT CONFIGURATION (~85-90 inputs - Institutional Grade)
+// ============================================================================
+
+// Instrument - MNQ ENABLED BY DEFAULT
+is_MNQ = input.bool(true, "Is MNQ?", group="Instrument")
+is_MGC = input.bool(false,  "Is MGC?", group="Instrument")
+
+// General - MNQ: 2 bars persistence for faster regime detection
+atr_lookback_in          = input.int(14,  "ATR Lookback",           minval=1,  maxval=50,  group="General")
+efficiency_lookback_in   = input.int(20,  "Efficiency Lookback",    minval=5,  maxval=100, group="General")
+regime_persist_bars_in   = input.int(2,   "Regime Persistence Bars",minval=1,  maxval=10,  group="General")  // MNQ: 2 bars
+
+// DRE Concepts
+grp_dre = "═══  DRE CONCEPTS  ═══ "
+dre_enabled              = input.bool(true,  "Enable Dre Concepts",           group=grp_dre)
+pd_lookback              = input.int(50,     "Swing Lookback (bars)",         minval=20, maxval=200, group=grp_dre)
+pd_tf                    = input.string("240","Premium/Discount HTF",          group=grp_dre)
+order_flow_mode          = input.string("Auto","Order Flow Bias", options=["Auto","Bullish","Bearish"], group=grp_dre)
+require_pd_alignment     = input.bool(true,  "Require PD Alignment",          group=grp_dre)
+require_flow_alignment   = input.bool(true,  "Require Flow Alignment",        group=grp_dre)
+breaker_block_lookback   = input.int(10,     "Breaker Block Lookback",        minval=5,  maxval=20,  group=grp_dre)
+pd_weight_max            = input.int(15,     "Max PD Score",                  minval=0,  maxval=25,  group=grp_dre)
+flow_weight_max          = input.int(12,     "Max Flow Score",                minval=0,  maxval=20,  group=grp_dre)
+bb_weight                = input.int(6,      "Breaker Block Score",           minval=0,  maxval=15,  group=grp_dre)
+require_extreme_structure_block = input.bool(true, "Block Against Extreme Structure", group=grp_dre)
+
+// Volatility Regime
+grp_vol = "═══  Volatility Regime  ═══ "
+use_vol_expansion        = input.bool(true, "Use Vol Expansion/Compression",   group=grp_vol)
+vol_percentile_len       = input.int(100,   "Vol Percentile Lookback",         minval=50, maxval=500, group=grp_vol)
+expansion_threshold      = input.int(70,    "Expansion Threshold",             minval=50, maxval=90,  group=grp_vol)
+compression_threshold    = input.int(30,    "Compression Threshold",           minval=10, maxval=50,  group=grp_vol)
+expansion_stop_mult      = input.float(1.3, "Expansion Stop Mult",             minval=1.0,maxval=2.0, step=0.1, group=grp_vol)
+compression_stop_mult    = input.float(0.7, "Compression Stop Mult",           minval=0.5,maxval=1.0, step=0.1, group=grp_vol)
+expansion_target_mult    = input.float(1.2, "Expansion Target Mult",           minval=1.0,maxval=1.5, step=0.1, group=grp_vol)
+compression_target_mult  = input.float(0.8, "Compression Target Mult",         minval=0.5,maxval=1.0, step=0.1, group=grp_vol)
+
+// Dynamic Slippage (v5.0)
+grp_slip = "═══  Dynamic Slippage  ═══ "
+use_dynamic_slippage     = input.bool(true,  "Use Dynamic Slippage",           group=grp_slip)
+base_slippage            = input.float(1.0,  "Base Slippage (ticks)",          minval=0.5, maxval=5.0,  step=0.5, group=grp_slip)
+expansion_slippage_mult  = input.float(2.5,  "Expansion Slippage Multiplier",  minval=1.0, maxval=5.0,  step=0.5, group=grp_slip)
+compression_slippage_mult= input.float(0.5,  "Compression Slippage Mult",      minval=0.1, maxval=1.0,  step=0.1, group=grp_slip)
+
+// Monte Carlo (v5.0)
+grp_mc = "═══  Monte Carlo Robustness  ═══ "
+use_monte_carlo          = input.bool(true,  "Enable Monte Carlo Display",     group=grp_mc)
+mc_lookback              = input.int(100,    "MC Trade Lookback",              minval=20, maxval=500, group=grp_mc)
+mc_perturbation          = input.float(0.20, "MC Perturbation ±%",             minval=0.05,maxval=0.5, step=0.05, group=grp_mc)
+
+// Anchored WFO (v5.0)
+grp_wfo = "═══  WFO Settings  ═══ "
+use_wfo                  = input.bool(true,  "Use WFO",                        group=grp_wfo)
+wfo_anchor_bars          = input.int(500,    "WFO Anchor (In-Sample Bars)",    minval=100,maxval=2000, group=grp_wfo)
+wfo_validation_bars      = input.int(100,    "WFO Validation (OOS Bars)",      minval=50, maxval=500,  group=grp_wfo)
+wfo_defensive_mode       = input.bool(false, "WFO Defensive Mode",             group=grp_wfo)
+atr_mult_max             = input.float(3.0,  "ATR Mult Max",                   minval=1.0,maxval=5.0,  step=0.1, group=grp_wfo)
+atr_mult_min             = input.float(1.0,  "ATR Mult Min",                   minval=0.5,maxval=3.0,  step=0.1, group=grp_wfo)
+conf_threshold_max       = input.int(85,     "Confluence Threshold Max",       minval=50, maxval=100,  group=grp_wfo)
+conf_threshold_min       = input.int(50,     "Confluence Threshold Min",       minval=20, maxval=80,   group=grp_wfo)
+risk_per_trade_max       = input.float(2.0,  "Risk Per Trade Max %",           minval=0.1,maxval=5.0,  step=0.1, group=grp_wfo)
+risk_per_trade_min       = input.float(0.5,  "Risk Per Trade Min %",           minval=0.1,maxval=2.0,  step=0.1, group=grp_wfo)
+
+// MAZ
+use_maz_light            = input.bool(true,  "Use MAZ Light Filter",           group="MAZ Settings")
+mazMtfMode               = input.string("Auto","MAZ MTF Mode", options=["Auto","Manual"], group="MAZ Settings")
+mazTfManual1             = input.string("60", "MAZ Manual TF 1",               group="MAZ Settings")
+mazTfManual2             = input.string("240","MAZ Manual TF 2",               group="MAZ Settings")
+mazAtrLen                = input.int(14,     "MAZ ATR Length",                 minval=5, maxval=50,  group="MAZ Settings")
+mazClusterWidthMult      = input.float(0.5,  "MAZ Cluster Width Mult",         minval=0.1,maxval=2.0, step=0.1, group="MAZ Settings")
+mazConsensusMin          = input.int(2,      "MAZ Consensus Min",              minval=1,  maxval=3,   group="MAZ Settings")
+maz_tier1_confluence_adj = input.int(-10,    "MAZ T1 Adj",                    minval=-50,maxval=50,  group="MAZ Settings")
+maz_tier2_confluence_adj = input.int(5,      "MAZ T2 Adj",                    minval=-50,maxval=50,  group="MAZ Settings")
+maz_tier3_confluence_adj = input.int(15,     "MAZ T3 Adj",                    minval=-50,maxval=50,  group="MAZ Settings")
+use_volatile_maz_gate    = input.bool(true,  "Use Volatile MAZ Gate",          group="MAZ Settings")
+maz_volatile_mode        = input.string("Strict (AND)", "Volatile MAZ Mode", options=["Strict (AND)","Relaxed (OR)","Tier2+"], group="MAZ Settings")
+mazEfficiencyLowThr      = input.float(0.3,  "MAZ Efficiency Low Thr",         minval=0.1,maxval=0.9, step=0.1, group="MAZ Settings")
+
+// HTF Bias
+htf_sma_len_in           = input.int(50,    "HTF SMA Length",                 minval=10, maxval=200, group="HTF Bias")
+htf_atr_len_in           = input.int(14,    "HTF ATR Length",                 minval=5,  maxval=50,  group="HTF Bias")
+htf_deadband_atr_in      = input.float(0.2, "HTF Deadband ATR Mult",          minval=0.05,maxval=1.0,step=0.05,group="HTF Bias")
+htf_bias_lookback_in     = input.int(3,     "HTF Bias Lookback",              minval=1,  maxval=10,  group="HTF Bias")
+
+// Rejection Blocks - MNQ SPECIFIC DEFAULTS
+use_rb                   = input.bool(true, "Use Rejection Blocks",            group="Rejection Blocks")
+rb_decay_bars_mnq        = input.int(20,    "RB Decay Bars (MNQ)",             minval=5,  maxval=100, group="Rejection Blocks")  // MNQ: 20 bars
+rb_decay_bars_mgc        = input.int(15,    "RB Decay Bars (MGC)",             minval=5,  maxval=100, group="Rejection Blocks")
+rb_min_tier_mnq          = input.int(1,     "RB Min Tier (MNQ)",               minval=0,  maxval=3,   group="Rejection Blocks")
+rb_min_tier_mgc          = input.int(1,     "RB Min Tier (MGC)",               minval=0,  maxval=3,   group="Rejection Blocks")
+rb_ranging_weight_strong = input.int(25,    "RB Ranging Weight Strong",        minval=0,  maxval=50,  group="Rejection Blocks")
+rb_ranging_weight_weak   = input.int(15,    "RB Ranging Weight Weak",          minval=0,  maxval=50,  group="Rejection Blocks")
+rb_trending_weight       = input.int(10,    "RB Trending Weight",              minval=0,  maxval=50,  group="Rejection Blocks")
+
+// Volume & Confluence
+rvol_threshold_in        = input.float(0.95, "RVOL Threshold", minval=0.5, maxval=5.0, step=0.1, group="Volume")
+cap_volume_profile       = input.int(20,    "Volume Profile Cap", minval=5, maxval=50, group="Volume")
+cap_sweep                = input.int(15,    "Liquidity Sweep Cap", minval=5, maxval=50, group="Confluence")
+
+// Thresholds
+threshold_trending_in    = input.int(58, "Trending Threshold",  minval=30, maxval=100, group="Thresholds")
+threshold_ranging_in     = input.int(48, "Ranging Threshold",   minval=30, maxval=100, group="Thresholds")
+threshold_volatile_in    = input.int(70, "Volatile Threshold",  minval=30, maxval=100, group="Thresholds")
+long_entry_min_in        = input.int(62, "Long Entry Min",      minval=30, maxval=100, group="Thresholds")
+short_entry_min_mgc_in   = input.int(58, "Short Entry Min (MGC)", minval=30, maxval=100, group="Thresholds")
+short_entry_min_mnq_in   = input.int(62, "Short Entry Min (MNQ)", minval=30, maxval=100, group="Thresholds")
+bias_only_min_in         = input.int(74, "Bias-Only Min",       minval=30, maxval=100, group="Thresholds")
+trend_fast_ema_in        = input.int(21, "Trend Fast EMA",      minval=2,  maxval=200, group="Thresholds")
+trend_slow_ema_in        = input.int(55, "Trend Slow EMA",      minval=3,  maxval=400, group="Thresholds")
+trend_macro_ema_in       = input.int(200, "Trend Macro EMA",    minval=5,  maxval=800, group="Thresholds")
+min_efficiency_ratio_in  = input.float(0.42, "Min Efficiency Ratio", minval=0.1, maxval=0.95, step=0.01, group="Thresholds")
+min_atr_pct_in           = input.float(0.00025, "Min ATR %",     minval=0.0001, maxval=0.05, step=0.0001, group="Thresholds")
+range_long_entry_min_in  = input.int(48, "Range Long Entry Min", minval=30, maxval=100, group="Thresholds")
+range_short_entry_min_in = input.int(48, "Range Short Entry Min", minval=30, maxval=100, group="Thresholds")
+
+// Range Engine (Python parity: ICT sweep branch)
+grp_range = "═══  Range Engine  ═══"
+range_mode_in               = input.string("ICT_ASIAN_SWEEP", "Range Mode", options=["NO_TRADE","TREND_ONLY","ICT_ASIAN_SWEEP"], group=grp_range)
+ict_invert_signals_in       = input.bool(true, "ICT Invert Signals", group=grp_range)
+ict_range_max_eff_in        = input.float(0.80, "ICT Max Efficiency", minval=0.1, maxval=1.0, step=0.01, group=grp_range)
+ict_sweep_lookback_bars_in  = input.int(3, "ICT Sweep Lookback Bars", minval=1, maxval=20, group=grp_range)
+ict_sweep_buffer_atr_mgc_in = input.float(0.05, "ICT Sweep Buffer ATR (MGC)", minval=0.0, maxval=1.0, step=0.01, group=grp_range)
+ict_sweep_buffer_atr_mnq_in = input.float(0.05, "ICT Sweep Buffer ATR (MNQ)", minval=0.0, maxval=1.0, step=0.01, group=grp_range)
+ict_min_dir_imb_mgc_in      = input.float(0.003, "ICT Min Dir Imbalance (MGC)", minval=0.0, maxval=1.0, step=0.001, group=grp_range)
+ict_min_dir_imb_mnq_in      = input.float(0.003, "ICT Min Dir Imbalance (MNQ)", minval=0.0, maxval=1.0, step=0.001, group=grp_range)
+ict_require_kill_zone_in    = input.bool(false, "ICT Require Kill Zone", group=grp_range)
+ict_require_pd_align_in     = input.bool(false, "ICT Require PD Alignment", group=grp_range)
+ict_require_disp_in         = input.bool(false, "ICT Require Displacement", group=grp_range)
+ict_min_disp_atr_in         = input.float(0.03, "ICT Min Displacement ATR", minval=0.0, maxval=2.0, step=0.01, group=grp_range)
+ict_require_fvg_ce_in       = input.bool(false, "ICT Require FVG CE", group=grp_range)
+ict_fvg_lookback_bars_in    = input.int(8, "ICT FVG Lookback Bars", minval=1, maxval=40, group=grp_range)
+ict_ce_tolerance_atr_in     = input.float(0.35, "ICT CE Tolerance ATR", minval=0.0, maxval=2.0, step=0.01, group=grp_range)
+
+// MTF
+use_mtf_confirmation     = input.bool(true, "Use MTF Confirmation", group="MTF")
+mtf_timeframe1           = input.string("15",  "MTF TF 1", group="MTF")
+mtf_timeframe2           = input.string("60",  "MTF TF 2", group="MTF")
+mtf_timeframe3           = input.string("240", "MTF TF 3", group="MTF")
+mtf_alignment_threshold  = input.int(2, "MTF Alignment Threshold", minval=1, maxval=3, group="MTF")
+
+// Filters
+use_news_filter          = input.bool(true,  "Use News Filter",     group="Filters")
+news_hour                = input.int(8,      "News Hour (EST)",     minval=0, maxval=23, group="Filters")
+news_minute              = input.int(30,     "News Minute",         minval=0, maxval=59, group="Filters")
+news_window_before       = input.int(5,      "News Window Before",  minval=0, maxval=60, group="Filters")
+news_window_after        = input.int(15,     "News Window After",   minval=0, maxval=60, group="Filters")
+use_volatility_filter    = input.bool(true,  "Use Vol Filter",      group="Filters")
+vol_spike_threshold      = input.float(2.0,  "Vol Spike Threshold", minval=1.0, maxval=5.0, step=0.1, group="Filters")
+
+// Position Sizing
+trending_multiplier_in   = input.float(1.5, "Trending Pos Mult",  minval=0.5, maxval=3.0, step=0.1, group="Position Sizing")
+ranging_multiplier_in    = input.float(1.0, "Ranging Pos Mult",   minval=0.5, maxval=3.0, step=0.1, group="Position Sizing")
+volatile_multiplier_in   = input.float(0.5, "Volatile Pos Mult",  minval=0.1, maxval=2.0, step=0.1, group="Position Sizing")
+base_risk_percent_in     = input.float(1.0, "Base Risk %",        minval=0.1, maxval=5.0, step=0.1, group="Position Sizing")
+max_risk_percent_in      = input.float(2.0, "Max Risk %",         minval=0.5, maxval=10.0,step=0.1, group="Position Sizing")
+qty_min_in               = input.int(1,     "Min Quantity",       minval=1,   maxval=100, group="Position Sizing")
+qty_max_in               = input.int(50,    "Max Quantity",       minval=1,   maxval=500, group="Position Sizing")
+
+// Stops / Targets
+trending_stop_mult_in    = input.float(2.0, "Trending Stop ATR Mult",   minval=0.5, maxval=5.0, step=0.1, group="Stop Loss")
+ranging_stop_mult_in     = input.float(1.5, "Ranging Stop ATR Mult",    minval=0.5, maxval=5.0, step=0.1, group="Stop Loss")
+volatile_stop_mult_in    = input.float(3.0, "Volatile Stop ATR Mult",   minval=1.0, maxval=6.0, step=0.1, group="Stop Loss")
+trending_target1_mult_in = input.float(1.5, "Trending T1 ATR Mult",     minval=0.5, maxval=5.0, step=0.1, group="Take Profit")
+trending_target2_mult_in = input.float(3.0, "Trending T2 ATR Mult",     minval=1.0, maxval=10.0,step=0.1, group="Take Profit")
+trending_target3_mult_in = input.float(5.0, "Trending T3 ATR Mult",     minval=2.0, maxval=15.0,step=0.1, group="Take Profit")
+ranging_target_mult_in   = input.float(1.5, "Ranging Target ATR Mult",  minval=0.5, maxval=5.0, step=0.1, group="Take Profit")
+volatile_target1_mult_in = input.float(1.0, "Volatile T1 ATR Mult",     minval=0.5, maxval=3.0, step=0.1, group="Take Profit")
+volatile_target2_mult_in = input.float(2.0, "Volatile T2 ATR Mult",     minval=1.0, maxval=5.0, step=0.1, group="Take Profit")
+use_adaptive_targets     = input.bool(true, "Use Adaptive Targets",     group="Take Profit")
+t2_scale_min             = input.float(2.0, "T2 Scale Min",              minval=1.0, maxval=5.0, step=0.1, group="Take Profit")
+t2_scale_max             = input.float(4.0, "T2 Scale Max",              minval=2.0, maxval=10.0,step=0.1, group="Take Profit")
+t3_scale_min             = input.float(3.0, "T3 Scale Min",              minval=2.0, maxval=8.0, step=0.1, group="Take Profit")
+t3_scale_max             = input.float(7.0, "T3 Scale Max",              minval=3.0, maxval=15.0,step=0.1, group="Take Profit")
+
+// Scale Out / Breakeven / Trailing
+enable_scale_out              = input.bool(true,  "Enable Scale Out",              group="Exit Management")
+scale_out_percent             = input.int(50,     "Scale Out %",                   minval=10, maxval=100, group="Exit Management")
+move_stop_to_entry_after_scale= input.bool(true,  "Move Stop to Entry After Scale",group="Exit Management")
+use_breakeven                 = input.bool(true,  "Use Breakeven",                 group="Exit Management")
+breakeven_trigger_atr         = input.float(1.0,  "Breakeven Trigger ATR",         minval=0.5, maxval=3.0, step=0.1, group="Exit Management")
+use_trailing_stop             = input.bool(true,  "Use Trailing Stop",             group="Exit Management")
+trailing_activation_atr       = input.float(2.0,  "Trailing Activation ATR",       minval=0.5, maxval=5.0, step=0.1, group="Exit Management")
+trailing_distance_atr         = input.float(1.5,  "Trailing Distance ATR",         minval=0.5, maxval=5.0, step=0.1, group="Exit Management")
+use_time_exit                 = input.bool(true,  "Use Time Exit",                  group="Exit Management")
+trending_max_bars_in          = input.int(100,    "Trending Max Bars",             minval=10, maxval=500, group="Exit Management")
+ranging_max_bars_in           = input.int(50,     "Ranging Max Bars",              minval=10, maxval=300, group="Exit Management")
+volatile_max_bars_in          = input.int(30,     "Volatile Max Bars",             minval=5,  maxval=200, group="Exit Management")
+
+// Session
+use_session_filter       = input.bool(true,  "Use Session Filter",          group="Session")
+trade_sessions_in        = input.string("Both","Trade Sessions", options=["London","NY","Both","Overlap"], group="Session")
+london_start_hour        = input.int(3,  "London Start Hour (EST)",        minval=0, maxval=23, group="Session")
+london_start_min         = input.int(0,  "London Start Min",               minval=0, maxval=59, group="Session")
+london_end_hour          = input.int(11, "London End Hour (EST)",          minval=0, maxval=23, group="Session")
+london_end_min           = input.int(0,  "London End Min",                 minval=0, maxval=59, group="Session")
+ny_start_hour            = input.int(9,  "NY Start Hour (EST)",            minval=0, maxval=23, group="Session")
+ny_start_min             = input.int(30, "NY Start Min",                   minval=0, maxval=59, group="Session")
+ny_end_hour              = input.int(16, "NY End Hour (EST)",              minval=0, maxval=23, group="Session")
+ny_end_min               = input.int(0,  "NY End Min",                     minval=0, maxval=59, group="Session")
+
+// Daily Limits
+enable_daily_limits      = input.bool(true,  "Enable Daily Limits",        group="Daily Limits")
+max_daily_trades         = input.int(10,     "Max Daily Trades",           minval=1, maxval=50,  group="Daily Limits")
+max_daily_loss_in        = input.float(3.0,  "Max Daily Loss %",           minval=0.5,maxval=10.0,step=0.1, group="Daily Limits")
+max_consecutive_losses_in= input.int(3,      "Max Consecutive Losses",     minval=1, maxval=10,  group="Daily Limits")
+
+// Anti-Repainting
+use_trade_cooldown       = input.bool(true,  "Use Trade Cooldown",         group="Anti-Repainting")
+trade_cooldown_bars      = input.int(5,      "Trade Cooldown Bars",        minval=1, maxval=20,  group="Anti-Repainting")
+use_zone_separation      = input.bool(true,  "Use Zone Separation",        group="Anti-Repainting")
+zone_separation_mult     = input.float(2.0,  "Zone Separation ATR Mult",   minval=0.5,maxval=5.0, step=0.1, group="Anti-Repainting")
+
+// ============================================================================
+// NEW MODULE 1: PORTFOLIO CORRELATION MATRIX
+// ============================================================================
+grp_portfolio = "═══  PORTFOLIO CORRELATION MATRIX  ═══ "
+portfolio_mode              = input.bool(false, "Enable Portfolio Mode",          group=grp_portfolio)
+correlation_symbol_1        = input.symbol("MNQ1!", "Correlation Symbol 1",       group=grp_portfolio)
+correlation_symbol_2        = input.symbol("MGC1!", "Correlation Symbol 2",       group=grp_portfolio)
+correlation_symbol_3        = input.symbol("ES1!",  "Correlation Symbol 3",       group=grp_portfolio)
+corr_lookback               = input.int(50,     "Correlation Lookback",           minval=20, maxval=100, group=grp_portfolio)
+max_correlation_threshold   = input.float(0.7,  "Max Correlation Threshold",      minval=0.5, maxval=0.9, step=0.05, group=grp_portfolio)
+use_hierarchical_risk       = input.bool(true,  "Use Hierarchical Risk Parity",   group=grp_portfolio)
+hrp_cluster_threshold       = input.float(0.5,  "HRP Cluster Threshold",          minval=0.3, maxval=0.7, step=0.05, group=grp_portfolio)
+
+// ============================================================================
+// NEW MODULE 2: ONLINE LEARNING SYSTEM
+// ============================================================================
+grp_ol = "═══  ONLINE LEARNING SYSTEM  ═══ "
+online_learning_enabled  = input.bool(true,  "Enable Online Learning",         group=grp_ol)
+ol_learning_rate         = input.float(0.01,  "OL Learning Rate",               minval=0.001, maxval=0.1, step=0.001, group=grp_ol)
+ol_forgetting_factor     = input.float(0.995, "OL Forgetting Factor",           minval=0.95, maxval=0.999, step=0.001, group=grp_ol)
+ol_update_frequency      = input.int(5,       "OL Update Frequency",            minval=1, maxval=20, group=grp_ol)
+ol_adaptation_threshold  = input.float(0.15,  "OL Adaptation Threshold",        minval=0.05, maxval=0.3, step=0.01, group=grp_ol)
+
+// ============================================================================
+// NEW MODULE 3: ML REGIME CLASSIFIER
+// ============================================================================
+grp_ml = "═══  ML REGIME CLASSIFIER  ═══ "
+ml_enabled                = input.bool(true,  "Enable ML Classifier",           group=grp_ml)
+ml_confidence_threshold   = input.float(0.65, "ML Confidence Threshold",        minval=0.5, maxval=0.9, step=0.05, group=grp_ml)
+ml_regime_switch_filter   = input.bool(true,  "Filter Rapid Regime Switches",   group=grp_ml)
+
+// ============================================================================
+// NEW MODULE 4: MARKET IMPACT MODEL
+// ============================================================================
+grp_impact = "═══  MARKET IMPACT MODEL  ═══ "
+impact_model_enabled       = input.bool(true,  "Enable Market Impact Model",     group=grp_impact)
+impact_model_type          = input.string("SquareRoot", "Impact Model Type", options=["KyleLinear","SquareRoot","Combined"], group=grp_impact)
+kyle_lambda_base           = input.float(0.1,  "Kyle Lambda Base",               minval=0.01, maxval=1.0, step=0.01, group=grp_impact)
+impact_alpha               = input.float(0.5,  "Impact Alpha (Square Root)",     minval=0.3, maxval=0.7, step=0.05, group=grp_impact)
+impact_coefficient         = input.float(1.0,  "Impact Coefficient",             minval=0.5, maxval=2.0, step=0.1, group=grp_impact)
+participation_rate_limit   = input.float(0.1,  "Participation Rate Limit",       minval=0.05, maxval=0.3, step=0.01, group=grp_impact)
+impact_decay_time          = input.int(50,     "Impact Decay Time (bars)",       minval=10, maxval=200, group=grp_impact)
+use_temporary_impact       = input.bool(true,  "Use Temporary Impact",           group=grp_impact)
+use_permanent_impact       = input.bool(true,  "Use Permanent Impact",           group=grp_impact)
+
+// ============================================================================
+// NEW MODULE 5: RL EXECUTION OPTIMIZER
+// ============================================================================
+grp_rl = "═══  RL EXECUTION OPTIMIZER  ═══ "
+rl_enabled              = input.bool(true,  "Enable RL Optimizer",            group=grp_rl)
+rl_learning_rate        = input.float(0.001, "RL Learning Rate",               minval=0.0001, maxval=0.01, step=0.0001, group=grp_rl)
+rl_gamma                = input.float(0.99,  "RL Gamma (Discount)",            minval=0.9, maxval=0.999, step=0.001, group=grp_rl)
+rl_clip_epsilon         = input.float(0.2,   "RL Clip Epsilon",                minval=0.1, maxval=0.3, step=0.05, group=grp_rl)
+rl_update_frequency     = input.int(10,      "RL Update Frequency",            minval=5, maxval=50, group=grp_rl)
+
+// Visualization
+show_signals             = input.bool(true,  "Show Entry Signals",         group="Visualization")
+show_lines               = input.bool(true,  "Show RB Zones",              group="Visualization")
+show_dashboard           = input.bool(true,  "Show Dashboard",             group="Visualization")
+show_exit_labels         = input.bool(true,  "Show Exit Labels",           group="Visualization")
+use_delayed_labels       = input.bool(true,  "Use Delayed Labels",         group="Visualization")
+col_long_trig            = input.color(color.new(color.green, 0), "Long Signal Color",  group="Visualization")
+col_short_trig           = input.color(color.new(color.red,   0), "Short Signal Color", group="Visualization")
+col_trig_text            = input.color(color.white,               "Signal Text Color",  group="Visualization")
+col_exit_win             = input.color(color.new(color.green, 20),"Exit Win Color",     group="Visualization")
+col_exit_loss            = input.color(color.new(color.red,   20),"Exit Loss Color",    group="Visualization")
+col_scale_out            = input.color(color.new(color.blue,  30),"Scale Out Color",    group="Visualization")
+
+// Alerts
+alert_mode               = input.string("Both","Alert Mode", options=["Off","Signals","Executions","Both"], group="Alerts")
+include_payload          = input.bool(false, "Include JSON Payload", group="Alerts")
+
+// ============================================================================
+// PART 2 - GLOBAL STATE
+// ============================================================================
+
+var string current_regime           = "RANGING"
+var int    total_confluence         = 0
+var int    position_size            = 0
+var float  setup_confluence         = na
+var string setup_regime             = "RANGING"
+var int    current_threshold        = 0
+var float  regime_confidence        = 50.0
+var bool   is_expansion             = false
+var bool   is_compression           = false
+var float  vol_percentile_val       = 50.0
+var string last_regime              = "RANGING"
+var int    regime_stable_count      = 0
+var bool   regime_is_stable         = false
+var bool   needs_delayed_label      = false
+var int    label_delay_bars         = 0
+var bool   in_long_trade            = false
+var bool   in_short_trade           = false
+var bool   confluence_latched_long  = false
+var bool   confluence_latched_short = false
+var int    entry_bar_index_trade    = na
+var float  entry_price_trade        = na
+var int    trade_entry_confluence_score = 0
+var float  rb_bull_level            = na
+var float  rb_bear_level            = na
+var int    rb_bull_tier             = 0
+var int    rb_bear_tier             = 0
+var int    rb_bull_decay            = 0
+var int    rb_bear_decay            = 0
+var bool   rb_active                = false
+var int    rb_current_tier          = 0
+var int    rb_score                 = 0
+
+// DRE State
+var float  pd_high                  = high
+var float  pd_low                   = low
+var float  pd_mid                   = close
+var bool   in_premium               = false
+var bool   in_discount              = false
+var bool   structure_bullish        = false
+var bool   structure_bearish        = false
+var float  last_swing_high          = high
+var float  last_swing_low           = low
+var int    bullish_bos_count        = 0
+var int    bearish_bos_count        = 0
+var bool   breaker_bull_active      = false
+var bool   breaker_bear_active      = false
+var float  breaker_bull_level       = na
+var float  breaker_bear_level       = na
+var int    breaker_bull_age         = 0
+var int    breaker_bear_age         = 0
+var int    pd_score_long            = 0
+var int    pd_score_short           = 0
+var int    flow_score_long          = 0
+var int    flow_score_short         = 0
+var int    bb_score_long            = 0
+var int    bb_score_short           = 0
+
+// Regime State
+var int    htf_bias_count           = 0
+var int    last_htf_bias            = 0
+var int    regime_bars              = 0
+
+// Position/Trade State
+var bool   in_allowed_session       = false
+var string current_session_name     = "None"
+var float  asian_high_live          = na
+var float  asian_low_live           = na
+var float  asian_high_last          = na
+var float  asian_low_last           = na
+var int    daily_trade_count        = 0
+var float  daily_pnl                = 0.0
+var int    consecutive_losses       = 0
+var int    last_trade_day           = 0
+var float  entry_price              = 0.0
+var float  initial_stop             = 0.0
+var int    entry_bar                = 0
+var bool   scaled_out               = false
+var bool   breakeven_triggered      = false
+var bool   trailing_triggered       = false
+var float  trailing_stop_price      = 0.0
+var int    exit_reason              = 0
+var float  last_position_size       = 0.0
+var float  last_exit_pnl            = 0.0
+var string last_exit_type           = ""
+var string last_exit_reason         = ""
+var bool   scale_out_this_bar       = false
+var float  scale_out_pnl            = 0.0
+
+// WFO State (Anchored)
+var float  adaptive_atr_mult_long   = 2.0
+var float  adaptive_atr_mult_short  = 2.0
+var int    adaptive_confluence_threshold = 70
+var float  adaptive_position_risk   = 1.0
+var int    adaptive_rb_tier_boost   = 0
+var int    wfo_bar_counter          = 0
+var int    wfo_last_opt_bar         = 0
+var float  wfo_best_score           = 0.0
+var bool   wfo_in_oos_window        = false
+
+// Dynamic Slippage State
+var float  effective_slippage       = 1.0
+
+// Monte Carlo State
+var float  mc_equity_base           = 0.0
+var float  mc_best_equity           = 0.0
+var float  mc_worst_equity          = 0.0
+var int    mc_sample_count          = 0
+
+// Control Narrative
+var int    bull_control_score       = 0
+var int    bear_control_score       = 0
+var string control_narrative        = "NEUTRAL"
+
+// Anti-Repainting
+var int    last_entry_bar           = -999
+var float  last_long_signal_price   = 0.0
+var float  last_short_signal_price  = 0.0
+var bool   cooldown_active          = false
+var int    consecutive_wins         = 0
+var bool   defensive_mode_active    = false
+
+// ============================================================================
+// NEW MODULE 1 STATE: Portfolio Correlation
+// ============================================================================
+var float portfolio_correlation_1 = 0.0
+var float portfolio_correlation_2 = 0.0
+var float portfolio_correlation_3 = 0.0
+var float portfolio_avg_correlation = 0.0
+var float portfolio_risk_adjustment = 1.0
+var bool  portfolio_diversification_ok = true
+var string portfolio_risk_status = "GREEN"
+var float hrp_weight_1 = 0.33
+var float hrp_weight_2 = 0.33
+var float hrp_weight_3 = 0.33
+var float portfolio_heat_score = 0.0
+var int   correlated_assets_count = 0
+
+// ============================================================================
+// NEW MODULE 2 STATE: Online Learning
+// ============================================================================
+var float ol_regime_weights_trend  = 0.33
+var float ol_regime_weights_range  = 0.33
+var float ol_regime_weights_vol    = 0.33
+var float ol_feature_weights_1     = 0.25
+var float ol_feature_weights_2     = 0.25
+var float ol_feature_weights_3     = 0.25
+var float ol_feature_weights_4     = 0.25
+var float ol_learning_error        = 0.0
+var float ol_cumulative_error      = 0.0
+var int   ol_update_count          = 0
+var float ol_adaptation_rate       = 0.0
+var bool  ol_is_adapting           = false
+var float ol_concept_drift_score   = 0.0
+var float ol_regime_transition_prob = 0.0
+var float ol_memory_buffer_1       = 0.0
+var float ol_memory_buffer_2       = 0.0
+var float ol_memory_buffer_3       = 0.0
+
+// ============================================================================
+// NEW MODULE 3 STATE: ML Regime Classifier
+// ============================================================================
+var string ml_predicted_regime     = "RANGING"
+var float  ml_confidence           = 0.0
+var float  ml_ensemble_vote_trend  = 0.0
+var float  ml_ensemble_vote_range  = 0.0
+var float  ml_ensemble_vote_vol    = 0.0
+var int    ml_bars_since_switch    = 0
+
+// ============================================================================
+// NEW MODULE 4 STATE: Market Impact Model
+// ============================================================================
+var float impact_temporary          = 0.0
+var float impact_permanent          = 0.0
+var float impact_total              = 0.0
+var float impact_decayed            = 0.0
+var float kyle_lambda_current       = 0.1
+var float participation_rate        = 0.0
+var float expected_impact_cost      = 0.0
+var float cumulative_impact_cost    = 0.0
+var int   impact_violations         = 0
+var float order_flow_imbalance      = 0.0
+var bool  toxic_order_flow          = false
+var float adverse_selection_estimate = 0.0
+var float spread_percent            = 0.0
+var float market_depth_estimate     = 0.0
+var int   impact_entry_bar          = 0
+
+// ============================================================================
+// NEW MODULE 5 STATE: RL Execution Optimizer
+// ============================================================================
+var float rl_policy_weights_1   = 0.0
+var float rl_policy_weights_2   = 0.0
+var float rl_policy_weights_3   = 0.0
+var float rl_policy_weights_4   = 0.0
+var float rl_cumulative_reward  = 0.0
+var int   rl_episode_count      = 0
+var int   rl_step_count         = 0
+var string rl_last_action       = "MARKET"
+var float rl_last_action_prob   = 0.0
+var float rl_td_error           = 0.0
+var float rl_gae_advantage      = 0.0
+var float rl_policy_loss        = 0.0
+var float rl_old_log_prob       = 0.0
+var float rl_new_log_prob       = 0.0
+var float rl_value_estimate     = 0.0
+var float rl_return_estimate    = 0.0
+var float rl_entropy            = 0.0
+
+// ============================================================================
+// PART 3 - UTILITY FUNCTIONS
+// ============================================================================
+
+f_calc_atr(int len) =>
+    ta.rma(ta.tr(true), len)
+
+f_calc_efficiency(float src, int len) =>
+    float change_val = math.abs(src - src[len])
+    float volatility_sum = math.sum(math.abs(src - src[1]), len)
+    float result = volatility_sum > 0 ? change_val / volatility_sum : 0.0
+    result
+
+f_is_inside_zone(float price, float zone_top, float zone_bottom) =>
+    price <= zone_top and price >= zone_bottom
+
+f_mtf_maz_bias(float htf_close, float htf_sma, float htf_atr, float deadband) =>
+    float diff = htf_close - htf_sma
+    float threshold = htf_atr * deadband
+    int result = diff > threshold ? 1 : diff < -threshold ? -1 : 0
+    result
+
+f_is_time_in_range(int _hour, int _min, int start_h, int start_m, int end_h, int end_m) =>
+    int current_minutes = (_hour * 60) + _min
+    int start_minutes   = (start_h * 60) + start_m
+    int end_minutes     = (end_h * 60) + end_m
+    bool result = false
+    if end_minutes < start_minutes
+        result := (current_minutes >= start_minutes) or (current_minutes <= end_minutes)
+    else
+        result := (current_minutes >= start_minutes) and (current_minutes <= end_minutes)
+    result
+
+f_bb_width_percent(float src, int len, float mult) =>
+    [_basis, upper, lower] = ta.bb(src, len, mult)
+    float width = upper - lower
+    float sma = ta.sma(src, len)
+    float percent = width / sma * 100
+    percent
+
+f_payload(string _event, string _dir) =>
+    string result = _event
+    if include_payload
+        string json = str.format('{"event":"{0}","symbol":"{1}","tf":"{2}","dir":"{3}","price":{4},"time":{5},"regime":"{6}","confluence":{7},"expansion":{8},"mc_grade":"{9}","portfolio_risk":"{10}","ol_adapting":{11},"rl_action":"{12}","impact_total":{13}}',
+             _event, syminfo.ticker, timeframe.period, _dir, close, time, current_regime, total_confluence, is_expansion,
+             mc_sample_count >= mc_lookback ? (mc_worst_equity > 0 ? "A" : "B") : "C",
+             portfolio_risk_status, ol_is_adapting, rl_last_action, impact_total)
+        result := json
+    result
+
+// ============================================================================
+// PART 4 - WFO FUNCTIONS (Anchored OOS v5.0)
+// ============================================================================
+
+f_calc_performance_score(int lookback) =>
+    float result = 0.0
+    if lookback > 0 and lookback <= 500 and bar_index >= lookback
+        float current_equity = strategy.equity
+        float past_equity    = strategy.equity[lookback]
+        if not na(past_equity) and past_equity > 0 and not na(current_equity) and current_equity > 0
+            float total_return  = ((current_equity - past_equity) / past_equity) * 100
+            float equity_stdev  = ta.stdev(strategy.equity, lookback)
+            float volatility_eq = (equity_stdev / past_equity) * 100
+            float max_dd = 0.0
+            float peak   = past_equity
+            for i = 0 to lookback - 1
+                float eq_i = strategy.equity[i]
+                if not na(eq_i)
+                    if eq_i > peak
+                        peak := eq_i
+                    float dd = (peak - eq_i) / peak * 100
+                    if dd > max_dd
+                        max_dd := dd
+            float denominator = volatility_eq + max_dd + 1.0
+            result := denominator > 0 ? total_return / denominator : total_return
+    result
+
+f_optimize_atr_mult(float _atr, float _atr_mult_max, float _atr_mult_min, bool _defensive) =>
+    float vol_perc    = ta.percentrank(_atr, 100)
+    float optimal_mult = _atr_mult_max - ((_atr_mult_max - _atr_mult_min) * vol_perc / 100)
+    _defensive ? optimal_mult * 0.7 : optimal_mult
+
+f_optimize_confluence_threshold(int _conf_max, int _conf_min, bool _defensive) =>
+    int recent_trades = math.min(50, strategy.closedtrades)
+    float win_rate = 50.0
+    if recent_trades > 10
+        int wins = 0
+        for i = 0 to recent_trades - 1
+            if strategy.closedtrades.profit(i) > 0
+                wins := wins + 1
+        win_rate := (wins * 100.0) / recent_trades
+    float threshold_adj = (50.0 - win_rate) * 0.5
+    int optimal_threshold = int(math.max(_conf_min, math.min(_conf_max, 70 + threshold_adj)))
+    _defensive ? math.min(85, optimal_threshold + 10) : optimal_threshold
+
+f_optimize_position_risk(float _risk_max, float _risk_min, bool _defensive) =>
+    int consec_losses_local = 0
+    for i = 0 to math.min(10, strategy.closedtrades) - 1
+        if strategy.closedtrades.profit(i) > 0
+            break
+        consec_losses_local := consec_losses_local + 1
+    float risk_mult    = math.max(0.25, 1.0 - (consec_losses_local * 0.15))
+    float optimal_risk = _risk_max - ((_risk_max - _risk_min) * (1.0 - risk_mult))
+    _defensive ? optimal_risk * 0.5 : optimal_risk
+
+f_optimize_rb_boost(int _htf_bias_count, int _regime_persist, string _cur_regime, bool _defensive) =>
+    int stability_score = _htf_bias_count >= _regime_persist ? 2 : (_htf_bias_count >= 2 ? 1 : 0)
+    int boost = 0
+    if _cur_regime == "TRENDING"
+        boost := stability_score
+    else if _cur_regime == "RANGING"
+        boost := stability_score + 1
+    _defensive ? 0 : boost
+
+// ============================================================================
+// NEW MODULE 1: Portfolio Correlation Functions
+// ============================================================================
+f_update_portfolio_correlations() =>
+    float _c1   = portfolio_correlation_1
+    float _c2   = portfolio_correlation_2
+    float _c3   = portfolio_correlation_3
+    float _avg  = portfolio_avg_correlation
+    float _w1   = hrp_weight_1
+    float _w2   = hrp_weight_2
+    float _w3   = hrp_weight_3
+    float _heat = portfolio_heat_score
+    float _radj = portfolio_risk_adjustment
+    bool  _dok  = portfolio_diversification_ok
+    string _rst = portfolio_risk_status
+    int   _cnt  = correlated_assets_count
+    if portfolio_mode
+        float close_1 = request.security(correlation_symbol_1, timeframe.period, close, lookahead=barmerge.lookahead_off)
+        float close_2 = request.security(correlation_symbol_2, timeframe.period, close, lookahead=barmerge.lookahead_off)
+        float close_3 = request.security(correlation_symbol_3, timeframe.period, close, lookahead=barmerge.lookahead_off)
+        float ret_1 = (close_1 - close_1[1]) / close_1[1]
+        float ret_2 = (close_2 - close_2[1]) / close_2[1]
+        float ret_3 = (close_3 - close_3[1]) / close_3[1]
+        _c1 := nz(ta.correlation(ret_1, ret_2, corr_lookback), 0)
+        _c2 := nz(ta.correlation(ret_1, ret_3, corr_lookback), 0)
+        _c3 := nz(ta.correlation(ret_2, ret_3, corr_lookback), 0)
+        _avg := (math.abs(_c1) + math.abs(_c2) + math.abs(_c3)) / 3.0
+        float var_1 = ta.variance(ret_1, corr_lookback)
+        float var_2 = ta.variance(ret_2, corr_lookback)
+        float var_3 = ta.variance(ret_3, corr_lookback)
+        float inv_1 = var_1 > 0 ? 1.0 / var_1 : 1.0
+        float inv_2 = var_2 > 0 ? 1.0 / var_2 : 1.0
+        float inv_3 = var_3 > 0 ? 1.0 / var_3 : 1.0
+        float tot_inv = inv_1 + inv_2 + inv_3
+        if tot_inv > 0
+            _w1 := inv_1 / tot_inv
+            _w2 := inv_2 / tot_inv
+            _w3 := inv_3 / tot_inv
+        _heat := _avg * 100
+        _cnt  := (math.abs(_c1) > max_correlation_threshold ? 1 : 0) + (math.abs(_c2) > max_correlation_threshold ? 1 : 0) + (math.abs(_c3) > max_correlation_threshold ? 1 : 0)
+        _radj := _heat < 40 ? 1.0 : _heat < 60 ? 0.85 : _heat < 80 ? 0.7 : 0.5
+        _dok  := _heat < 60
+        _rst  := _heat < 40 ? "GREEN" : _heat < 60 ? "YELLOW" : "RED"
+    [_c1, _c2, _c3, _avg, _w1, _w2, _w3, _heat, _radj, _dok, _rst, _cnt]
+
+f_online_learning_update() =>
+    float _lerr  = ol_learning_error
+    float _cerr  = ol_cumulative_error
+    int   _ucnt  = ol_update_count
+    float _arate = ol_adaptation_rate
+    float _drift = ol_concept_drift_score
+    bool  _adapt = ol_is_adapting
+    float _wt    = ol_regime_weights_trend
+    float _wr    = ol_regime_weights_range
+    float _wv    = ol_regime_weights_vol
+    float _fw1   = ol_feature_weights_1
+    float _fw2   = ol_feature_weights_2
+    float _fw3   = ol_feature_weights_3
+    float _fw4   = ol_feature_weights_4
+    float _mb1   = ol_memory_buffer_1
+    float _mb2   = ol_memory_buffer_2
+    float _mb3   = ol_memory_buffer_3
+    float _tprob = ol_regime_transition_prob
+    if online_learning_enabled and bar_index % ol_update_frequency == 0
+        float actual_return = (close - close[1]) / close[1]
+        float predicted = current_regime == "TRENDING" ? 0.001 : current_regime == "RANGING" ? 0.0 : -0.001
+        _lerr  := actual_return - predicted
+        _cerr  := _cerr * ol_forgetting_factor + math.abs(_lerr)
+        _ucnt  := _ucnt + 1
+        _arate := _cerr / _ucnt
+        float error_change = math.abs(_lerr) - _arate
+        _drift := error_change > ol_adaptation_threshold ? 1.0 : 0.0
+        _adapt := _drift > 0
+        if _adapt
+            if current_regime == "TRENDING"
+                _wt := math.min(0.6, _wt + ol_learning_rate)
+            else if current_regime == "RANGING"
+                _wr := math.min(0.6, _wr + ol_learning_rate)
+            else
+                _wv := math.min(0.6, _wv + ol_learning_rate)
+            float total_weight = _wt + _wr + _wv
+            if total_weight > 0
+                _wt := _wt / total_weight
+                _wr := _wr / total_weight
+                _wv := _wv / total_weight
+        float rsi_val = ta.rsi(close, 14)
+        float atr_val = f_calc_atr(14)
+        float mom_val = close - close[10]
+        float feature_1 = rsi_val / 100.0
+        float feature_2 = math.min(1.0, atr_val / close * 100)
+        float feature_3 = volume / ta.sma(volume, 20)
+        float feature_4 = mom_val / close
+        float prediction = _fw1 * feature_1 + _fw2 * feature_2 + _fw3 * feature_3 + _fw4 * feature_4
+        float error = actual_return - prediction
+        _fw1 := _fw1 + ol_learning_rate * error * feature_1 * ol_forgetting_factor
+        _fw2 := _fw2 + ol_learning_rate * error * feature_2 * ol_forgetting_factor
+        _fw3 := _fw3 + ol_learning_rate * error * feature_3 * ol_forgetting_factor
+        _fw4 := _fw4 + ol_learning_rate * error * feature_4 * ol_forgetting_factor
+        float feat_total = _fw1 + _fw2 + _fw3 + _fw4
+        if feat_total > 0
+            _fw1 := _fw1 / feat_total
+            _fw2 := _fw2 / feat_total
+            _fw3 := _fw3 / feat_total
+            _fw4 := _fw4 / feat_total
+        _mb3   := _mb2
+        _mb2   := _mb1
+        _mb1   := actual_return
+        _tprob := math.abs(_mb1 - _mb2) + math.abs(_mb2 - _mb3)
+    [_lerr, _cerr, _ucnt, _arate, _drift, _adapt, _wt, _wr, _wv, _fw1, _fw2, _fw3, _fw4, _mb1, _mb2, _mb3, _tprob]
+
+f_ml_ensemble_vote() =>
+    float rsi_val = ta.rsi(close, 14)
+    float atr_ratio = f_calc_atr(14) / ta.sma(f_calc_atr(14), 20)
+    float momentum = (close - close[10]) / close[10]
+
+    // Weighted features using OL weights
+    float trend_score = (rsi_val / 100.0) * ol_feature_weights_1 + (1.0 - math.min(1.0, atr_ratio)) * ol_feature_weights_2 + momentum * ol_feature_weights_4
+
+    float range_score = (1.0 - math.abs(rsi_val - 50) / 50) * ol_feature_weights_1 + (1.0 / (1.0 + atr_ratio)) * ol_feature_weights_2
+
+    float vol_score = math.min(1.0, atr_ratio) * ol_feature_weights_2 + (math.abs(momentum) > 0.02 ? 1.0 : 0.0) * ol_feature_weights_4
+
+    // Weighted votes using OL regime weights
+    float v_trend = trend_score * ol_regime_weights_trend
+    float v_range = range_score * ol_regime_weights_range
+    float v_vol = vol_score * ol_regime_weights_vol
+
+    // FIXED: Single-line ternary for regime prediction
+    string pred_regime = "RANGING"
+    if v_trend > v_range and v_trend > v_vol
+        pred_regime := "TRENDING"
+    else if v_vol > v_range
+        pred_regime := "VOLATILE"
+
+    float max_vote = math.max(v_trend, math.max(v_range, v_vol))
+    float total_vote = v_trend + v_range + v_vol
+    float confidence = total_vote > 0 ? max_vote / total_vote : 0.0
+
+    [pred_regime, confidence, v_trend, v_range, v_vol]
+
+f_update_ml_classifier() =>
+    string _pred = ml_predicted_regime
+    float  _conf = ml_confidence
+    float  _vt   = ml_ensemble_vote_trend
+    float  _vr   = ml_ensemble_vote_range
+    float  _vv   = ml_ensemble_vote_vol
+    int    _bars = ml_bars_since_switch
+    if ml_enabled
+        [p, c, vt, vr, vv] = f_ml_ensemble_vote()
+        _vt := vt
+        _vr := vr
+        _vv := vv
+        if ml_regime_switch_filter
+            if p != _pred
+                _bars := _bars + 1
+                if _bars >= 3
+                    _pred := p
+                    _conf := c
+                    _bars := 0
+            else
+                _bars := 0
+                _conf := c
+        else
+            _pred := p
+            _conf := c
+    [_pred, _conf, _vt, _vr, _vv, _bars]
+
+f_calculate_market_impact(float order_size) =>
+    float _total  = 0.0
+    float _cost   = 0.0
+    float _prate  = participation_rate
+    float _klam   = kyle_lambda_current
+    float _itemp  = impact_temporary
+    float _iperm  = impact_permanent
+    float _idecay = impact_decayed
+    float _itotal = impact_total
+    float _ecost  = expected_impact_cost
+    float _ccost  = cumulative_impact_cost
+    int   _viols  = impact_violations
+    if impact_model_enabled
+        float avg_vol  = ta.sma(volume, 20) * 390
+        _prate := math.min(avg_vol > 0 ? order_size / avg_vol : 0.0, participation_rate_limit)
+        float daily_vol = ta.stdev(close, 20) / ta.sma(close, 20)
+        _klam  := kyle_lambda_base * (1.0 + daily_vol * 10.0)
+        float lin_imp  = _klam * order_size
+        float sqrt_imp = impact_coefficient * daily_vol * math.pow(_prate, impact_alpha)
+        float model_imp = impact_model_type == "KyleLinear" ? lin_imp : impact_model_type == "SquareRoot" ? sqrt_imp : (lin_imp + sqrt_imp) / 2.0
+        if use_temporary_impact and use_permanent_impact
+            _itemp := model_imp * 0.7
+            _iperm := model_imp * 0.3
+        else if use_temporary_impact
+            _itemp := model_imp
+            _iperm := 0.0
+        else if use_permanent_impact
+            _itemp := 0.0
+            _iperm := model_imp
+        else
+            _itemp := model_imp * 0.5
+            _iperm := model_imp * 0.5
+        _idecay := strategy.position_size != 0 ? _itemp * math.exp(-1.0 * (bar_index - impact_entry_bar) / impact_decay_time) : 0.0
+        _itotal := _idecay + _iperm
+        _ecost  := _itotal * close
+        _ccost  := _ccost + _ecost
+        if _prate >= participation_rate_limit
+            _viols := _viols + 1
+        _total  := _itotal
+        _cost   := _ecost
+    [_total, _cost, _prate, _klam, _itemp, _iperm, _idecay, _itotal, _ecost, _ccost, _viols]
+
+f_rl_extract_state() =>
+    float obi_proxy = (close - low) / (high - low) - 0.5
+    float _spread   = (high - low) / close * 100
+    float _depth    = volume / (_spread + 0.001)
+    float _ofi      = close > open ? volume : -volume
+    bool  _toxic    = math.abs(_ofi) > ta.sma(volume, 20) * 2
+    float _adverse  = close > close[1] and volume < volume[1] ? 0.5 : close < close[1] and volume > volume[1] ? -0.5 : 0.0
+    [obi_proxy, _spread, _depth, _ofi, _toxic, _adverse]
+
+f_rl_policy_forward(float obi, float spread, float depth, float ofi) =>
+    // Simple linear policy with 4 weights -> 3 action logits
+    float logit_market = rl_policy_weights_1 * obi + rl_policy_weights_2 * spread + rl_policy_weights_3 * depth + rl_policy_weights_4 * ofi
+    float logit_limit = -logit_market * 0.5 + rl_policy_weights_1 * spread
+    float logit_delay = -math.abs(logit_market) * 0.3
+
+    // Softmax
+    float max_logit = math.max(logit_market, math.max(logit_limit, logit_delay))
+    float exp_market = math.exp(logit_market - max_logit)
+    float exp_limit = math.exp(logit_limit - max_logit)
+    float exp_delay = math.exp(logit_delay - max_logit)
+    float sum_exp = exp_market + exp_limit + exp_delay
+
+    float prob_market = exp_market / sum_exp
+    float prob_limit = exp_limit / sum_exp
+    float prob_delay = exp_delay / sum_exp
+
+    [prob_market, prob_limit, prob_delay]
+
+f_rl_value_forward(string regime) =>
+    // Regime-aware value estimate
+    float base_value = regime == "TRENDING" ? 1.0 : regime == "RANGING" ? 0.5 : 0.0
+    base_value + rl_policy_weights_1 * 0.1
+
+f_rl_select_action() =>
+    [obi, _sp, _dep, _ofi, _tox, _adv] = f_rl_extract_state()
+    [p_market, p_limit, p_delay] = f_rl_policy_forward(obi, _sp, _dep, _ofi)
+    float rand_val  = math.random()
+    string _action  = "MARKET"
+    float  _aprob   = p_market
+    if rand_val < p_market
+        _action := "MARKET"
+        _aprob  := p_market
+    else if rand_val < p_market + p_limit
+        _action := "LIMIT"
+        _aprob  := p_limit
+    else
+        _action := "DELAY"
+        _aprob  := p_delay
+    float reward   = strategy.closedtrades > 0 ? strategy.closedtrades.profit(strategy.closedtrades - 1) : 0.0
+    float _cumrew  = rl_cumulative_reward * rl_gamma + reward
+    float _valest  = f_rl_value_forward(current_regime)
+    float _tderr   = reward + rl_gamma * _valest - _valest
+    [_action, _aprob, _cumrew, _valest, _tderr, _sp, _dep, _ofi, _tox, _adv]
+
+f_rl_ppo_update() =>
+    float _w1  = rl_policy_weights_1
+    float _w2  = rl_policy_weights_2
+    float _w3  = rl_policy_weights_3
+    float _w4  = rl_policy_weights_4
+    int   _epc = rl_episode_count
+    float _gae = rl_gae_advantage
+    float _pl  = rl_policy_loss
+    float _ent = rl_entropy
+    float _olp = rl_old_log_prob
+    float _nlp = rl_new_log_prob
+    if rl_enabled and bar_index % rl_update_frequency == 0 and strategy.closedtrades > _epc
+        _epc      := strategy.closedtrades
+        float adv  = rl_td_error
+        _gae      := adv
+        float ratio   = _nlp / (_olp + 0.0001)
+        float clipped = math.max(1.0 - rl_clip_epsilon, math.min(1.0 + rl_clip_epsilon, ratio))
+        _pl  := -math.min(ratio * adv, clipped * adv)
+        _ent := -(rl_last_action_prob * math.log(rl_last_action_prob + 0.0001) + (1.0 - rl_last_action_prob) * math.log(1.0 - rl_last_action_prob + 0.0001))
+        float upd = rl_learning_rate * _pl
+        _w1 := math.max(-1.0, math.min(1.0, _w1 - upd * 0.1 + math.random() * 0.01))
+        _w2 := math.max(-1.0, math.min(1.0, _w2 - upd * 0.1 + math.random() * 0.01))
+        _w3 := math.max(-1.0, math.min(1.0, _w3 - upd * 0.1 + math.random() * 0.01))
+        _w4 := math.max(-1.0, math.min(1.0, _w4 - upd * 0.1 + math.random() * 0.01))
+        _olp := _nlp
+        _nlp := rl_last_action_prob
+    [_w1, _w2, _w3, _w4, _epc, _gae, _pl, _ent, _olp, _nlp]
+
+// ============================================================================
+// PART 5 - MAIN CALCULATION BLOCK
+// ============================================================================
+
+// NEW: Module calls at top of main calc block - FIXED FOR PINE SCRIPT v6
+// Portfolio Correlation Update - using intermediate locals then assign to vars
+[portfolio_correlation_1_temp, portfolio_correlation_2_temp, portfolio_correlation_3_temp, 
+ portfolio_avg_correlation_temp, hrp_weight_1_temp, hrp_weight_2_temp, hrp_weight_3_temp, 
+ portfolio_heat_score_temp, portfolio_risk_adjustment_temp, portfolio_diversification_ok_temp, 
+ portfolio_risk_status_temp, correlated_assets_count_temp] = f_update_portfolio_correlations()
+
+portfolio_correlation_1 := portfolio_correlation_1_temp
+portfolio_correlation_2 := portfolio_correlation_2_temp
+portfolio_correlation_3 := portfolio_correlation_3_temp
+portfolio_avg_correlation := portfolio_avg_correlation_temp
+hrp_weight_1 := hrp_weight_1_temp
+hrp_weight_2 := hrp_weight_2_temp
+hrp_weight_3 := hrp_weight_3_temp
+portfolio_heat_score := portfolio_heat_score_temp
+portfolio_risk_adjustment := portfolio_risk_adjustment_temp
+portfolio_diversification_ok := portfolio_diversification_ok_temp
+portfolio_risk_status := portfolio_risk_status_temp
+correlated_assets_count := correlated_assets_count_temp
+
+// Online Learning Update - using intermediate locals then assign to vars
+[ol_learning_error_temp, ol_cumulative_error_temp, ol_update_count_temp, ol_adaptation_rate_temp, 
+ ol_concept_drift_score_temp, ol_is_adapting_temp, ol_regime_weights_trend_temp, 
+ ol_regime_weights_range_temp, ol_regime_weights_vol_temp, ol_feature_weights_1_temp, 
+ ol_feature_weights_2_temp, ol_feature_weights_3_temp, ol_feature_weights_4_temp, 
+ ol_memory_buffer_1_temp, ol_memory_buffer_2_temp, ol_memory_buffer_3_temp, 
+ ol_regime_transition_prob_temp] = f_online_learning_update()
+
+ol_learning_error := ol_learning_error_temp
+ol_cumulative_error := ol_cumulative_error_temp
+ol_update_count := ol_update_count_temp
+ol_adaptation_rate := ol_adaptation_rate_temp
+ol_concept_drift_score := ol_concept_drift_score_temp
+ol_is_adapting := ol_is_adapting_temp
+ol_regime_weights_trend := ol_regime_weights_trend_temp
+ol_regime_weights_range := ol_regime_weights_range_temp
+ol_regime_weights_vol := ol_regime_weights_vol_temp
+ol_feature_weights_1 := ol_feature_weights_1_temp
+ol_feature_weights_2 := ol_feature_weights_2_temp
+ol_feature_weights_3 := ol_feature_weights_3_temp
+ol_feature_weights_4 := ol_feature_weights_4_temp
+ol_memory_buffer_1 := ol_memory_buffer_1_temp
+ol_memory_buffer_2 := ol_memory_buffer_2_temp
+ol_memory_buffer_3 := ol_memory_buffer_3_temp
+ol_regime_transition_prob := ol_regime_transition_prob_temp
+
+float atr        = f_calc_atr(atr_lookback_in)
+float efficiency = f_calc_efficiency(close, efficiency_lookback_in)
+
+string htf_tf    = mazMtfMode == "Auto" ? (timeframe.isintraday ? "60" : "240") : mazTfManual1
+float  htf_close = request.security(syminfo.tickerid, htf_tf, close, lookahead=barmerge.lookahead_off)
+float  htf_sma   = request.security(syminfo.tickerid, htf_tf, ta.sma(close, htf_sma_len_in), lookahead=barmerge.lookahead_off)
+float  htf_atr   = request.security(syminfo.tickerid, htf_tf, f_calc_atr(htf_atr_len_in), lookahead=barmerge.lookahead_off)
+
+int htf_bias = f_mtf_maz_bias(htf_close, htf_sma, htf_atr, htf_deadband_atr_in)
+
+if htf_bias != 0 and htf_bias == last_htf_bias
+    htf_bias_count := math.min(htf_bias_count + 1, htf_bias_lookback_in)
+else if htf_bias != last_htf_bias
+    htf_bias_count := 0
+    last_htf_bias := htf_bias
+
+bool htf_stable  = htf_bias_count >= regime_persist_bars_in
+float atr_percent = atr / close * 100
+
+// MNQ-SPECIFIC: Higher volatility threshold for MNQ (0.15 vs 0.12 for MGC)
+bool is_high_vol  = atr_percent > (is_MNQ ? 0.15 : (is_MGC ? 0.12 : 0.10))
+bool is_low_eff   = efficiency < mazEfficiencyLowThr
+
+string new_regime = "RANGING"
+if is_high_vol and not htf_stable
+    new_regime := "VOLATILE"
+else if htf_stable and efficiency > 0.5
+    new_regime := "TRENDING"
+
+if new_regime != current_regime
+    regime_bars := regime_bars + 1
+    if regime_bars >= regime_persist_bars_in
+        current_regime := new_regime
+        regime_bars := 0
+else
+    regime_bars := 0
+
+if current_regime == "TRENDING"
+    regime_confidence := 50.0 + (efficiency * 50.0)
+    if htf_stable
+        regime_confidence := regime_confidence + 25.0
+else if current_regime == "RANGING"
+    regime_confidence := 50.0 + ((1.0 - efficiency) * 30.0)
+    if is_low_eff
+        regime_confidence := regime_confidence + 20.0
+else
+    regime_confidence := 50.0 + (atr_percent * 100.0)
+
+regime_confidence := math.min(regime_confidence, 100.0)
+
+// NEW: ML Regime Override (after rule-based detection) - FIXED FOR PINE SCRIPT v6
+[ml_predicted_regime_temp, ml_confidence_temp, ml_ensemble_vote_trend_temp, 
+ ml_ensemble_vote_range_temp, ml_ensemble_vote_vol_temp, ml_bars_since_switch_temp] = f_update_ml_classifier()
+
+ml_predicted_regime := ml_predicted_regime_temp
+ml_confidence := ml_confidence_temp
+ml_ensemble_vote_trend := ml_ensemble_vote_trend_temp
+ml_ensemble_vote_range := ml_ensemble_vote_range_temp
+ml_ensemble_vote_vol := ml_ensemble_vote_vol_temp
+ml_bars_since_switch := ml_bars_since_switch_temp
+
+if ml_enabled and ml_confidence >= ml_confidence_threshold
+    current_regime := ml_predicted_regime
+
+// Dynamic Slippage Regime Adjustment
+if use_dynamic_slippage
+    float vol_rank_now = ta.percentrank(atr, vol_percentile_len)
+    is_expansion := vol_rank_now > expansion_threshold
+    is_compression := vol_rank_now < compression_threshold
+    if is_expansion
+        effective_slippage := base_slippage * expansion_slippage_mult
+    else if is_compression
+        effective_slippage := base_slippage * compression_slippage_mult
+    else
+        effective_slippage := base_slippage
+
+// DRE CONCEPTS - PREMIUM/DISCOUNT & ORDER FLOW
+float htf_high_pd = request.security(syminfo.tickerid, pd_tf, ta.highest(high, pd_lookback), lookahead=barmerge.lookahead_off)
+float htf_low_pd  = request.security(syminfo.tickerid, pd_tf, ta.lowest(low,  pd_lookback), lookahead=barmerge.lookahead_off)
+
+pd_mid  := (htf_high_pd + htf_low_pd) / 2
+pd_high := htf_high_pd
+pd_low  := htf_low_pd
+
+in_premium  := close > pd_mid
+in_discount := close < pd_mid
+
+int swing_window = int(math.max(2, math.floor(pd_lookback / 2)))
+float swing_high_tf = ta.highest(high, swing_window)
+float swing_low_tf  = ta.lowest(low,  swing_window)
+last_swing_high := swing_high_tf
+last_swing_low  := swing_low_tf
+
+bool bull_break = close > swing_high_tf[1]
+bool bear_break = close < swing_low_tf[1]
+if bull_break
+    bullish_bos_count := math.min(bullish_bos_count + 1, 10)
+    bearish_bos_count := 0
+else if bear_break
+    bearish_bos_count := math.min(bearish_bos_count + 1, 10)
+    bullish_bos_count := 0
+
+structure_bullish :=
+     order_flow_mode == "Bullish" ? true :
+     order_flow_mode == "Bearish" ? false :
+     bullish_bos_count >= 2
+
+structure_bearish :=
+     order_flow_mode == "Bearish" ? true :
+     order_flow_mode == "Bullish" ? false :
+     bearish_bos_count >= 2
+
+bool potential_bull_breaker = close > last_swing_high[1] and close[1] < last_swing_high[1]
+bool potential_bear_breaker = close < last_swing_low[1]  and close[1] > last_swing_low[1]
+
+if potential_bull_breaker
+    breaker_bull_active := true
+    breaker_bull_level  := last_swing_high[1]
+    breaker_bull_age    := 0
+
+if potential_bear_breaker
+    breaker_bear_active := true
+    breaker_bear_level  := last_swing_low[1]
+    breaker_bear_age    := 0
+
+if breaker_bull_active
+    breaker_bull_age := breaker_bull_age + 1
+    if breaker_bull_age > breaker_block_lookback or close < breaker_bull_level
+        breaker_bull_active := false
+
+if breaker_bear_active
+    breaker_bear_age := breaker_bear_age + 1
+    if breaker_bear_age > breaker_block_lookback or close > breaker_bear_level
+        breaker_bear_active := false
+
+// VOLATILITY EXPANSION / COMPRESSION
+vol_percentile_val := ta.percentrank(atr, vol_percentile_len)
+is_expansion       := vol_percentile_val > expansion_threshold
+is_compression     := vol_percentile_val < compression_threshold
+
+color expansion_bg = is_expansion ? color.new(color.green, 95) : is_compression ? color.new(color.orange, 95) : na
+bgcolor(use_vol_expansion ? expansion_bg : na, title="Vol Regime BG")
+
+// REGIME STABILITY - MNQ SPECIFIC: 2 bars (vs 3 for MGC)
+if current_regime != last_regime
+    regime_stable_count := 0
+    last_regime         := current_regime
+else
+    regime_stable_count := regime_stable_count + 1
+
+int required_stable_bars = is_MNQ ? 2 : 3
+regime_is_stable := regime_stable_count >= required_stable_bars
+
+// LABEL DELAY DETECTION
+int current_tf_minutes = timeframe.multiplier
+bool is_micro_asset    = is_MNQ or is_MGC
+bool is_delayed_tf     = current_tf_minutes == 1 or current_tf_minutes == 5
+needs_delayed_label    := use_delayed_labels and is_micro_asset and is_delayed_tf
+
+// RB DETECTION - MNQ SPECIFIC: 20 decay bars, $0.50 tick value
+float rvol       = volume / ta.sma(volume, 20)
+
+// Tick values used for PnL math and risk sizing.
+float tick_value = is_MNQ ? 0.5 : (is_MGC ? 1.0 : 1.0)
+float point_value = syminfo.mintick > 0 ? tick_value / syminfo.mintick : tick_value
+
+// MNQ-SPECIFIC: 20 decay bars for MNQ, 15 for MGC
+int rb_decay_bars = is_MNQ ? rb_decay_bars_mnq : (is_MGC ? rb_decay_bars_mgc : 15)
+int rb_min_tier   = is_MNQ ? rb_min_tier_mnq   : (is_MGC ? rb_min_tier_mgc   : 1)
+
+float body_size  = math.abs(close - open)
+float bar_range  = high - low
+float lower_wick = open < close ? (open - low) : (close - low)
+float upper_wick = open < close ? (high - close) : (high - open)
+
+bool bull_cond1 = low < low[1]
+bool bull_cond2 = close > open
+bool bull_cond3 = bar_range > 0 ? (upper_wick / bar_range < 0.3) : false
+bool bull_cond4 = lower_wick > (body_size * 0.5)
+bool is_rb_bull = (bull_cond1 and bull_cond2) and (bull_cond3 and bull_cond4)
+
+bool bear_cond1 = high > high[1]
+bool bear_cond2 = close < open
+bool bear_cond3 = bar_range > 0 ? (lower_wick / bar_range < 0.3) : false
+bool bear_cond4 = upper_wick > (body_size * 0.5)
+bool is_rb_bear = (bear_cond1 and bear_cond2) and (bear_cond3 and bear_cond4)
+
+float rb_quality = 0.0
+if is_rb_bull
+    float wick_ratio_bull = lower_wick / bar_range
+    float vol_factor_bull = rvol > 2.0 ? 1.5 : (rvol > 1.5 ? 1.2 : 1.0)
+    rb_quality := (wick_ratio_bull * 2.0 + vol_factor_bull) / 3.0
+else if is_rb_bear
+    float wick_ratio_bear = upper_wick / bar_range
+    float vol_factor_bear = rvol > 2.0 ? 1.5 : (rvol > 1.5 ? 1.2 : 1.0)
+    rb_quality := (wick_ratio_bear * 2.0 + vol_factor_bear) / 3.0
+
+if is_rb_bull
+    rb_bull_level := close
+    rb_bull_tier  := int(math.min(3, 1 + (rb_quality * 2)))
+    rb_bull_decay := rb_decay_bars
+else
+    rb_bull_decay := math.max(0, rb_bull_decay - 1)
+    if rb_bull_decay == 0
+        rb_bull_level := na
+        rb_bull_tier  := 0
+
+if is_rb_bear
+    rb_bear_level := close
+    rb_bear_tier  := int(math.min(3, 1 + (rb_quality * 2)))
+    rb_bear_decay := rb_decay_bars
+else
+    rb_bear_decay := math.max(0, rb_bear_decay - 1)
+    if rb_bear_decay == 0
+        rb_bear_level := na
+        rb_bear_tier  := 0
+
+rb_current_tier := math.max(rb_bull_tier, rb_bear_tier)
+rb_active       := rb_current_tier >= rb_min_tier
+
+// MAZ CALCULATION
+bool maz_pass = not use_maz_light
+int  maz_tier = 0
+
+if use_maz_light
+    string tf1 = mazMtfMode == "Auto" ? (timeframe.isintraday ? "15"  : "60")  : mazTfManual1
+    string tf2 = mazMtfMode == "Auto" ? (timeframe.isintraday ? "60"  : "240") : mazTfManual2
+    string tf3 = mazMtfMode == "Auto" ? (timeframe.isintraday ? "240" : "D")   : mazTfManual2
+
+    float close_tf1 = request.security(syminfo.tickerid, tf1, close, lookahead=barmerge.lookahead_off)
+    float close_tf2 = request.security(syminfo.tickerid, tf2, close, lookahead=barmerge.lookahead_off)
+    float close_tf3 = request.security(syminfo.tickerid, tf3, close, lookahead=barmerge.lookahead_off)
+    float sma_tf1   = request.security(syminfo.tickerid, tf1, ta.sma(close, 50), lookahead=barmerge.lookahead_off)
+    float sma_tf2   = request.security(syminfo.tickerid, tf2, ta.sma(close, 50), lookahead=barmerge.lookahead_off)
+    float sma_tf3   = request.security(syminfo.tickerid, tf3, ta.sma(close, 50), lookahead=barmerge.lookahead_off)
+    float atr_tf1   = request.security(syminfo.tickerid, tf1, f_calc_atr(mazAtrLen), lookahead=barmerge.lookahead_off)
+    float atr_tf2   = request.security(syminfo.tickerid, tf2, f_calc_atr(mazAtrLen), lookahead=barmerge.lookahead_off)
+    float atr_tf3   = request.security(syminfo.tickerid, tf3, f_calc_atr(mazAtrLen), lookahead=barmerge.lookahead_off)
+
+    int bias_tf1 = f_mtf_maz_bias(close_tf1, sma_tf1, atr_tf1, htf_deadband_atr_in)
+    int bias_tf2 = f_mtf_maz_bias(close_tf2, sma_tf2, atr_tf2, htf_deadband_atr_in)
+    int bias_tf3 = f_mtf_maz_bias(close_tf3, sma_tf3, atr_tf3, htf_deadband_atr_in)
+
+    int consensus_count = 0
+    if bias_tf1 != 0 and bias_tf1 == bias_tf2
+        consensus_count := consensus_count + 1
+    if bias_tf2 != 0 and bias_tf2 == bias_tf3
+        consensus_count := consensus_count + 1
+    if bias_tf1 != 0 and bias_tf1 == bias_tf3
+        consensus_count := consensus_count + 1
+
+    bool consensus = consensus_count >= mazConsensusMin
+    float cluster_width = atr * mazClusterWidthMult
+    bool in_zone = f_is_inside_zone(close, htf_sma + cluster_width, htf_sma - cluster_width)
+
+    if in_zone and consensus
+        maz_tier := 3
+        maz_pass := true
+    else if consensus
+        maz_tier := 2
+        maz_pass := true
+    else if in_zone
+        maz_tier := 1
+        maz_pass := true
+    else
+        maz_tier := 0
+        if use_volatile_maz_gate
+            if maz_volatile_mode == "Strict (AND)"
+                maz_pass := false
+            else if maz_volatile_mode == "Relaxed (OR)"
+                maz_pass := true
+            else if maz_volatile_mode == "Tier2+" and maz_tier >= 2
+                maz_pass := true
+            else
+                maz_pass := false
+        else
+            maz_pass := false
+
+// CONFLUENCE SCORING
+int base_confluence = 0
+if current_regime == "TRENDING"
+    base_confluence := htf_stable ? 25 : 15
+else if current_regime == "RANGING"
+    base_confluence := 15
+else
+    base_confluence := 10
+
+int vol_confluence   = int(math.min(cap_volume_profile, (rvol - 1.0) * 50))
+int sweep_confluence = 0
+if close > high[1] or close < low[1]
+    sweep_confluence := int(math.min(cap_sweep, (rvol - 1.0) * 30))
+
+int rb_confluence = 0
+if rb_active
+    if rb_current_tier == 3
+        rb_confluence := current_regime == "RANGING" ? rb_ranging_weight_strong : rb_trending_weight
+    else if rb_current_tier == 2
+        rb_confluence := current_regime == "RANGING" ? rb_ranging_weight_strong - 5 : rb_trending_weight - 3
+    else if rb_current_tier == 1
+        rb_confluence := current_regime == "RANGING" ? rb_ranging_weight_weak : 0
+
+int eff_confluence     = efficiency > 0.6 ? 10 : 0
+int htf_confluence     = htf_stable ? 15 : 0
+int vol_exp_confluence = is_expansion ? 5 : 0
+int wfo_confluence     = (use_wfo and wfo_best_score > 2.0) ? 5 : 0
+
+// WEIGHTED DRE SCORING
+pd_score_long  := 0
+pd_score_short := 0
+flow_score_long  := 0
+flow_score_short := 0
+bb_score_long  := 0
+bb_score_short := 0
+
+if dre_enabled
+    float pd_range_val  = pd_high - pd_low
+    float pd_position   = pd_range_val > 0 ? (close - pd_low) / pd_range_val : 0.5
+
+    pd_score_long  := pd_position < 0.3 ? pd_weight_max : pd_position < 0.5 ? int(pd_weight_max * 0.7) : pd_position < 0.6 ? int(pd_weight_max * 0.3) : 0
+    pd_score_short := pd_position > 0.7 ? pd_weight_max : pd_position > 0.5 ? int(pd_weight_max * 0.7) : pd_position > 0.4 ? int(pd_weight_max * 0.3) : 0
+
+    int flow_long_inner  = bullish_bos_count >= 3 ? flow_weight_max : bullish_bos_count >= 2 ? int(flow_weight_max * 0.7) : int(flow_weight_max * 0.3)
+    int flow_short_inner = bearish_bos_count >= 3 ? flow_weight_max : bearish_bos_count >= 2 ? int(flow_weight_max * 0.7) : int(flow_weight_max * 0.3)
+
+    flow_score_long  := structure_bullish ? flow_long_inner  : structure_bearish ? -int(flow_weight_max * 0.7) : 0
+    flow_score_short := structure_bearish ? flow_short_inner : structure_bullish  ? -int(flow_weight_max * 0.7) : 0
+
+    bb_score_long  := breaker_bull_active and close > breaker_bull_level ? bb_weight : breaker_bear_active and close > breaker_bear_level ? int(bb_weight * 0.5) : 0
+    bb_score_short := breaker_bear_active and close < breaker_bear_level ? bb_weight : breaker_bull_active and close < breaker_bull_level ? int(bb_weight * 0.5) : 0
+
+// Direction-specific totals
+int long_confluence  = base_confluence + vol_confluence + sweep_confluence + rb_confluence + pd_score_long  + flow_score_long  + bb_score_long  + eff_confluence + htf_confluence + vol_exp_confluence + wfo_confluence + int(regime_confidence * 0.1)
+int short_confluence = base_confluence + vol_confluence + sweep_confluence + rb_confluence + pd_score_short + flow_score_short + bb_score_short + eff_confluence + htf_confluence + vol_exp_confluence + wfo_confluence + int(regime_confidence * 0.1)
+
+if maz_tier == 1
+    long_confluence  := long_confluence  + maz_tier1_confluence_adj
+    short_confluence := short_confluence + maz_tier1_confluence_adj
+else if maz_tier == 2
+    long_confluence  := long_confluence  + maz_tier2_confluence_adj
+    short_confluence := short_confluence + maz_tier2_confluence_adj
+else if maz_tier == 3
+    long_confluence  := long_confluence  + maz_tier3_confluence_adj
+    short_confluence := short_confluence + maz_tier3_confluence_adj
+
+// NEW: Portfolio risk adjustment to confluence
+if portfolio_mode
+    long_confluence  := int(long_confluence  * portfolio_risk_adjustment)
+    short_confluence := int(short_confluence * portfolio_risk_adjustment)
+
+long_confluence  := math.min(100, long_confluence)
+short_confluence := math.min(100, short_confluence)
+
+// MTF CONFIRMATION
+bool mtf_aligned_long  = true
+bool mtf_aligned_short = true
+
+if use_mtf_confirmation
+    float mtf_close_1 = request.security(syminfo.tickerid, mtf_timeframe1, close, lookahead=barmerge.lookahead_off)
+    float mtf_close_2 = request.security(syminfo.tickerid, mtf_timeframe2, close, lookahead=barmerge.lookahead_off)
+    float mtf_close_3 = request.security(syminfo.tickerid, mtf_timeframe3, close, lookahead=barmerge.lookahead_off)
+    float mtf_sma_1   = request.security(syminfo.tickerid, mtf_timeframe1, ta.sma(close, 50), lookahead=barmerge.lookahead_off)
+    float mtf_sma_2   = request.security(syminfo.tickerid, mtf_timeframe2, ta.sma(close, 50), lookahead=barmerge.lookahead_off)
+    float mtf_sma_3   = request.security(syminfo.tickerid, mtf_timeframe3, ta.sma(close, 50), lookahead=barmerge.lookahead_off)
+    int mtf_count_long  = 0
+    int mtf_count_short = 0
+    if mtf_close_1 > mtf_sma_1
+        mtf_count_long := mtf_count_long + 1
+    else if mtf_close_1 < mtf_sma_1
+        mtf_count_short := mtf_count_short + 1
+    if mtf_close_2 > mtf_sma_2
+        mtf_count_long := mtf_count_long + 1
+    else if mtf_close_2 < mtf_sma_2
+        mtf_count_short := mtf_count_short + 1
+    if mtf_close_3 > mtf_sma_3
+        mtf_count_long := mtf_count_long + 1
+    else if mtf_close_3 < mtf_sma_3
+        mtf_count_short := mtf_count_short + 1
+    mtf_aligned_long  := mtf_count_long  >= mtf_alignment_threshold
+    mtf_aligned_short := mtf_count_short >= mtf_alignment_threshold
+
+// FILTERS (News / Volatility)
+bool in_news_blackout = false
+if use_news_filter
+    int cur_hour     = hour(time, "America/New_York")
+    int cur_minute   = minute(time, "America/New_York")
+    int cur_mins     = cur_hour * 60 + cur_minute
+    int news_mins    = news_hour * 60 + news_minute
+    bool before_news = cur_mins >= (news_mins - news_window_before) and cur_mins < news_mins
+    bool after_news  = cur_mins > news_mins and cur_mins <= (news_mins + news_window_after)
+    in_news_blackout := before_news or after_news
+
+bool vol_allows_trade = true
+if use_volatility_filter
+    float atr_spike   = atr / ta.sma(atr, 20)
+    vol_allows_trade  := atr_spike < vol_spike_threshold
+
+// SESSION FILTER
+in_allowed_session   := true
+current_session_name := "None"
+
+if use_session_filter
+    int cur_hour   = hour(time, "America/New_York")
+    int cur_minute = minute(time, "America/New_York")
+    bool london_active = f_is_time_in_range(cur_hour, cur_minute, london_start_hour, london_start_min, london_end_hour, london_end_min)
+    bool ny_active     = f_is_time_in_range(cur_hour, cur_minute, ny_start_hour, ny_start_min, ny_end_hour, ny_end_min)
+    bool overlap       = london_active and ny_active
+    if trade_sessions_in == "London"
+        in_allowed_session   := london_active
+        current_session_name := london_active ? "London" : "None"
+    else if trade_sessions_in == "NY"
+        in_allowed_session   := ny_active
+        current_session_name := ny_active ? "NY" : "None"
+    else if trade_sessions_in == "Both"
+        in_allowed_session   := london_active or ny_active
+        current_session_name := overlap ? "Overlap" : (london_active ? "London" : (ny_active ? "NY" : "None"))
+    else if trade_sessions_in == "Overlap"
+        in_allowed_session   := overlap
+        current_session_name := overlap ? "Overlap" : "None"
+
+// DAILY LIMITS
+if dayofmonth != last_trade_day
+    daily_trade_count := 0
+    daily_pnl         := 0.0
+    last_trade_day    := dayofmonth
+
+bool daily_limits_ok = true
+if enable_daily_limits
+    daily_limits_ok := daily_trade_count < max_daily_trades and
+         daily_pnl > -(max_daily_loss_in / 100 * strategy.equity) and
+         consecutive_losses < max_consecutive_losses_in
+
+// ANCHORED WFO v5.0
+if use_wfo
+    wfo_bar_counter := wfo_bar_counter + 1
+    bool in_sample    = wfo_bar_counter <= wfo_anchor_bars
+    bool oos_window   = not in_sample and (wfo_bar_counter - wfo_anchor_bars) <= wfo_validation_bars
+    wfo_in_oos_window := oos_window
+
+    if wfo_bar_counter > wfo_anchor_bars + wfo_validation_bars
+        wfo_bar_counter := 0
+
+    if in_sample and wfo_bar_counter - wfo_last_opt_bar >= 100
+        float performance_score = f_calc_performance_score(wfo_anchor_bars)
+        if performance_score > wfo_best_score
+            wfo_best_score := performance_score
+        bool defensive_trigger   = consecutive_losses >= 2 or (strategy.equity < strategy.initial_capital * 0.98)
+        defensive_mode_active    := wfo_defensive_mode and defensive_trigger
+        adaptive_atr_mult_long   := f_optimize_atr_mult(atr, atr_mult_max, atr_mult_min, defensive_mode_active)
+        adaptive_atr_mult_short  := adaptive_atr_mult_long
+        adaptive_confluence_threshold := f_optimize_confluence_threshold(conf_threshold_max, conf_threshold_min, defensive_mode_active)
+        adaptive_position_risk   := f_optimize_position_risk(risk_per_trade_max, risk_per_trade_min, defensive_mode_active)
+        adaptive_rb_tier_boost   := f_optimize_rb_boost(htf_bias_count, regime_persist_bars_in, current_regime, defensive_mode_active)
+        wfo_last_opt_bar         := wfo_bar_counter
+
+// PINE-NATIVE MONTE CARLO ROBUSTNESS TRACKER
+if use_monte_carlo and strategy.closedtrades >= mc_lookback
+    float cumulative_base  = 0.0
+    float cumulative_best  = 0.0
+    float cumulative_worst = 0.0
+
+    for i = 0 to mc_lookback - 1
+        float raw_pnl = strategy.closedtrades.profit(i)
+        float perturb  = math.abs(raw_pnl) * mc_perturbation
+        cumulative_base  := cumulative_base  + raw_pnl
+        cumulative_best  := cumulative_best  + raw_pnl + perturb
+        cumulative_worst := cumulative_worst + raw_pnl - perturb
+
+    mc_equity_base  := cumulative_base
+    mc_best_equity  := cumulative_best
+    mc_worst_equity := cumulative_worst
+    mc_sample_count := mc_lookback
+
+// POSITION SIZING
+float regime_multiplier  = current_regime == "TRENDING" ? trending_multiplier_in : (current_regime == "RANGING" ? ranging_multiplier_in : volatile_multiplier_in)
+float risk_percent       = use_wfo ? adaptive_position_risk : base_risk_percent_in
+risk_percent            := math.min(risk_percent * regime_multiplier, max_risk_percent_in)
+
+int effective_ct = use_wfo ? adaptive_confluence_threshold :
+     (current_regime == "TRENDING" ? threshold_trending_in : (current_regime == "RANGING" ? threshold_ranging_in : threshold_volatile_in))
+current_threshold := effective_ct
+
+float dollar_risk     = strategy.equity * (risk_percent / 100)
+float stop_dist       = atr * (use_wfo ? adaptive_atr_mult_long  : (current_regime == "TRENDING" ? trending_stop_mult_in : (current_regime == "RANGING" ? ranging_stop_mult_in : volatile_stop_mult_in)))
+float position_value  = stop_dist > 0 ? dollar_risk / (stop_dist * point_value) : 0
+position_size        := int(math.max(qty_min_in, math.min(qty_max_in, position_value)))
+
+// CONTROL NARRATIVE
+if close > open
+    bull_control_score := bull_control_score + 1
+    bear_control_score := math.max(0, bear_control_score - 1)
+else if close < open
+    bear_control_score := bear_control_score + 1
+    bull_control_score := math.max(0, bull_control_score - 1)
+
+bool bulls_in_control = bull_control_score > bear_control_score + 2
+bool bears_in_control = bear_control_score > bull_control_score + 2
+
+float structure_bias = 0
+if close > htf_sma
+    structure_bias := structure_bias + 1
+if htf_bias > 0
+    structure_bias := structure_bias + 1
+if rb_bull_decay > 0 and close > rb_bull_level
+    structure_bias := structure_bias + 1
+if rb_bear_decay > 0 and close < rb_bear_level
+    structure_bias := structure_bias - 1
+
+if bulls_in_control and structure_bias >= 2
+    control_narrative := "BULLS CONTROL → STRONG LONG"
+else if bulls_in_control
+    control_narrative := "BULLS CONTROL → LONG"
+else if bears_in_control and structure_bias <= -2
+    control_narrative := "BEARS CONTROL → STRONG SHORT"
+else if bears_in_control
+    control_narrative := "BEARS CONTROL → SHORT"
+else if structure_bias > 0
+    control_narrative := "SLIGHT BULL → WEAK LONG"
+else if structure_bias < 0
+    control_narrative := "SLIGHT BEAR → WEAK SHORT"
+else
+    control_narrative := "NEUTRAL → WAIT"
+
+// SIGNAL GENERATION
+bool can_long   = false
+bool can_short  = false
+string block_reason = ""
+
+float base_stop_mult_long  = use_wfo ? adaptive_atr_mult_long  : (current_regime == "TRENDING" ? trending_stop_mult_in : (current_regime == "RANGING" ? ranging_stop_mult_in : volatile_stop_mult_in))
+float base_stop_mult_short = use_wfo ? adaptive_atr_mult_short : base_stop_mult_long
+
+float effective_stop_mult_long  = use_vol_expansion ? (is_expansion ? base_stop_mult_long * expansion_stop_mult : is_compression ? base_stop_mult_long * compression_stop_mult : base_stop_mult_long) : base_stop_mult_long
+float effective_stop_mult_short = use_vol_expansion ? (is_expansion ? base_stop_mult_short * expansion_stop_mult : is_compression ? base_stop_mult_short * compression_stop_mult : base_stop_mult_short) : base_stop_mult_short
+
+float effective_risk_per_trade  = use_wfo ? adaptive_position_risk : base_risk_percent_in
+
+if use_wfo and (wfo_defensive_mode or defensive_mode_active)
+    effective_risk_per_trade      := effective_risk_per_trade * 0.5
+    if wfo_in_oos_window
+        effective_risk_per_trade  := effective_risk_per_trade * 0.75
+
+int rb_adjusted_tier = math.min(3, rb_current_tier + (use_wfo ? adaptive_rb_tier_boost : 0))
+
+bool bull_setup = close > open and (low < low[1] or (use_rb and rb_bull_decay > 0 and close > rb_bull_level))
+bool bear_setup = close < open and (high > high[1] or (use_rb and rb_bear_decay > 0 and close < rb_bear_level))
+
+if use_rb
+    if rb_bull_decay > 0 and close > rb_bull_level and rvol > 1.2
+        bull_setup := true
+    if rb_bear_decay > 0 and close < rb_bear_level and rvol > 1.2
+        bear_setup := true
+
+bool long_confluence_ok  = long_confluence  >= effective_ct
+bool short_confluence_ok = short_confluence >= effective_ct
+
+bool extreme_structure_blocks_long  = require_extreme_structure_block and structure_bearish and bearish_bos_count >= 3
+bool extreme_structure_blocks_short = require_extreme_structure_block and structure_bullish and bullish_bos_count >= 3
+
+can_long  := long_confluence_ok  and maz_pass and bull_setup and not extreme_structure_blocks_long
+can_short := short_confluence_ok and maz_pass and bear_setup and not extreme_structure_blocks_short
+
+if current_regime == "TRENDING" and maz_tier < 1
+    can_long  := false
+    can_short := false
+    block_reason := "TrendNoMAZ"
+
+// Python parity: trend regime + ICT range mode.
+float atr_pct_now = close != 0 ? atr / close : 0.0
+bool atr_quality_gate = atr_pct_now >= min_atr_pct_in
+bool eff_quality_gate = efficiency >= min_efficiency_ratio_in
+float ema_fast = ta.ema(close, trend_fast_ema_in)
+float ema_slow = ta.ema(close, trend_slow_ema_in)
+float ema_macro = ta.ema(close, trend_macro_ema_in)
+bool trend_up = ema_fast > ema_slow and ema_slow > ema_macro and close >= ema_fast
+bool trend_down = ema_fast < ema_slow and ema_slow < ema_macro and close <= ema_fast
+bool is_range_regime = current_regime == "RANGING"
+bool this_is_mnq = is_MNQ
+
+int short_entry_gate = this_is_mnq ? short_entry_min_mnq_in : short_entry_min_mgc_in
+int long_quality_gate = math.max(effective_ct, long_entry_min_in)
+int short_quality_gate = math.max(effective_ct, short_entry_gate)
+
+bool in_asian_session_now = not na(time(timeframe.period, "1900-0000:1234567", "America/New_York"))
+if in_asian_session_now
+    asian_high_live := na(asian_high_live) ? high : math.max(asian_high_live, high)
+    asian_low_live := na(asian_low_live) ? low : math.min(asian_low_live, low)
+if not in_asian_session_now and in_asian_session_now[1]
+    asian_high_last := asian_high_live
+    asian_low_last := asian_low_live
+    asian_high_live := na
+    asian_low_live := na
+
+bool has_asian_range = not na(asian_high_last) and not na(asian_low_last) and asian_high_last > asian_low_last
+bool kz_london = not na(time(timeframe.period, "0300-0600:1234567", "America/New_York"))
+bool kz_ny = not na(time(timeframe.period, "0930-1130:1234567", "America/New_York"))
+bool ict_kill_zone_ok = not ict_require_kill_zone_in or kz_london or kz_ny
+
+float dir_imbalance = ta.sma((close - open) / math.max(high - low, syminfo.mintick), 3)
+float ict_dir_imb_min = this_is_mnq ? ict_min_dir_imb_mnq_in : ict_min_dir_imb_mgc_in
+float ict_sweep_buffer_atr = this_is_mnq ? ict_sweep_buffer_atr_mnq_in : ict_sweep_buffer_atr_mgc_in
+float ict_sweep_buffer = atr * ict_sweep_buffer_atr
+bool swept_low = has_asian_range and ta.lowest(low, ict_sweep_lookback_bars_in) <= (asian_low_last - ict_sweep_buffer)
+bool swept_high = has_asian_range and ta.highest(high, ict_sweep_lookback_bars_in) >= (asian_high_last + ict_sweep_buffer)
+bool reclaimed_low = has_asian_range and close > asian_low_last
+bool reclaimed_high = has_asian_range and close < asian_high_last
+bool disp_ok = not ict_require_disp_in or math.abs(close - open) >= (atr * ict_min_disp_atr_in)
+bool range_eff_ok = efficiency <= ict_range_max_eff_in
+
+float bull_ce = na
+float bear_ce = na
+for i = 0 to ict_fvg_lookback_bars_in - 1
+    if na(bull_ce) and bar_index > i + 2 and high[i + 2] < low[i]
+        bull_ce := (high[i + 2] + low[i]) * 0.5
+    if na(bear_ce) and bar_index > i + 2 and low[i + 2] > high[i]
+        bear_ce := (low[i + 2] + high[i]) * 0.5
+bool long_fvg_ok = not ict_require_fvg_ce_in or (not na(bull_ce) and math.abs(close - bull_ce) <= atr * ict_ce_tolerance_atr_in)
+bool short_fvg_ok = not ict_require_fvg_ce_in or (not na(bear_ce) and math.abs(close - bear_ce) <= atr * ict_ce_tolerance_atr_in)
+
+bool ict_long_raw = range_eff_ok and ict_kill_zone_ok and has_asian_range and swept_low and reclaimed_low and close > open and long_confluence >= range_long_entry_min_in and dir_imbalance >= ict_dir_imb_min and (not ict_require_pd_align_in or in_discount) and disp_ok and long_fvg_ok and not trend_down and atr_quality_gate
+bool ict_short_raw = range_eff_ok and ict_kill_zone_ok and has_asian_range and swept_high and reclaimed_high and close < open and short_confluence >= range_short_entry_min_in and dir_imbalance <= -ict_dir_imb_min and (not ict_require_pd_align_in or in_premium) and disp_ok and short_fvg_ok and not trend_up and atr_quality_gate
+bool ict_long = false
+bool ict_short = false
+if ict_long_raw and not ict_short_raw
+    ict_long := true
+else if ict_short_raw and not ict_long_raw
+    ict_short := true
+else if ict_long_raw and ict_short_raw
+    ict_long := dir_imbalance >= 0
+    ict_short := not ict_long
+if ict_invert_signals_in
+    bool t_long = ict_long
+    ict_long := ict_short
+    ict_short := t_long
+
+bool allow_trend_logic = current_regime == "TRENDING" or (is_range_regime and range_mode_in == "TREND_ONLY")
+bool trend_regime_gate = allow_trend_logic and atr_quality_gate and eff_quality_gate
+
+if is_range_regime and range_mode_in == "NO_TRADE"
+    can_long := false
+    can_short := false
+    block_reason := "RangeNoTrade"
+else if is_range_regime and range_mode_in == "ICT_ASIAN_SWEEP"
+    can_long := ict_long
+    can_short := ict_short
+    if not can_long and not can_short
+        block_reason := "IctNoSweep"
+else
+    can_long := can_long and trend_regime_gate and htf_bias > 0 and structure_bullish and not structure_bearish and long_confluence >= long_quality_gate and trend_up
+    can_short := can_short and trend_regime_gate and htf_bias < 0 and structure_bearish and not structure_bullish and short_confluence >= short_quality_gate and trend_down
+
+// Bias-only fallback when structure is not perfect but directional quality is very high.
+if range_mode_in != "ICT_ASIAN_SWEEP"
+    if not can_long and long_confluence >= bias_only_min_in and trend_regime_gate and htf_bias > 0 and trend_up
+        can_long := true
+    if not can_short and short_confluence >= bias_only_min_in and trend_regime_gate and htf_bias < 0 and trend_down
+        can_short := true
+
+int active_confluence_score = can_long ? long_confluence : can_short ? short_confluence : 0
+
+bool final_can_long  = can_long  and mtf_aligned_long  and not in_news_blackout and vol_allows_trade and daily_limits_ok
+bool final_can_short = can_short and mtf_aligned_short and not in_news_blackout and vol_allows_trade and daily_limits_ok
+
+// NEW: Portfolio diversification gate
+if portfolio_mode and not portfolio_diversification_ok
+    final_can_long := false
+    final_can_short := false
+
+// ANTI-REPAINTING
+bool position_flat = strategy.position_size == 0
+bool cooldown_expired = true
+if use_trade_cooldown
+    int bars_since_entry = bar_index - last_entry_bar
+    cooldown_expired := bars_since_entry >= trade_cooldown_bars
+    cooldown_active  := not cooldown_expired
+
+bool mutual_exclusive_long  = final_can_long  and (not final_can_short or (bull_control_score >= bear_control_score))
+bool mutual_exclusive_short = final_can_short and (not final_can_long  or (bear_control_score >  bull_control_score))
+
+bool zone_sep_long  = true
+bool zone_sep_short = true
+
+if use_zone_separation
+    float min_dist = atr * zone_separation_mult
+    if last_long_signal_price  > 0
+        zone_sep_long  := math.abs(close - last_long_signal_price)  >= min_dist
+    if last_short_signal_price > 0
+        zone_sep_short := math.abs(close - last_short_signal_price) >= min_dist
+
+final_can_long  := final_can_long  and position_flat and cooldown_expired and mutual_exclusive_long  and zone_sep_long  and in_allowed_session
+final_can_short := final_can_short and position_flat and cooldown_expired and mutual_exclusive_short and zone_sep_short and in_allowed_session
+
+if final_can_long
+    last_long_signal_price := close
+    last_entry_bar         := bar_index
+
+if final_can_short
+    last_short_signal_price := close
+    last_entry_bar          := bar_index
+
+// ============================================================================
+// PART 12 - EXECUTION (with RL and Impact integration)
+// ============================================================================
+
+// NEW: RL Action Selection before entry - FIXED FOR PINE SCRIPT v6
+string rl_action = "MARKET"
+if rl_enabled
+    [rl_last_action_temp, rl_last_action_prob_temp, rl_cumulative_reward_temp, rl_value_estimate_temp, rl_td_error_temp, spread_percent_temp, market_depth_estimate_temp, order_flow_imbalance_temp, toxic_order_flow_temp, adverse_selection_estimate_temp] = f_rl_select_action()
+    rl_last_action := rl_last_action_temp
+    rl_last_action_prob := rl_last_action_prob_temp
+    rl_cumulative_reward := rl_cumulative_reward_temp
+    rl_value_estimate := rl_value_estimate_temp
+    rl_td_error := rl_td_error_temp
+    spread_percent := spread_percent_temp
+    market_depth_estimate := market_depth_estimate_temp
+    order_flow_imbalance := order_flow_imbalance_temp
+    toxic_order_flow := toxic_order_flow_temp
+    adverse_selection_estimate := adverse_selection_estimate_temp
+
+    rl_action := rl_last_action
+
+    // RL PPO Update - FIXED FOR PINE SCRIPT v6
+    [rl_policy_weights_1_temp, rl_policy_weights_2_temp, rl_policy_weights_3_temp, rl_policy_weights_4_temp, rl_episode_count_temp, rl_gae_advantage_temp, rl_policy_loss_temp, rl_entropy_temp, rl_old_log_prob_temp, rl_new_log_prob_temp] = f_rl_ppo_update()
+    rl_policy_weights_1 := rl_policy_weights_1_temp
+    rl_policy_weights_2 := rl_policy_weights_2_temp
+    rl_policy_weights_3 := rl_policy_weights_3_temp
+    rl_policy_weights_4 := rl_policy_weights_4_temp
+    rl_episode_count := rl_episode_count_temp
+    rl_gae_advantage := rl_gae_advantage_temp
+    rl_policy_loss := rl_policy_loss_temp
+    rl_entropy := rl_entropy_temp
+    rl_old_log_prob := rl_old_log_prob_temp
+    rl_new_log_prob := rl_new_log_prob_temp
+
+// NEW: Dynamic slippage adjustment for portfolio heat
+float current_slippage_ticks = effective_slippage
+if portfolio_mode and portfolio_heat_score > 60
+    current_slippage_ticks := current_slippage_ticks + 0.5
+
+if strategy.position_size == 0
+    float conf_factor = math.min(1.0, active_confluence_score / 100.0)
+
+    float t2_mult_base = use_adaptive_targets and current_regime == "TRENDING" ?
+         (t2_scale_min + (t2_scale_max - t2_scale_min) * conf_factor) :
+         (current_regime == "TRENDING" ? trending_target2_mult_in : (current_regime == "RANGING" ? ranging_target_mult_in : volatile_target1_mult_in))
+
+    float t3_mult_base = use_adaptive_targets and current_regime == "TRENDING" ?
+         (t3_scale_min + (t3_scale_max - t3_scale_min) * conf_factor) :
+         (current_regime == "TRENDING" ? trending_target3_mult_in : volatile_target2_mult_in)
+
+    float t2_mult = use_vol_expansion ?
+         (is_expansion ? t2_mult_base * expansion_target_mult : is_compression ? t2_mult_base * compression_target_mult : t2_mult_base) : t2_mult_base
+
+    float t3_mult = use_vol_expansion ?
+         (is_expansion ? t3_mult_base * expansion_target_mult : is_compression ? t3_mult_base * compression_target_mult : t3_mult_base) : t3_mult_base
+
+    // NEW: Calculate market impact before entry - FIXED FOR PINE SCRIPT v6
+    float impact_cost = 0.0
+    if impact_model_enabled
+        [imp_temp, imp_cost_temp, participation_rate_temp, kyle_lambda_current_temp, impact_temporary_temp, impact_permanent_temp, impact_decayed_temp, impact_total_temp, expected_impact_cost_temp, cumulative_impact_cost_temp, impact_violations_temp] = f_calculate_market_impact(position_size)
+        impact_temporary := impact_temporary_temp
+        impact_permanent := impact_permanent_temp
+        impact_decayed := impact_decayed_temp
+        impact_total := impact_total_temp
+        participation_rate := participation_rate_temp
+        kyle_lambda_current := kyle_lambda_current_temp
+        expected_impact_cost := expected_impact_cost_temp
+        cumulative_impact_cost := cumulative_impact_cost_temp
+        impact_violations := impact_violations_temp
+        impact_cost := imp_cost_temp * 0.01
+        impact_entry_bar := bar_index
+
+    // NEW: RL-based entry delay
+    bool should_delay_entry = rl_enabled and rl_action == "DELAY"
+
+    // NEW: RL slippage adjustment
+    if rl_enabled and rl_action == "MARKET" and toxic_order_flow
+        current_slippage_ticks := current_slippage_ticks + 0.5
+
+    if final_can_long and not should_delay_entry
+        float stop_price = close - (atr * effective_stop_mult_long)
+        float t3         = close + (atr * t3_mult)
+
+        float effective_slippage_cost = (current_slippage_ticks * tick_value) + impact_cost
+
+        strategy.entry("Long",  strategy.long,  qty=position_size)
+        strategy.exit("Long Exit",  "Long",  stop=stop_price, limit=t3, qty_percent=50)
+
+        if show_signals
+            string label_text = "LONG" + (use_wfo ? " (WFO)" : "") + "\nConf: " + str.tostring(long_confluence) + "\nDre: " + str.tostring(pd_score_long + flow_score_long + bb_score_long) + (is_expansion ? "\n⚡ EXP" : is_compression ? "\n🗜️ COMP" : "") + "\nSlip: " + str.tostring(current_slippage_ticks, "#.#")
+            if impact_model_enabled
+                label_text := label_text + "\nImpact: $" + str.tostring(impact_cost, "#.#")
+            if rl_enabled
+                label_text := label_text + "\nRL: " + rl_action
+            label.new(bar_index, low, label_text, color=col_long_trig, textcolor=col_trig_text, style=label.style_label_up, size=size.small)
+
+    if final_can_short and not should_delay_entry
+        float stop_price = close + (atr * effective_stop_mult_short)
+        float t3         = close - (atr * t3_mult)
+
+        float effective_slippage_cost = (current_slippage_ticks * tick_value) + impact_cost
+
+        strategy.entry("Short", strategy.short, qty=position_size)
+        strategy.exit("Short Exit", "Short", stop=stop_price, limit=t3, qty_percent=50)
+
+        if show_signals
+            string label_text = "SHORT" + (use_wfo ? " (WFO)" : "") + "\nConf: " + str.tostring(short_confluence) + "\nDre: " + str.tostring(pd_score_short + flow_score_short + bb_score_short) + (is_expansion ? "\n⚡ EXP" : is_compression ? "\n🗜️ COMP" : "") + "\nSlip: " + str.tostring(current_slippage_ticks, "#.#")
+            if impact_model_enabled
+                label_text := label_text + "\nImpact: $" + str.tostring(impact_cost, "#.#")
+            if rl_enabled
+                label_text := label_text + "\nRL: " + rl_action
+            label.new(bar_index, high, label_text, color=col_short_trig, textcolor=col_trig_text, style=label.style_label_down, size=size.small)
+
+// ============================================================================
+// PART 13 - EXIT MANAGEMENT
+// ============================================================================
+
+last_position_size := strategy.position_size
+
+if strategy.position_size != 0 and strategy.position_size[1] == 0
+    entry_price         := close
+    entry_bar           := bar_index
+    scaled_out          := false
+    breakeven_triggered := false
+    trailing_triggered  := false
+    trailing_stop_price := 0.0
+    exit_reason         := 0
+    float stop_mult     = current_regime == "TRENDING" ? trending_stop_mult_in : (current_regime == "RANGING" ? ranging_stop_mult_in : volatile_stop_mult_in)
+    initial_stop        := strategy.position_size > 0 ? close - (atr * stop_mult) : close + (atr * stop_mult)
+
+float t1_mult     = current_regime == "TRENDING" ? trending_target1_mult_in : (current_regime == "RANGING" ? ranging_target_mult_in : volatile_target1_mult_in)
+bool is_long_pos  = strategy.position_size > 0
+bool in_position  = strategy.position_size != 0
+
+bool should_scale = false
+if enable_scale_out and not scaled_out and in_position
+    float t1_level = is_long_pos ? entry_price + (atr * t1_mult) : entry_price - (atr * t1_mult)
+    if is_long_pos and close >= t1_level
+        should_scale := true
+    else if not is_long_pos and close <= t1_level
+        should_scale := true
+
+if should_scale and in_position
+    int scale_qty = int(math.abs(strategy.position_size) * scale_out_percent / 100)
+    if scale_qty > 0
+        if is_long_pos
+            strategy.close("Long",  qty=scale_qty, comment="Scale Out T1")
+        else
+            strategy.close("Short", qty=scale_qty, comment="Scale Out T1")
+        scaled_out    := true
+        scale_out_pnl := (close - entry_price) * (is_long_pos ? 1 : -1) * scale_qty * tick_value
+        if move_stop_to_entry_after_scale
+            initial_stop        := entry_price
+            breakeven_triggered := true
+        if show_exit_labels
+            label.new(bar_index, low - (atr * 0.5),
+                 "Scale Out T1\n" + (scale_out_pnl > 0 ? "+" : "") + str.tostring(scale_out_pnl, "#.#"),
+                 color=col_scale_out, textcolor=color.white, size=size.tiny, style=label.style_label_up)
+
+int  max_bars    = current_regime == "TRENDING" ? trending_max_bars_in : (current_regime == "RANGING" ? ranging_max_bars_in : volatile_max_bars_in)
+bool exit_now    = false
+float current_stop  = initial_stop
+float current_limit = na
+
+if use_breakeven and not breakeven_triggered and entry_price != 0
+    float be_trigger = is_long_pos ? entry_price + (atr * breakeven_trigger_atr) : entry_price - (atr * breakeven_trigger_atr)
+    if is_long_pos and close >= be_trigger
+        breakeven_triggered := true
+        current_stop        := entry_price
+    else if not is_long_pos and close <= be_trigger
+        breakeven_triggered := true
+        current_stop        := entry_price
+
+if use_trailing_stop and in_position
+    float trail_act = is_long_pos ? entry_price + (atr * trailing_activation_atr) : entry_price - (atr * trailing_activation_atr)
+    if is_long_pos
+        if close >= trail_act
+            if not trailing_triggered
+                trailing_triggered  := true
+                trailing_stop_price := close - (atr * trailing_distance_atr)
+            else
+                float new_trail = close - (atr * trailing_distance_atr)
+                if new_trail > trailing_stop_price
+                    trailing_stop_price := new_trail
+            if trailing_stop_price > current_stop
+                current_stop := trailing_stop_price
+    else
+        if close <= trail_act
+            if not trailing_triggered
+                trailing_triggered  := true
+                trailing_stop_price := close + (atr * trailing_distance_atr)
+            else
+                float new_trail = close + (atr * trailing_distance_atr)
+                if new_trail < trailing_stop_price
+                    trailing_stop_price := new_trail
+            if trailing_stop_price < current_stop or current_stop == 0
+                current_stop := trailing_stop_price
+
+if use_time_exit and in_position
+    if bar_index - entry_bar >= max_bars
+        exit_now    := true
+        exit_reason := 5
+
+if in_position and not in_allowed_session and use_session_filter
+    exit_now    := true
+    exit_reason := 6
+
+if strategy.position_size > 0
+    strategy.exit("Long Exit",  "Long",  stop=current_stop, limit=current_limit, qty_percent=100)
+else if strategy.position_size < 0
+    strategy.exit("Short Exit", "Short", stop=current_stop, limit=current_limit, qty_percent=100)
+
+if exit_now and in_position
+    if is_long_pos
+        strategy.close("Long",  comment="Exit: Time/Session")
+    else
+        strategy.close("Short", comment="Exit: Time/Session")
+
+if strategy.position_size == 0 and strategy.position_size[1] > 0
+    in_long_trade         := false
+    confluence_latched_long := false
+if strategy.position_size == 0 and strategy.position_size[1] < 0
+    in_short_trade          := false
+    confluence_latched_short := false
+
+// ============================================================================
+// PART 14 - EXIT LABELS & DYNAMIC SLIPPAGE DISPLAY
+// ============================================================================
+
+bool position_just_closed = strategy.position_size == 0 and strategy.position_size[1] != 0
+
+if position_just_closed and show_exit_labels
+    int   trade_idx = strategy.closedtrades - 1
+    float exit_pnl  = trade_idx >= 0 ? strategy.closedtrades.profit(trade_idx) : 0.0
+    string exit_dir = strategy.position_size[1] > 0 ? "Long" : "Short"
+    bool is_win     = exit_pnl > 0
+    string exit_type = exit_reason == 5 ? "Time" : exit_reason == 6 ? "Session" : is_win ? (breakeven_triggered ? "BE→TP" : "TP") : (breakeven_triggered ? "BE→SL" : "SL")
+    float label_y   = exit_dir == "Long" ? high + (atr * 0.8) : low - (atr * 0.8)
+    label.new(bar_index, label_y,
+         exit_dir + " Exit\n" + exit_type + "\n" + (is_win ? "+" : "") + str.tostring(exit_pnl, "#.#"),
+         color=is_win ? col_exit_win : col_exit_loss, textcolor=color.white, size=size.small,
+         style=exit_dir == "Long" ? label.style_label_down : label.style_label_up, textalign=text.align_center)
+    last_exit_pnl    := exit_pnl
+    last_exit_type   := exit_dir
+    last_exit_reason := exit_type
+
+if strategy.position_size == 0 and strategy.position_size[1] != 0
+    float trade_pnl = strategy.closedtrades.profit(strategy.closedtrades - 1)
+    daily_trade_count := daily_trade_count + 1
+    daily_pnl         := daily_pnl + trade_pnl
+    if trade_pnl > 0
+        consecutive_losses := 0
+    else
+        consecutive_losses := consecutive_losses + 1
+
+// ============================================================================
+// PART 15 - REPLAY RESET
+// ============================================================================
+
+if barstate.isfirst
+    bull_control_score        := 0
+    bear_control_score        := 0
+    control_narrative         := "NEUTRAL → WAIT"
+    daily_trade_count         := 0
+    daily_pnl                 := 0.0
+    consecutive_losses        := 0
+    consecutive_wins          := 0
+    last_trade_day            := 0
+    last_entry_bar            := -999
+    last_long_signal_price    := 0.0
+    last_short_signal_price   := 0.0
+    cooldown_active           := false
+    defensive_mode_active     := false
+    wfo_best_score            := 0.0
+    wfo_bar_counter           := 0
+    wfo_last_opt_bar          := 0
+    adaptive_atr_mult_long    := 2.0
+    adaptive_atr_mult_short   := 2.0
+    adaptive_confluence_threshold := 70
+    adaptive_position_risk    := 1.0
+    adaptive_rb_tier_boost    := 0
+    is_expansion              := false
+    is_compression            := false
+    vol_percentile_val        := 50.0
+    regime_stable_count       := 0
+    regime_is_stable          := false
+    last_regime               := "RANGING"
+    in_long_trade             := false
+    in_short_trade            := false
+    confluence_latched_long   := false
+    confluence_latched_short  := false
+    bullish_bos_count         := 0
+    bearish_bos_count         := 0
+    breaker_bull_active       := false
+    breaker_bear_active       := false
+    pd_score_long             := 0
+    pd_score_short            := 0
+    flow_score_long           := 0
+    flow_score_short          := 0
+    bb_score_long             := 0
+    bb_score_short            := 0
+    mc_equity_base            := 0.0
+    mc_best_equity            := 0.0
+    mc_worst_equity           := 0.0
+    mc_sample_count           := 0
+    effective_slippage        := base_slippage
+    wfo_in_oos_window         := false
+    last_exit_pnl             := 0.0
+    last_exit_type            := ""
+    last_exit_reason          := ""
+    scale_out_pnl             := 0.0
+    last_position_size        := 0.0
+    // Reset new module states
+    portfolio_correlation_1   := 0.0
+    portfolio_correlation_2   := 0.0
+    portfolio_correlation_3   := 0.0
+    portfolio_avg_correlation := 0.0
+    portfolio_risk_adjustment := 1.0
+    portfolio_diversification_ok := true
+    portfolio_risk_status     := "GREEN"
+    hrp_weight_1              := 0.33
+    hrp_weight_2              := 0.33
+    hrp_weight_3              := 0.33
+    portfolio_heat_score      := 0.0
+    correlated_assets_count   := 0
+    ol_regime_weights_trend   := 0.33
+    ol_regime_weights_range   := 0.33
+    ol_regime_weights_vol     := 0.33
+    ol_feature_weights_1      := 0.25
+    ol_feature_weights_2      := 0.25
+    ol_feature_weights_3      := 0.25
+    ol_feature_weights_4      := 0.25
+    ol_learning_error         := 0.0
+    ol_cumulative_error       := 0.0
+    ol_update_count           := 0
+    ol_adaptation_rate        := 0.0
+    ol_is_adapting            := false
+    ol_concept_drift_score    := 0.0
+    ol_regime_transition_prob := 0.0
+    ol_memory_buffer_1        := 0.0
+    ol_memory_buffer_2        := 0.0
+    ol_memory_buffer_3        := 0.0
+    ml_predicted_regime       := "RANGING"
+    ml_confidence             := 0.0
+    ml_ensemble_vote_trend    := 0.0
+    ml_ensemble_vote_range    := 0.0
+    ml_ensemble_vote_vol      := 0.0
+    ml_bars_since_switch      := 0
+    impact_temporary          := 0.0
+    impact_permanent          := 0.0
+    impact_total              := 0.0
+    impact_decayed            := 0.0
+    kyle_lambda_current       := 0.1
+    participation_rate        := 0.0
+    expected_impact_cost      := 0.0
+    cumulative_impact_cost    := 0.0
+    impact_violations         := 0
+    order_flow_imbalance      := 0.0
+    toxic_order_flow          := false
+    adverse_selection_estimate := 0.0
+    spread_percent            := 0.0
+    market_depth_estimate     := 0.0
+    impact_entry_bar          := 0
+    rl_policy_weights_1       := 0.0
+    rl_policy_weights_2       := 0.0
+    rl_policy_weights_3       := 0.0
+    rl_policy_weights_4       := 0.0
+    rl_cumulative_reward      := 0.0
+    rl_episode_count          := 0
+    rl_step_count             := 0
+    rl_last_action            := "MARKET"
+    rl_last_action_prob       := 0.0
+    rl_td_error               := 0.0
+    rl_gae_advantage          := 0.0
+    rl_policy_loss            := 0.0
+    rl_old_log_prob           := 0.0
+    rl_new_log_prob           := 0.0
+    rl_value_estimate         := 0.0
+    rl_return_estimate        := 0.0
+    rl_entropy                := 0.0
+
+// ============================================================================
+// PART 16 - VISUALIZATION
+// ============================================================================
+
+if show_lines
+    if not na(rb_bull_level) and rb_bull_decay > 0
+        float zw = atr * 0.15
+        box.new(bar_index - rb_bull_decay, rb_bull_level + zw, bar_index, rb_bull_level - zw,
+             bgcolor=color.new(color.green, 85), border_color=color.new(color.green, 60), border_width=1)
+    if not na(rb_bear_level) and rb_bear_decay > 0
+        float zw = atr * 0.15
+        box.new(bar_index - rb_bear_decay, rb_bear_level + zw, bar_index, rb_bear_level - zw,
+             bgcolor=color.new(color.red, 85), border_color=color.new(color.red, 60), border_width=1)
+
+p1 = plot(dre_enabled ? pd_high : na, "PD High",     color=color.new(color.blue,   80), style=plot.style_linebr)
+p2 = plot(dre_enabled ? pd_low  : na, "PD Low",      color=color.new(color.blue,   80), style=plot.style_linebr)
+p3 = plot(dre_enabled ? pd_mid  : na, "Equilibrium", color=color.new(color.orange, 70), style=plot.style_line)
+fill(p1, p3, color=color.new(color.red,   90), title="Premium Zone")
+fill(p3, p2, color=color.new(color.green, 90), title="Discount Zone")
+
+plot(breaker_bull_active and dre_enabled ? breaker_bull_level : na, "Bull Breaker", color=color.new(color.teal,   50), style=plot.style_line)
+plot(breaker_bear_active and dre_enabled ? breaker_bear_level : na, "Bear Breaker", color=color.new(color.maroon, 50), style=plot.style_line)
+
+// Fallback markers so entries/exits remain visible even if labels hit limits.
+plotshape(show_signals and final_can_long and strategy.position_size == 0,  title="Long Marker",  style=shape.triangleup,   location=location.belowbar, color=col_long_trig,  size=size.tiny, text="L")
+plotshape(show_signals and final_can_short and strategy.position_size == 0, title="Short Marker", style=shape.triangledown, location=location.abovebar, color=col_short_trig, size=size.tiny, text="S")
+plotshape(show_exit_labels and position_just_closed, title="Exit Marker", style=shape.circle, location=location.top, color=color.new(color.white, 0), size=size.tiny, text="X")
+
+// ============================================================================
+// PART 17 - MAIN DASHBOARD (Enhanced with 5 new rows)
+// ============================================================================
+
+if show_dashboard
+    var table dash = table.new(position.top_right, 2, 25, bgcolor=color.new(color.black, 10), border_width=1, border_color=color.gray)
+    string data_hash = str.tostring(current_regime) + str.tostring(long_confluence) + str.tostring(short_confluence) + str.tostring(strategy.position_size) + str.tostring(is_expansion) + str.tostring(mc_equity_base) + portfolio_risk_status + rl_last_action
+    var string last_hash = ""
+    var int last_update_bar = 0
+
+    if bar_index - last_update_bar >= 5 or data_hash != last_hash or barstate.islast
+        table.clear(dash, 0, 0, 1, 24)
+
+        string decision = "WAIT"
+        color decision_color = color.yellow
+        if final_can_long or final_can_short
+            decision := "GO"
+            decision_color := color.green
+        else if not (long_confluence_ok or short_confluence_ok)
+            decision := "NO"
+            decision_color := color.red
+
+        // Original rows 0-15
+        table.cell(dash, 0, 0,  "SIGNAL",      text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 0,  decision,       text_color=decision_color, text_size=size.normal)
+        table.cell(dash, 0, 1,  "Regime",       text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 1,  current_regime + (is_expansion ? " ⚡" : is_compression ? " 🗜️" : ""),
+             text_color=current_regime == "TRENDING" ? color.green : (current_regime == "RANGING" ? color.yellow : color.red), text_size=size.small)
+        table.cell(dash, 0, 2,  "Long Conf",    text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 2,  str.tostring(long_confluence) + "/" + str.tostring(effective_ct),
+             text_color=long_confluence >= effective_ct ? color.green : color.red, text_size=size.small)
+        table.cell(dash, 0, 3,  "Short Conf",   text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 3,  str.tostring(short_confluence) + "/" + str.tostring(effective_ct),
+             text_color=short_confluence >= effective_ct ? color.green : color.red, text_size=size.small)
+        table.cell(dash, 0, 4,  "Dre Zone",     text_color=color.white, text_size=size.small)
+        string zone_text = dre_enabled ? (in_premium ? "PREMIUM 🔴" : in_discount ? "DISCOUNT 🟢" : "EQ ⚪") : "OFF"
+        color  zone_color = dre_enabled ? (in_premium ? color.red : in_discount ? color.green : color.gray) : color.gray
+        table.cell(dash, 1, 4,  zone_text,      text_color=zone_color, text_size=size.small)
+        table.cell(dash, 0, 5,  "Order Flow",   text_color=color.white, text_size=size.small)
+        string flow_text = dre_enabled ? (structure_bullish ? "BULLISH 🐂" : structure_bearish ? "BEARISH 🐻" : "NEUTRAL ⚪") : "OFF"
+        color  flow_color = dre_enabled ? (structure_bullish ? color.green : structure_bearish ? color.red : color.gray) : color.gray
+        table.cell(dash, 1, 5,  flow_text,      text_color=flow_color, text_size=size.small)
+        table.cell(dash, 0, 6,  "Long Dre",     text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 6,  "PD:" + str.tostring(pd_score_long) + " F:" + str.tostring(flow_score_long) + " BB:" + str.tostring(bb_score_long), text_color=color.green, text_size=size.small)
+        table.cell(dash, 0, 7,  "Short Dre",    text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 7,  "PD:" + str.tostring(pd_score_short) + " F:" + str.tostring(flow_score_short) + " BB:" + str.tostring(bb_score_short), text_color=color.red, text_size=size.small)
+        table.cell(dash, 0, 8,  "RB Tier",      text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 8,  str.tostring(rb_current_tier) + (rb_active ? " ✓" : " ✗"), text_color=rb_active ? color.green : color.gray, text_size=size.small)
+        table.cell(dash, 0, 9,  "MAZ",          text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 9,  str.tostring(maz_tier) + (maz_pass ? " ✓" : " ✗"), text_color=maz_pass ? color.green : color.red, text_size=size.small)
+        table.cell(dash, 0, 10, "Session",      text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 10, current_session_name, text_color=in_allowed_session ? color.green : color.red, text_size=size.small)
+        table.cell(dash, 0, 11, "Position",     text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 11, strategy.position_size > 0 ? "LONG 📈" : strategy.position_size < 0 ? "SHORT 📉" : "FLAT ⚪",
+             text_color=strategy.position_size != 0 ? color.yellow : color.gray, text_size=size.small)
+        table.cell(dash, 0, 12, "Daily",        text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 12, str.tostring(daily_trade_count) + "/" + str.tostring(max_daily_trades) + " | " + str.tostring(daily_pnl, "#.#"),
+             text_color=daily_pnl >= 0 ? color.green : color.red, text_size=size.small)
+        table.cell(dash, 0, 13, "Slippage",     text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 13, str.tostring(effective_slippage, "#.#") + " ticks" + (is_expansion ? " ⚡" : ""),
+             text_color=is_expansion ? color.orange : color.aqua, text_size=size.small)
+        table.cell(dash, 0, 14, "MC Robustness", text_color=color.white, text_size=size.small)
+        string mc_text = mc_sample_count >= mc_lookback ?
+             str.tostring(mc_worst_equity, "#") + " / " + str.tostring(mc_equity_base, "#") + " / " + str.tostring(mc_best_equity, "#") : "Need " + str.tostring(mc_lookback) + " trades"
+        color mc_color = mc_sample_count >= mc_lookback ? (mc_worst_equity > 0 ? color.green : color.orange) : color.gray
+        table.cell(dash, 1, 14, mc_text, text_color=mc_color, text_size=size.small)
+
+        // NEW: Module rows 15-23 (9 new rows for modules 1-5)
+        // Portfolio
+        table.cell(dash, 0, 15, "PORTFOLIO",    text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 15, portfolio_risk_status, text_color=portfolio_risk_status == "GREEN" ? color.green : portfolio_risk_status == "YELLOW" ? color.yellow : color.red, text_size=size.small)
+        table.cell(dash, 0, 16, "PORT HEAT",    text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 16, str.tostring(portfolio_heat_score, "#.#"), text_color=portfolio_heat_score < 60 ? color.green : color.red, text_size=size.small)
+        table.cell(dash, 0, 17, "CORR COUNT",   text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 17, str.tostring(correlated_assets_count) + "/3", text_color=correlated_assets_count == 0 ? color.green : color.orange, text_size=size.small)
+
+        // ML Regime
+        table.cell(dash, 0, 18, "ML REGIME",    text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 18, ml_predicted_regime + " [ML]", text_color=ml_confidence >= ml_confidence_threshold ? color.green : color.gray, text_size=size.small)
+        table.cell(dash, 0, 19, "ML CONF",      text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 19, str.tostring(ml_confidence, "#.##"), text_color=ml_confidence >= ml_confidence_threshold ? color.green : color.red, text_size=size.small)
+
+        // Impact
+        table.cell(dash, 0, 20, "IMPACT",       text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 20, "$" + str.tostring(expected_impact_cost, "#.#"), text_color=expected_impact_cost < 10 ? color.green : color.orange, text_size=size.small)
+        table.cell(dash, 0, 21, "IMP VIOL",     text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 21, str.tostring(impact_violations), text_color=impact_violations == 0 ? color.green : color.red, text_size=size.small)
+
+        // RL
+        table.cell(dash, 0, 22, "RL ACTION",    text_color=color.white, text_size=size.small)
+        color rl_color = rl_last_action == "MARKET" ? color.gray : rl_last_action == "LIMIT" ? color.blue : color.yellow
+        table.cell(dash, 1, 22, rl_last_action, text_color=rl_color, text_size=size.small)
+        table.cell(dash, 0, 23, "RL REWARD",    text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 23, str.tostring(rl_cumulative_reward, "#.#"), text_color=rl_cumulative_reward > 0 ? color.green : color.red, text_size=size.small)
+
+        // Version
+        table.cell(dash, 0, 24, "Version",      text_color=color.white, text_size=size.small)
+        table.cell(dash, 1, 24, "v5.1-Grand Unified (MNQ)", text_color=color.aqua, text_size=size.small)
+
+        last_hash        := data_hash
+        last_update_bar  := bar_index
+
+// ============================================================================
+// PART 18 - SUB-DASHBOARDS (OL, Portfolio, RL/Impact)
+// ============================================================================
+
+// Online Learning Sub-Dashboard (bottom-left)
+if show_dashboard and online_learning_enabled
+    var table ol_dash = table.new(position.bottom_left, 2, 6, bgcolor=color.new(color.purple, 90), border_width=1, border_color=color.purple)
+    if barstate.islast
+        table.cell(ol_dash, 0, 0, "OL SYSTEM", text_color=color.white, text_size=size.small)
+        table.cell(ol_dash, 1, 0, ol_is_adapting ? "ADAPTING ⚡" : "STABLE", text_color=ol_is_adapting ? color.yellow : color.green, text_size=size.small)
+        table.cell(ol_dash, 0, 1, "LEARN RATE", text_color=color.white, text_size=size.small)
+        table.cell(ol_dash, 1, 1, str.tostring(ol_learning_rate, "#.###"), text_color=color.aqua, text_size=size.small)
+        table.cell(ol_dash, 0, 2, "ERROR", text_color=color.white, text_size=size.small)
+        table.cell(ol_dash, 1, 2, str.tostring(ol_learning_error, "#.####"), text_color=color.gray, text_size=size.small)
+        table.cell(ol_dash, 0, 3, "ADAPT RATE", text_color=color.white, text_size=size.small)
+        table.cell(ol_dash, 1, 3, str.tostring(ol_adaptation_rate, "#.####"), text_color=color.gray, text_size=size.small)
+        table.cell(ol_dash, 0, 4, "FEAT W TREND", text_color=color.white, text_size=size.small)
+        table.cell(ol_dash, 1, 4, str.tostring(ol_feature_weights_1, "#.##"), text_color=color.blue, text_size=size.small)
+        table.cell(ol_dash, 0, 5, "TRANS PROB", text_color=color.white, text_size=size.small)
+        table.cell(ol_dash, 1, 5, str.tostring(ol_regime_transition_prob, "#.####"), text_color=color.orange, text_size=size.small)
+
+// Portfolio Sub-Dashboard (bottom-right)
+if show_dashboard and portfolio_mode
+    var table port_dash = table.new(position.bottom_right, 2, 6, bgcolor=color.new(color.teal, 90), border_width=1, border_color=color.teal)
+    if barstate.islast
+        table.cell(port_dash, 0, 0, "PORTFOLIO", text_color=color.white, text_size=size.small)
+        table.cell(port_dash, 1, 0, portfolio_risk_status, text_color=portfolio_risk_status == "GREEN" ? color.green : portfolio_risk_status == "YELLOW" ? color.yellow : color.red, text_size=size.small)
+        table.cell(port_dash, 0, 1, "AVG CORR", text_color=color.white, text_size=size.small)
+        table.cell(port_dash, 1, 1, str.tostring(portfolio_avg_correlation, "#.##"), text_color=color.aqua, text_size=size.small)
+        table.cell(port_dash, 0, 2, "RISK ADJ", text_color=color.white, text_size=size.small)
+        table.cell(port_dash, 1, 2, str.tostring(portfolio_risk_adjustment, "#.##"), text_color=color.yellow, text_size=size.small)
+        table.cell(port_dash, 0, 3, "HRP W1", text_color=color.white, text_size=size.small)
+        table.cell(port_dash, 1, 3, str.tostring(hrp_weight_1, "#.##"), text_color=color.blue, text_size=size.small)
+        table.cell(port_dash, 0, 4, "HRP W2", text_color=color.white, text_size=size.small)
+        table.cell(port_dash, 1, 4, str.tostring(hrp_weight_2, "#.##"), text_color=color.blue, text_size=size.small)
+        table.cell(port_dash, 0, 5, "HRP W3", text_color=color.white, text_size=size.small)
+        table.cell(port_dash, 1, 5, str.tostring(hrp_weight_3, "#.##"), text_color=color.blue, text_size=size.small)
+
+// RL/Impact Sub-Dashboard (top-left)
+if show_dashboard and (rl_enabled or impact_model_enabled)
+    var table rl_impact_dash = table.new(position.top_left, 2, 6, bgcolor=color.new(color.maroon, 90), border_width=1, border_color=color.maroon)
+    if barstate.islast
+        table.cell(rl_impact_dash, 0, 0, "EXECUTION", text_color=color.white, text_size=size.small)
+        table.cell(rl_impact_dash, 1, 0, rl_enabled ? "RL+IMPACT" : "IMPACT", text_color=color.orange, text_size=size.small)
+        table.cell(rl_impact_dash, 0, 1, "RL ACTION", text_color=color.white, text_size=size.small)
+        color rl_act_color = rl_last_action == "MARKET" ? color.gray : rl_last_action == "LIMIT" ? color.blue : color.yellow
+        table.cell(rl_impact_dash, 1, 1, rl_last_action, text_color=rl_act_color, text_size=size.small)
+        table.cell(rl_impact_dash, 0, 2, "TOXIC FLOW", text_color=color.white, text_size=size.small)
+        table.cell(rl_impact_dash, 1, 2, toxic_order_flow ? "YES ⚠️" : "NO", text_color=toxic_order_flow ? color.red : color.green, text_size=size.small)
+        table.cell(rl_impact_dash, 0, 3, "KYLE λ", text_color=color.white, text_size=size.small)
+        table.cell(rl_impact_dash, 1, 3, str.tostring(kyle_lambda_current, "#.###"), text_color=color.aqua, text_size=size.small)
+        table.cell(rl_impact_dash, 0, 4, "PART RATE", text_color=color.white, text_size=size.small)
+        table.cell(rl_impact_dash, 1, 4, str.tostring(participation_rate * 100, "#.#") + "%", text_color=participation_rate > participation_rate_limit ? color.red : color.green, text_size=size.small)
+        table.cell(rl_impact_dash, 0, 5, "CUM IMPACT", text_color=color.white, text_size=size.small)
+        table.cell(rl_impact_dash, 1, 5, "$" + str.tostring(cumulative_impact_cost, "#.#"), text_color=cumulative_impact_cost > 100 ? color.red : color.gray, text_size=size.small)
+
+// ============================================================================
+// PART 19 - ALERTS
+// ============================================================================
+
+if final_can_long and alert_mode != "Off" and (alert_mode == "Signals" or alert_mode == "Both")
+    alert(f_payload("LONG_SIGNAL", "LONG"), alert.freq_once_per_bar_close)
+
+if final_can_short and alert_mode != "Off" and (alert_mode == "Signals" or alert_mode == "Both")
+    alert(f_payload("SHORT_SIGNAL", "SHORT"), alert.freq_once_per_bar_close)
+
+// ============================================================================
+// PART 20 - DEBUG LOGGING
+// ============================================================================
+
+if bar_index % 5 == 0
+    log.info("v5.1-MNQ | regime=" + current_regime + " slip=" + str.tostring(effective_slippage) +
+             " oos=" + str.tostring(wfo_in_oos_window) + " mc_base=" + str.tostring(mc_equity_base, "#.#") +
+             " portfolio=" + portfolio_risk_status + " ml_conf=" + str.tostring(ml_confidence, "#.##") +
+             " rl=" + rl_last_action + " impact=" + str.tostring(expected_impact_cost, "#.#") +
+             " ol_adapt=" + str.tostring(ol_is_adapting))

@@ -1,0 +1,485 @@
+# ============================================================================
+# ENHANCED ADAPTIVE STRATEGY - PYTHON CONFIGURATION
+# ============================================================================
+
+# Instrument Settings
+instrument:
+  symbol: "MGC1!"
+  exchange: "COMEX"
+  tick_size: 0.1
+  tick_value: 1.0
+  is_mnq: false
+  is_mgc: true
+  contract_multiplier: 10
+
+# Capital & Risk
+capital:
+  initial_capital: 100000
+  max_risk_percent: 2.0
+  min_risk_percent: 0.5
+  base_risk_percent: 1.0
+  max_risk_per_trade_usd: 200
+  min_stop_distance_pct: 0.001
+  max_notional_pct: 0.08
+  max_daily_loss_percent: 3.0
+  max_position_size: 10
+  min_position_size: 1
+
+# General Parameters
+general:
+  atr_lookback: 14
+  efficiency_lookback: 20
+  regime_persistence_bars: 3
+  trend_fast_ema: 21
+  trend_slow_ema: 55
+  trend_macro_ema: 200
+  min_atr_pct: 0.00045
+  min_efficiency_ratio: 0.55
+
+# Regime Split Behavior
+regime_split:
+  enabled: true
+  # TREND_ONLY | NO_TRADE | MEAN_REVERT
+  range_mode: "NO_TRADE"
+  range_max_efficiency_ratio: 0.45
+  # NO_TRADE | TREND_ONLY
+  volatile_mode: "NO_TRADE"
+
+# DRE Concepts
+dre:
+  enabled: true        # loosen for now
+  pd_lookback: 50
+  pd_timeframe: "240"
+  order_flow_mode: "Auto"  # Auto, Bullish, Bearish
+  require_pd_alignment: true
+  require_flow_alignment: true
+  breaker_block_lookback: 10
+  pd_weight_max: 20
+  flow_weight_max: 15
+  bb_weight: 8
+  require_extreme_structure_block: true
+  
+# Volatility Regime
+volatility:
+  use_vol_expansion: true
+  percentile_lookback: 100
+  expansion_threshold: 75
+  compression_threshold: 25
+  expansion_stop_mult: 1.3
+  compression_stop_mult: 0.7
+  expansion_target_mult: 1.2
+  compression_target_mult: 0.8
+
+# Dynamic Slippage
+slippage:
+  use_dynamic: true
+  base_slippage_ticks: 1.0
+  expansion_mult: 2.5
+  compression_mult: 0.5
+
+# Monte Carlo
+monte_carlo:
+  enabled: false
+  lookback: 100
+  perturbation_pct: 0.20
+  num_simulations: 1000
+
+# Walk-Forward Optimization
+wfo:
+  enabled: false
+  anchor_bars: 500
+  validation_bars: 100
+  defensive_mode: false
+  atr_mult_max: 3.0
+  atr_mult_min: 1.0
+  conf_threshold_max: 85
+  conf_threshold_min: 50
+
+# MAZ (Multi-Asset Zone)
+maz:
+  enabled: true              # was false
+  use_light_filter: false
+  mtf_mode: "Auto"
+  manual_tf1: "60"
+  manual_tf2: "240"
+  atr_length: 14
+  cluster_width_mult: 0.5
+  consensus_min: 3
+  tier1_confluence_adj: -5
+  tier2_confluence_adj: 10
+  tier3_confluence_adj: 20
+  use_volatile_gate: true
+  volatile_mode: "Strict (AND)"
+  efficiency_low_threshold: 0.3
+
+# HTF Bias
+htf_bias:
+  sma_length: 50
+  atr_length: 14
+  deadband_atr_mult: 0.2
+  bias_lookback: 3
+
+# Rejection Blocks
+rejection_blocks:
+  enabled: true
+  decay_bars_mnq: 20
+  decay_bars_mgc: 15
+  min_tier_mnq: 1
+  min_tier_mgc: 1
+  ranging_weight_strong: 25
+  ranging_weight_weak: 15
+  trending_weight: 10
+
+# Volume & Confluence
+volume:
+  rvol_threshold: 1.2
+  volume_profile_cap: 20
+  liquidity_sweep_cap: 15
+
+# Thresholds
+thresholds:
+  trending: 50
+  ranging: 40
+  volatile: 60
+  long_entry_min: 72
+  short_entry_min_mgc: 68
+  short_entry_min_mnq: 72
+  bias_only_min: 86
+  range_long_entry_min: 64
+  range_short_entry_min: 64
+
+# Multi-Timeframe
+mtf:
+  use_confirmation: true   # was false
+  timeframe1: "15"
+  timeframe2: "60"
+  timeframe3: "240"
+  alignment_threshold: 3
+
+
+# Filters
+filters:
+  use_news: true          # was false
+  news_hour: 8
+  news_minute: 30
+  news_window_before: 5
+  news_window_after: 15
+  use_volatility: true     # disable vol-spike filter
+  vol_spike_threshold: 1.5
+
+# Entry Quality Gates
+entry_quality:
+  enabled: true
+  min_rvol: 1.20
+  imbalance_lookback: 3
+  min_abs_imbalance: 0.10
+  min_directional_imbalance: 0.06
+
+# Trend Quality Gate
+trend_quality:
+  enabled: true
+  ema_spread_min_pct: 0.00025
+  ema_slope_lookback: 5
+  ema_slope_min_pct: 0.00008
+  structure_persistence_bars: 2
+  breakout_buffer_atr: 0.10
+
+# Position Sizing Multipliers
+position_sizing:
+  trending_multiplier: 1.8
+  ranging_multiplier: 1.3
+  volatile_multiplier: 2.5
+
+# Stop Loss
+stop_loss:
+  trending_mult: 2.0
+  ranging_mult: 1.5
+  range_mean_revert_mult: 1.0
+  volatile_mult: 3.0
+
+# Take Profit
+take_profit:
+  use_adaptive: true
+  trending_t1_mult: 1.2
+  trending_t2_mult: 2.5
+  trending_t3_mult: 4.0
+  ranging_target_mult: 1.5
+  range_mean_revert_t1_mult: 0.7
+  range_mean_revert_t2_mult: 1.3
+  volatile_t1_mult: 1.0
+  volatile_t2_mult: 2.0
+  t2_scale_min: 2.0
+  t2_scale_max: 4.0
+  t3_scale_min: 3.0
+  t3_scale_max: 7.0
+
+# Exit Management
+exit_management:
+  enable_scale_out: true
+  scale_out_percent: 50
+  move_stop_to_entry_after_scale: true
+  use_breakeven: true
+  breakeven_trigger_atr: 1.0
+  use_trailing_stop: true
+  trailing_activation_atr: 2.0
+  trailing_distance_atr: 1.5
+  use_time_exit: true
+  trending_max_bars: 100
+  ranging_max_bars: 50
+  volatile_max_bars: 30
+
+# Session Filter
+session:
+  use_filter: true         # allow all sessions
+  trade_sessions: "Both"    # kept for later use
+  london_start: "03:00"
+  london_end: "11:00"
+  ny_start: "09:30"
+  ny_end: "16:00"
+  timezone: "America/New_York"
+  allowed_weekdays: [0, 1, 2, 3, 4]  # 0=Mon ... 6=Sun
+  custom_windows: []
+
+
+# Daily Limits
+daily_limits:
+  enabled: true            # was false
+  max_daily_trades: 5
+  max_consecutive_losses: 3
+
+
+# Anti-Repainting
+anti_repainting:
+  use_trade_cooldown: false
+  cooldown_bars: 5
+  use_zone_separation: false
+  zone_separation_mult: 2.0
+
+# ============================================================================
+# ENHANCED MODULES (Python-Only Features)
+# ============================================================================
+
+# Portfolio Correlation Matrix
+portfolio:
+  enabled: false
+  symbols:
+    - "MNQ1!"
+    - "MGC1!"
+    - "ES1!"
+  correlation_lookback: 50
+  max_correlation_threshold: 0.7
+  use_hierarchical_risk_parity: true
+  hrp_cluster_threshold: 0.5
+  rebalance_frequency: "daily"
+
+# Machine Learning Regime Classifier
+ml_regime:
+  enabled: false
+  model_type: "xgboost"  # xgboost, lightgbm, random_forest
+  confidence_threshold: 0.65
+  filter_rapid_switches: true
+  min_bars_between_switches: 5
+  retrain_frequency: 100
+  feature_importance_tracking: true
+  features:
+    - "atr_percentile"
+    - "efficiency_ratio"
+    - "volume_profile"
+    - "price_momentum"
+    - "volatility_clustering"
+    - "autocorrelation"
+  hyperparameters:
+    n_estimators: 100
+    max_depth: 6
+    learning_rate: 0.1
+
+# Online Learning System
+online_learning:
+  enabled: false
+  algorithm: "river"  # river, incremental_sklearn
+  learning_rate: 0.01
+  forgetting_factor: 0.995
+  update_frequency: 5
+  adaptation_threshold: 0.15
+  concept_drift_detection: true
+  drift_threshold: 0.3
+
+# Reinforcement Learning Execution Optimizer
+rl_execution:
+  enabled: false
+  algorithm: "PPO"  # PPO, SAC, TD3
+  learning_rate: 0.0003
+  gamma: 0.99
+  clip_epsilon: 0.2
+  update_frequency: 10
+  episodes_per_update: 5
+  state_features:
+    - "current_pnl"
+    - "position_duration"
+    - "market_volatility"
+    - "order_flow_imbalance"
+    - "spread"
+    - "time_of_day"
+  actions:
+    - "MARKET"
+    - "LIMIT"
+    - "VWAP"
+    - "TWAP"
+  reward_function: "sharpe_weighted"  # pnl, sharpe_weighted, risk_adjusted
+
+# Market Impact Model
+market_impact:
+  enabled: false
+  model_type: "Combined"  # KyleLinear, SquareRoot, Combined
+  kyle_lambda_base: 0.1
+  impact_alpha: 0.5
+  impact_coefficient: 1.0
+  participation_rate_limit: 0.1
+  impact_decay_time: 50
+  use_temporary_impact: true
+  use_permanent_impact: true
+  calibration_window: 200
+
+# Bookmap Bridge (optional external execution filter)
+bookmap_bridge:
+  enabled: true
+  profile: "custom"   # strict | balanced | permissive | custom
+  signal_file: "data/bookmap_signal.json"
+  # Used only when profile = custom:
+  max_age_seconds: 60
+  min_confidence: 1
+  require_whale: false
+  fail_open: true
+
+database:
+  type: sqlite
+  # connection_string is optional because you hard‑coded the SQLite fallback
+  # connection_string: sqlite:///data/trading.db
+
+# Live Trading
+live_trading:
+  enabled: false
+  broker: "tradovate"  # tradovate, alpaca, ib
+  paper_trading: true
+  api_key: "${BROKER_API_KEY}"
+  api_secret: "${BROKER_API_SECRET}"
+  account_id: "${BROKER_ACCOUNT_ID}"
+  websocket_reconnect_delay: 5
+  heartbeat_interval: 30
+
+# TradingView -> Chimera Multi-Broker Automation
+automation:
+  enabled: true
+  mode: "paper"              # paper routing for now (live adapters can be added per broker)
+  broker: "tradovate"
+  brokers:
+    - "oanda"
+    - "tradovate"
+    - "ninjatrader"
+  listen_host: "127.0.0.1"
+  listen_port: 8787
+  webhook_secret: ""         # optional: set and send via X-Chimera-Secret header
+  audit_log_file: "data/chimera_execution_audit.jsonl"
+  allowed_symbols:
+    - "MNQ1!"
+    - "MGC1!"
+    - "EUR_USD"
+    - "USD_JPY"
+    - "XAU_USD"
+  default_order_qty: 1
+  cooldown_seconds: 20
+  state_dir: "data"
+  # Symbol contract specs for paper PnL and risk guard.
+  symbol_specs:
+    MNQ1!:
+      tick_size: 0.25
+      tick_value: 0.5
+    MGC1!:
+      tick_size: 0.1
+      tick_value: 1.0
+    EUR_USD:
+      tick_size: 0.0001
+      tick_value: 1.0
+    USD_JPY:
+      tick_size: 0.01
+      tick_value: 1.0
+    XAU_USD:
+      tick_size: 0.01
+      tick_value: 1.0
+  # Route symbols to your brokers/accounts.
+  broker_routing:
+    default_broker: "tradovate"
+    rules:
+      - pattern: "MNQ*"
+        broker: "tradovate"
+        profile: "strict"
+      - pattern: "MGC*"
+        broker: "ninjatrader"
+        profile: "balanced"
+      - pattern: "EUR_*"
+        broker: "oanda"
+        profile: "scalp"
+      - pattern: "USD_*"
+        broker: "oanda"
+        profile: "scalp"
+      - pattern: "XAU_*"
+        broker: "oanda"
+        profile: "balanced"
+  risk_guard:
+    enabled: true
+    max_daily_loss_usd: 500.0
+    per_symbol_kill_switch: []
+    session_lockout:
+      enabled: true
+      timezone: "America/New_York"
+      allowed_windows:
+        - "09:30-16:15"
+        - "18:00-23:59"
+        - "00:00-17:00"
+  watchdog:
+    enabled: true
+    max_feed_delay_seconds: 25
+    max_bridge_age_seconds: 30
+    max_webhook_idle_seconds: 180
+    phone_alert_webhook_url: ""    # optional IFTTT/Twilio relay URL
+    phone_alert_cooldown_seconds: 180
+  ab_profile_tracker:
+    rolling_trades: 60
+  l2_bridge:
+    provider: "file-poll"          # file-poll | binance-rest | synthetic
+    symbol: "MGC1!"
+    broker: "tradovate"
+    input_file: "data/bridges/tradovate_l2.json"
+    output_file: "data/live_l2_snapshot.json"
+    poll_ms: 300
+    stale_after_seconds: 3
+    fallback_provider: "synthetic"
+
+# Logging & Monitoring
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  log_to_file: true
+  log_directory: "logs"
+  rotation: "1 day"
+  retention: "30 days"
+
+monitoring:
+  enable_dashboard: true
+  dashboard_port: 8050
+  update_interval_seconds: 1
+  save_metrics_interval: 60
+
+# Backtesting
+backtesting:
+  start_date: "2025-01-01"
+  end_date: "2025-12-31"
+  timeframe: "5m"
+  commission_per_contract: 0.5
+  slippage_ticks: 1
+  use_realistic_fills: true
+  data_quality:
+    enforce: false
+    min_rows: 1000
+    min_close_ratio: 0.50
+    max_close_ratio: 2.50
+    max_abs_bar_return: 0.20

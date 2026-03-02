@@ -1,0 +1,55 @@
+# Enhanced Adaptive Strategy - Python Implementation
+# Generated: 2026-02-22 01:03:45
+
+PROJECT SUMMARY
+===============
+
+Total Files: 31
+Location: /home/user/enhanced_adaptive_strategy_python
+
+CORE MODULES
+============
+- Strategy Engine: src/core/strategy_engine.py
+- ML Regime Classifier: src/ml/regime_classifier.py
+- RL Execution Optimizer: src/ml/rl_optimizer.py
+- Portfolio Manager: src/portfolio/manager.py
+- Technical Indicators: src/indicators/technical.py
+- Database Manager: src/data/database.py
+
+SCRIPTS
+=======
+- backtest.py: Run historical backtests
+- generate_sample_data.py: Create synthetic test data
+- quick_start.py: Verify installation
+
+CONFIGURATION
+=============
+- config/config.yaml: Main strategy parameters
+- .env: Environment variables (API keys, database)
+
+ENHANCEMENTS OVER PINE SCRIPT
+==============================
+1. XGBoost regime classification (vs rule-based)
+2. Stable-Baselines3 RL execution optimization
+3. PyPortfolioOpt Hierarchical Risk Parity
+4. PostgreSQL/Redis persistence
+5. Live broker API integration
+6. Parallel processing capabilities
+7. Real order book analysis
+8. Production monitoring dashboards
+
+QUICK START
+===========
+1. cd enhanced_adaptive_strategy_python
+2. python3 -m venv venv && source venv/bin/activate
+3. pip install -r requirements.txt
+4. cp .env.template .env
+5. python quick_start.py
+
+See README.md and docs/setup_guide.md for detailed instructions.
+
+DISCLAIMER
+==========
+This software is for educational purposes only. Trading involves risk.
+Past performance does not guarantee future results. Test thoroughly 
+before risking real capital. Start with paper trading.
