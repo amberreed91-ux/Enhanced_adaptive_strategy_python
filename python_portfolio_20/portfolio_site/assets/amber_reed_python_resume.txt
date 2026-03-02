@@ -32,5 +32,3 @@ PORTFOLIO
 20 runnable Python projects available in this repository under:
 python_portfolio_20/projects/
 
-NOTE
-Replace placeholder contact links with your public profiles before sharing.
