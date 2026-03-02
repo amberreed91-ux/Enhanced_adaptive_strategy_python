@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-02T04:52:08.070760+00:00",
+  "generated_at": "2026-03-02T05:55:24.439375+00:00",
   "project_count": 20,
   "featured_count": 5,
   "categories": [
@@ -12,19 +12,23 @@
     "Systems & DevOps"
   ],
   "skills": [
+    "ETL transformation logic",
     "HMAC signing",
     "HMAC-safe compare",
     "HTML parsing",
     "KPI calculation",
     "PBKDF2",
+    "Python",
     "aggregation",
     "analytics aggregation",
     "anomaly rules",
     "argparse",
+    "asyncio",
     "base64url",
     "cleaning",
     "command routing",
     "container readiness",
+    "csv",
     "dataclasses",
     "edge detection intuition",
     "error metrics",
@@ -33,7 +37,10 @@
     "forecasting",
     "handlers",
     "health checks",
+    "inference pipeline design",
+    "io",
     "lightweight ML",
+    "linear modeling",
     "matrix processing",
     "moving averages",
     "naive bayes",
@@ -42,20 +49,26 @@
     "persistence",
     "priority queues",
     "quality gates",
+    "ranking algorithms",
     "regex parsing",
     "release criteria",
     "repository pattern",
+    "response aggregation",
     "retries",
     "schema normalization",
     "security basics",
     "service contracts",
+    "service-layer architecture",
     "sqlite3",
     "stateful sessions",
+    "task orchestration",
     "test/lint/type checks",
     "threshold logic",
     "token verification",
     "tokenization",
     "type hints",
+    "validation patterns",
+    "vector math",
     "worker orchestration"
   ],
   "projects": [
@@ -197,8 +210,13 @@
     {
       "slug": "04_rest_api_fastapi_style",
       "title": "REST API with FastAPI-style Design",
-      "summary": "",
-      "skills": [],
+      "summary": "Teams need a clean API service pattern that can scale from prototype to production handlers. Built a typed service layer with strict validation and deterministic create/list behavior.",
+      "skills": [
+        "Python",
+        "dataclasses",
+        "service-layer architecture",
+        "validation patterns"
+      ],
       "category": "Backend & APIs",
       "run_command": "python3 projects/04_rest_api_fastapi_style/main.py",
       "code_path": "./projects/04_rest_api_fastapi_style/main.py",
@@ -330,8 +348,13 @@
     {
       "slug": "07_etl_pipeline",
       "title": "ETL Pipeline Project",
-      "summary": "",
-      "skills": [],
+      "summary": "Raw data feeds often contain invalid rows that break downstream analytics. Implemented extraction + transform pipeline with data quality filtering and schema normalization.",
+      "skills": [
+        "Python",
+        "csv",
+        "io",
+        "ETL transformation logic"
+      ],
       "category": "Data & Analytics",
       "run_command": "python3 projects/07_etl_pipeline/main.py",
       "code_path": "./projects/07_etl_pipeline/main.py",
@@ -509,8 +532,13 @@
     {
       "slug": "11_async_api_aggregator",
       "title": "Asynchronous API Aggregator",
-      "summary": "",
-      "skills": [],
+      "summary": "Serial API calls increase latency and make dashboards feel slow. Used asyncio concurrency to collect multiple upstream responses in parallel and aggregate once.",
+      "skills": [
+        "Python",
+        "asyncio",
+        "task orchestration",
+        "response aggregation"
+      ],
       "category": "Backend & APIs",
       "run_command": "python3 projects/11_async_api_aggregator/main.py",
       "code_path": "./projects/11_async_api_aggregator/main.py",
@@ -600,8 +628,12 @@
     {
       "slug": "13_recommender_system",
       "title": "Recommendation System",
-      "summary": "",
-      "skills": [],
+      "summary": "Applications need transparent ranking logic to personalize user experiences. Implemented cosine-similarity scoring with deterministic ranking output.",
+      "skills": [
+        "Python",
+        "vector math",
+        "ranking algorithms"
+      ],
       "category": "ML & AI",
       "run_command": "python3 projects/13_recommender_system/main.py",
       "code_path": "./projects/13_recommender_system/main.py",
@@ -927,8 +959,12 @@
     {
       "slug": "20_capstone_end_to_end_ml_product",
       "title": "Capstone: End-to-End ML Product",
-      "summary": "",
-      "skills": [],
+      "summary": "Hiring teams want proof you can connect model training to serving predictions. Implemented full fit-to-predict pipeline with deterministic inference behavior.",
+      "skills": [
+        "Python",
+        "linear modeling",
+        "inference pipeline design"
+      ],
       "category": "Capstone",
       "run_command": "python3 projects/20_capstone_end_to_end_ml_product/main.py",
       "code_path": "./projects/20_capstone_end_to_end_ml_product/main.py",
@@ -976,8 +1012,13 @@
     {
       "slug": "04_rest_api_fastapi_style",
       "title": "REST API with FastAPI-style Design",
-      "summary": "",
-      "skills": [],
+      "summary": "Teams need a clean API service pattern that can scale from prototype to production handlers. Built a typed service layer with strict validation and deterministic create/list behavior.",
+      "skills": [
+        "Python",
+        "dataclasses",
+        "service-layer architecture",
+        "validation patterns"
+      ],
       "category": "Backend & APIs",
       "run_command": "python3 projects/04_rest_api_fastapi_style/main.py",
       "code_path": "./projects/04_rest_api_fastapi_style/main.py",
@@ -1023,8 +1064,13 @@
     {
       "slug": "07_etl_pipeline",
       "title": "ETL Pipeline Project",
-      "summary": "",
-      "skills": [],
+      "summary": "Raw data feeds often contain invalid rows that break downstream analytics. Implemented extraction + transform pipeline with data quality filtering and schema normalization.",
+      "skills": [
+        "Python",
+        "csv",
+        "io",
+        "ETL transformation logic"
+      ],
       "category": "Data & Analytics",
       "run_command": "python3 projects/07_etl_pipeline/main.py",
       "code_path": "./projects/07_etl_pipeline/main.py",
@@ -1070,8 +1116,13 @@
     {
       "slug": "11_async_api_aggregator",
       "title": "Asynchronous API Aggregator",
-      "summary": "",
-      "skills": [],
+      "summary": "Serial API calls increase latency and make dashboards feel slow. Used asyncio concurrency to collect multiple upstream responses in parallel and aggregate once.",
+      "skills": [
+        "Python",
+        "asyncio",
+        "task orchestration",
+        "response aggregation"
+      ],
       "category": "Backend & APIs",
       "run_command": "python3 projects/11_async_api_aggregator/main.py",
       "code_path": "./projects/11_async_api_aggregator/main.py",
@@ -1118,8 +1169,12 @@
     {
       "slug": "13_recommender_system",
       "title": "Recommendation System",
-      "summary": "",
-      "skills": [],
+      "summary": "Applications need transparent ranking logic to personalize user experiences. Implemented cosine-similarity scoring with deterministic ranking output.",
+      "skills": [
+        "Python",
+        "vector math",
+        "ranking algorithms"
+      ],
       "category": "ML & AI",
       "run_command": "python3 projects/13_recommender_system/main.py",
       "code_path": "./projects/13_recommender_system/main.py",
@@ -1165,8 +1220,12 @@
     {
       "slug": "20_capstone_end_to_end_ml_product",
       "title": "Capstone: End-to-End ML Product",
-      "summary": "",
-      "skills": [],
+      "summary": "Hiring teams want proof you can connect model training to serving predictions. Implemented full fit-to-predict pipeline with deterministic inference behavior.",
+      "skills": [
+        "Python",
+        "linear modeling",
+        "inference pipeline design"
+      ],
       "category": "Capstone",
       "run_command": "python3 projects/20_capstone_end_to_end_ml_product/main.py",
       "code_path": "./projects/20_capstone_end_to_end_ml_product/main.py",

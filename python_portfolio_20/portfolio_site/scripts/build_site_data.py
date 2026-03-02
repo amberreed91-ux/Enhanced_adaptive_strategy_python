@@ -38,21 +38,55 @@ CATEGORY_MAP = {
 }
 
 
+def split_sections(text: str) -> dict[str, str]:
+    sections: dict[str, str] = {}
+    pattern = re.compile(r"^##\s+(.+?)\n(.*?)(?=^##\s+|\Z)", flags=re.MULTILINE | re.DOTALL)
+    for match in pattern.finditer(text):
+        name = match.group(1).strip().lower()
+        body = match.group(2).strip()
+        if body:
+            sections[name] = body
+    return sections
+
+
+def clean_inline(text: str) -> str:
+    cleaned = re.sub(r"`([^`]+)`", r"\1", text)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    return cleaned
+
+
+def extract_list_values(raw: str) -> list[str]:
+    values: list[str] = []
+    for line in raw.splitlines():
+        item = line.strip()
+        if not item:
+            continue
+        item = re.sub(r"^[-*]\s*", "", item)
+        values.extend([part.strip() for part in item.split(",") if part.strip()])
+    return [clean_inline(v) for v in values if v.strip()]
+
+
 def parse_readme(readme_path: Path) -> tuple[str, str, list[str]]:
     text = readme_path.read_text(encoding="utf-8")
     title_match = re.search(r"^#\s+(.+)$", text, flags=re.MULTILINE)
     title = title_match.group(1).strip() if title_match else readme_path.parent.name
 
+    sections = split_sections(text)
     summary = ""
-    summary_match = re.search(r"##\s+What it shows\n(.+)", text)
-    if summary_match:
-        summary = summary_match.group(1).strip()
+    if sections.get("what it shows"):
+        summary = clean_inline(sections["what it shows"].splitlines()[0])
+    elif sections.get("approach"):
+        approach = clean_inline(sections["approach"].splitlines()[0])
+        problem = clean_inline(sections.get("problem", "").splitlines()[0]) if sections.get("problem") else ""
+        summary = f"{problem} {approach}".strip() if problem else approach
+    elif sections.get("problem"):
+        summary = clean_inline(sections["problem"].splitlines()[0])
 
-    skills = []
-    skills_match = re.search(r"##\s+Skills demonstrated\n(.+)", text)
-    if skills_match:
-        raw_skills = skills_match.group(1).strip()
-        skills = [s.strip() for s in raw_skills.split(",") if s.strip()]
+    skills: list[str] = []
+    if sections.get("skills demonstrated"):
+        skills = extract_list_values(sections["skills demonstrated"])
+    elif sections.get("tech stack"):
+        skills = extract_list_values(sections["tech stack"])
 
     return title, summary, skills
 

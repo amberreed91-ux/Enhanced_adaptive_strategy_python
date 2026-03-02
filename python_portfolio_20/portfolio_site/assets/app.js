@@ -47,6 +47,15 @@ function hasLink(url) {
   return typeof url === "string" && url.trim().length > 0;
 }
 
+function withVersion(url) {
+  const value = typeof url === "string" ? url.trim() : "";
+  if (!value) return "";
+  if (!state.payload?.generated_at) return value;
+  if (/^https?:\/\//i.test(value)) return value;
+  const sep = value.includes("?") ? "&" : "?";
+  return `${value}${sep}v=${encodeURIComponent(state.payload.generated_at)}`;
+}
+
 function safeList(items) {
   return Array.isArray(items) ? items.filter((v) => typeof v === "string" && v.trim()) : [];
 }
@@ -65,16 +74,16 @@ function linkButtons(project, includeDetails = true) {
   const out = [];
 
   if (hasLink(links.live)) {
-    out.push(`<a href="${links.live}" target="_blank" rel="noreferrer">Live</a>`);
+    out.push(`<a href="${withVersion(links.live)}" target="_blank" rel="noreferrer">Live</a>`);
   }
   if (hasLink(links.repo)) {
-    out.push(`<a href="${links.repo}" target="_blank" rel="noreferrer">GitHub</a>`);
+    out.push(`<a href="${withVersion(links.repo)}" target="_blank" rel="noreferrer">GitHub</a>`);
   }
   if (hasLink(links.docs)) {
-    out.push(`<a href="${links.docs}" target="_blank" rel="noreferrer">Docs</a>`);
+    out.push(`<a href="${withVersion(links.docs)}" target="_blank" rel="noreferrer">Docs</a>`);
   }
   if (hasLink(links.video)) {
-    out.push(`<a href="${links.video}" target="_blank" rel="noreferrer">Video</a>`);
+    out.push(`<a href="${withVersion(links.video)}" target="_blank" rel="noreferrer">Video</a>`);
   }
 
   out.push(`<a href="${project.code_path}" target="_blank" rel="noreferrer">Code</a>`);
@@ -230,7 +239,7 @@ function setOptionalLink(element, url) {
     return;
   }
   element.style.display = "inline-flex";
-  element.href = url;
+  element.href = withVersion(url);
 }
 
 function openModal(project) {
@@ -244,7 +253,7 @@ function openModal(project) {
   const hasVisual = hasLink((project.links || {}).video);
   if (hasVisual) {
     dom.modalPreview.style.display = "block";
-    dom.modalPreview.src = `./assets/project_media/${project.slug}/preview.png`;
+    dom.modalPreview.src = withVersion(`./assets/project_media/${project.slug}/preview.png`);
   } else {
     dom.modalPreview.style.display = "none";
     dom.modalPreview.removeAttribute("src");
