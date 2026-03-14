@@ -138,11 +138,11 @@ export default function StrategyBuilderPage() {
               New Strategy
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-card border-border max-w-2xl">
+          <DialogContent className="bg-card border-border max-w-2xl max-h-[85vh] flex flex-col">
             <DialogHeader>
               <DialogTitle>Create New Strategy</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 mt-4 max-h-[70vh] overflow-y-auto pr-2">
+            <div className="space-y-4 mt-4 overflow-y-auto pr-2 flex-1">
               {/* Strategy Name */}
               <div className="space-y-2">
                 <Label>Strategy Name</Label>
@@ -319,7 +319,8 @@ export default function StrategyBuilderPage() {
                   </div>
                 </div>
               </div>
-
+            </div>
+            <div className="pt-4 border-t border-border mt-4">
               <Button onClick={handleSubmit} disabled={submitting} className="w-full" data-testid="submit-strategy">
                 {submitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
                 Create Strategy

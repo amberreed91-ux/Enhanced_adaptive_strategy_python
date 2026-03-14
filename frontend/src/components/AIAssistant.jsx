@@ -64,7 +64,7 @@ export const AIAssistant = () => {
       <Button
         onClick={() => setIsOpen(!isOpen)}
         className={`
-          fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg z-50
+          fixed bottom-20 right-6 w-14 h-14 rounded-full shadow-lg z-50
           bg-primary hover:bg-primary/90 text-white
           ${isOpen ? "scale-0 opacity-0" : "scale-100 opacity-100"}
           transition-all duration-200
@@ -77,7 +77,7 @@ export const AIAssistant = () => {
       {/* Chat Panel */}
       <div
         className={`
-          fixed bottom-6 right-6 w-96 h-[500px] z-50
+          fixed bottom-20 right-6 w-96 h-[500px] z-50
           glass rounded-lg flex flex-col overflow-hidden
           ${isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0 pointer-events-none"}
           transition-all duration-200 origin-bottom-right
